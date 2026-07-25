@@ -22,7 +22,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "vendor"
   ],
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -32,7 +33,8 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --coverage",
+    "test": "vitest run --coverage --reporter=verbose",
+    "crosscheck": "tsx scripts/cross-check.ts",
     "build": "tsup",
     "evidence": "tsx scripts/evidence.ts",
     "evidence:check": "tsx scripts/evidence.ts --check"

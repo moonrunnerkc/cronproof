@@ -5,8 +5,8 @@ Command output below is captured verbatim.
 
 ## Run metadata
 
-- Generated: 2026-07-25T23:18:25.473Z
-- Git SHA: 16c617752dee6ad324beb34f2364d20a6237dbf0 (working tree dirty)
+- Generated: 2026-07-25T23:46:31.944Z
+- Git SHA: d0fa1bf16d9167b878e6a497279eea87b8afcd5c (working tree dirty)
 - Repo root: /home/brad/projects/cronproof
 - Node: v22.16.0
 - ICU: 77.1
@@ -63,37 +63,98 @@ Exit code: 0
 ````
 
 > cronproof@0.1.0 test /home/brad/projects/cronproof
-> vitest run --coverage
+> vitest run --coverage --reporter=verbose
 
 
  RUN  v4.1.10 /home/brad/projects/cronproof
       Coverage enabled with v8
 
+ ✓ tests/evidence-lib.test.ts > normalizeEvidence > makes two runs equal when they differ only in timestamp, git SHA, repo root, clock times, and durations 3ms
+ ✓ tests/evidence-lib.test.ts > normalizeEvidence > keeps two runs different when command output genuinely differs 1ms
+ ✓ tests/evidence-lib.test.ts > normalizeEvidence > treats output lines inside a block as an order-insensitive multiset, since concurrent build tools interleave log lines 0ms
+ ✓ tests/evidence-lib.test.ts > normalizeEvidence > keeps exit codes visible after normalization 0ms
+ ✓ tests/evidence-lib.test.ts > firstDifference > returns null for identical documents 0ms
+ ✓ tests/evidence-lib.test.ts > firstDifference > names the first line where two documents diverge 0ms
+ ✓ tests/cli-main.test.ts > cronproof CLI stub > prints "cronproof <version>" using the version from package.json 4ms
+ ✓ tests/cli-main.test.ts > cronproof CLI stub > reports exit code 0 1ms
+ ✓ tests/tz/resolve-wall-clock.test.ts > resolveWallClock input handling > an ordinary local time resolves to a unique instant with its offset 3ms
+ ✓ tests/tz/resolve-wall-clock.test.ts > resolveWallClock input handling > rejects out-of-range calendar fields with RangeError 0ms
+ ✓ tests/tz/resolve-wall-clock.test.ts > resolveWallClock input handling > propagates an error for a zone the backend cannot load 1ms
+ ✓ tests/tz/tzif-parse.test.ts > TZif binary parsing > reads the 64-bit transition table and footer of America/New_York 4ms
+ ✓ tests/tz/tzif-parse.test.ts > TZif binary parsing > reads a constant zone with no transitions 0ms
+ ✓ tests/tz/tzif-parse.test.ts > TZif binary parsing > preserves sub-minute historical offsets (Africa/Monrovia, UTC-00:44:30 until 1972) 0ms
+ ✓ tests/tz/tzif-parse.test.ts > TZif binary parsing > rejects input that is not TZif 1ms
+ ✓ tests/tz/versions.test.ts > tzdb version reporting > reports the Intl tzdb version and the zoneinfo tzdb version separately 3ms
+ ✓ tests/tz/versions.test.ts > tzdb version reporting > stays silent when both sources carry the same release 0ms
+ ✓ tests/tz/versions.test.ts > tzdb version reporting > warns loudly when the releases disagree, naming both versions 1ms
+ ✓ tests/tz/versions.test.ts > tzdb version reporting > warns when a version cannot be determined at all 0ms
+ ✓ tests/tz/civil-date.test.ts > civil date math > matches Date.UTC across ordinary, leap, and century boundaries 3ms
+ ✓ tests/tz/civil-date.test.ts > civil date math > day counts round-trip through civil dates 1ms
+ ✓ tests/tz/civil-date.test.ts > civil date math > weekday matches the known epoch anchor and a known Sunday 0ms
+ ✓ tests/tz/civil-date.test.ts > civil date math > wall fields round-trip through wall milliseconds 1ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > parses a US-style rule with east-positive offsets 3ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > parses angle-bracket names, explicit DST offsets, and rule times (Antarctica/Troll footer) 1ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > parses the reversed-season Dublin footer where standard time is the summer offset 0ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > parses a constant-offset zone with no DST 0ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > returns null on malformed input 0ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > computes the 2024 US spring-forward instant from the rule 0ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > resolves week 5 to the last weekday of the month 0ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > julian day rules skip February 29 while zero-based day rules count it 0ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > 2024-03-10T02:30 America/New_York is nonexistent with a one-hour gap 3ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > 2024-11-03T01:30 America/New_York is ambiguous with a one-hour fold 1ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > Australia/Lord_Howe 2024-10-06: 02:15 nonexistent and 02:45 unique, because the shift is 30 minutes 0ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > Antarctica/Troll 2024-03-31 produces a 2-hour gap 0ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > Europe/Dublin resolves correctly under negative DST: winter offset 0, summer offset +1h, gap and fold at the transitions 0ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > Pacific/Apia 2011-12-30 is a fully nonexistent calendar day 1ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > Asia/Tehran shows transitions before 2022 and none after 1ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > 2024-03-10T02:30 America/New_York is nonexistent with a one-hour gap 15ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > 2024-11-03T01:30 America/New_York is ambiguous with a one-hour fold 0ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > Australia/Lord_Howe 2024-10-06: 02:15 nonexistent and 02:45 unique, because the shift is 30 minutes 1ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > Antarctica/Troll 2024-03-31 produces a 2-hour gap 1ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > Europe/Dublin resolves correctly under negative DST: winter offset 0, summer offset +1h, gap and fold at the transitions 1ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > Pacific/Apia 2011-12-30 is a fully nonexistent calendar day 1ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > Asia/Tehran shows transitions before 2022 and none after 27ms
+ ✓ tests/tz/acceptance.test.ts > negative DST data is reported raw, never as a season proxy > vendored TZif reports Europe/Dublin winter as the DST variant at offset 0 and summer as standard time at +1h 0ms
+ ✓ tests/tz/cross-check.test.ts > backend cross-check > both backends agree on every transition instant and offset for hazard-heavy zones, 1970 to 2040 179ms
+ ✓ tests/tz/cross-check.test.ts > backend cross-check > a one-week DST stint shorter than the scan probe is still verified through direct offset queries (America/Boa_Vista, October 2000) 1ms
+ ✓ tests/tz/cross-check.test.ts > backend cross-check > a backend reporting shifted transition instants is caught, naming the zone and instant 1ms
+ ✓ tests/tz/cross-check.test.ts > backend cross-check > a transition missing from the TZif list is caught by the scan direction 1ms
 
- Test Files  2 passed (2)
-      Tests  8 passed (8)
-   Start at  23:18:23
-   Duration  187ms (transform 61ms, setup 0ms, import 86ms, tests 10ms, environment 0ms)
+ Test Files  9 passed (9)
+      Tests  50 passed (50)
+   Start at  23:46:20
+   Duration  566ms (transform 691ms, setup 0ms, import 1.07s, tests 286ms, environment 1ms)
 
  % Coverage report from v8
-------------------|---------|----------|---------|---------|-------------------
-File              | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
-------------------|---------|----------|---------|---------|-------------------
-All files         |   54.54 |    42.85 |      50 |   54.02 |                   
- scripts          |   52.63 |       38 |   46.15 |      52 |                   
-  evidence-lib.ts |   95.23 |    79.16 |     100 |   95.12 | 114,162           
-  evidence.ts     |       0 |        0 |       0 |       0 | 14-117            
- src              |   66.66 |    83.33 |   66.66 |   66.66 |                   
-  cli-main.ts     |   88.88 |    83.33 |     100 |   88.88 | 23                
-  cli.ts          |       0 |      100 |       0 |       0 | 4-6               
-  index.ts        |       0 |      100 |     100 |       0 | 5                 
-------------------|---------|----------|---------|---------|-------------------
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   71.76 |    62.84 |   76.47 |   71.13 |                   
+ scripts           |   29.19 |       25 |      30 |   28.67 |                   
+  cross-check.ts   |       0 |        0 |       0 |       0 | 22-155            
+  evidence-lib.ts  |   95.23 |    79.16 |     100 |   95.12 | 114,162           
+  evidence.ts      |       0 |        0 |       0 |       0 | 14-122            
+ src               |   66.66 |    83.33 |   66.66 |   66.66 |                   
+  cli-main.ts      |   88.88 |    83.33 |     100 |   88.88 | 23                
+  cli.ts           |       0 |      100 |       0 |       0 | 4-6               
+  index.ts         |       0 |      100 |     100 |       0 | 5                 
+ src/tz            |   84.97 |    72.53 |   91.93 |   84.56 |                   
+  civil-date.ts    |     100 |    90.47 |     100 |     100 | 18,63             
+  cross-check.ts   |   93.54 |       80 |     100 |   93.54 | 93,115            
+  intl-backend.ts  |   94.91 |    83.33 |     100 |   94.73 | 43,54,100         
+  posix-tz.ts      |   91.13 |    85.29 |     100 |   91.13 | ...26,141,147,162 
+  ...wall-clock.ts |   87.75 |    83.87 |   83.33 |    87.5 | 27-30,104,127,135 
+  tzif-backend.ts  |   81.81 |    70.76 |    90.9 |   81.17 | 95-120,150,160    
+  tzif-parse.ts    |   97.77 |     62.5 |     100 |    97.5 | 99                
+  versions.ts      |     100 |    83.33 |     100 |     100 | 29,45             
+  ...nfo-source.ts |   38.46 |    24.32 |   57.14 |   37.25 | ...19,133-134,138 
+-------------------|---------|----------|---------|---------|-------------------
 
 =============================== Coverage summary ===============================
-Statements   : 54.54% ( 48/88 )
-Branches     : 42.85% ( 24/56 )
-Functions    : 50% ( 8/16 )
-Lines        : 54.02% ( 47/87 )
+Statements   : 71.76% ( 427/595 )
+Branches     : 62.84% ( 230/366 )
+Functions    : 76.47% ( 65/85 )
+Lines        : 71.13% ( 414/582 )
 ================================================================================
 ````
 
@@ -103,7 +164,637 @@ Lines        : 54.02% ( 47/87 )
 (empty)
 ````
 
-## 4. build
+## 4. tz cross-check, all zones, 1970 to 2040, vendored root matching the Intl tzdb release
+
+Command: `pnpm run crosscheck --root vendor/zoneinfo`
+
+Exit code: 0
+
+### stdout
+
+````
+
+> cronproof@0.1.0 crosscheck /home/brad/projects/cronproof
+> tsx scripts/cross-check.ts --root vendor/zoneinfo
+
+cronproof tz cross-check
+range: 1970-01-01T00:00:00.000Z to 2040-01-01T00:00:00.000Z
+zoneinfo root: vendor/zoneinfo
+Intl (ICU) tzdb version: 2025b
+zoneinfo tzdb version: 2025b
+OK   Africa/Abidjan transitions compared=0 (A=0 B=0)
+OK   Africa/Accra transitions compared=0 (A=0 B=0)
+OK   Africa/Addis_Ababa transitions compared=0 (A=0 B=0)
+OK   Africa/Algiers transitions compared=9 (A=9 B=9)
+OK   Africa/Asmara transitions compared=0 (A=0 B=0)
+OK   Africa/Asmera transitions compared=0 (A=0 B=0)
+OK   Africa/Bamako transitions compared=0 (A=0 B=0)
+OK   Africa/Bangui transitions compared=0 (A=0 B=0)
+OK   Africa/Banjul transitions compared=0 (A=0 B=0)
+OK   Africa/Bissau transitions compared=1 (A=1 B=1)
+OK   Africa/Blantyre transitions compared=0 (A=0 B=0)
+OK   Africa/Brazzaville transitions compared=0 (A=0 B=0)
+OK   Africa/Bujumbura transitions compared=0 (A=0 B=0)
+OK   Africa/Cairo transitions compared=122 (A=122 B=122)
+OK   Africa/Casablanca transitions compared=89 (A=89 B=89)
+OK   Africa/Ceuta transitions compared=117 (A=117 B=117)
+OK   Africa/Conakry transitions compared=0 (A=0 B=0)
+OK   Africa/Dakar transitions compared=0 (A=0 B=0)
+OK   Africa/Dar_es_Salaam transitions compared=0 (A=0 B=0)
+OK   Africa/Djibouti transitions compared=0 (A=0 B=0)
+OK   Africa/Douala transitions compared=0 (A=0 B=0)
+OK   Africa/El_Aaiun transitions compared=86 (A=86 B=86)
+OK   Africa/Freetown transitions compared=0 (A=0 B=0)
+OK   Africa/Gaborone transitions compared=0 (A=0 B=0)
+OK   Africa/Harare transitions compared=0 (A=0 B=0)
+OK   Africa/Johannesburg transitions compared=0 (A=0 B=0)
+OK   Africa/Juba transitions compared=34 (A=34 B=34)
+OK   Africa/Kampala transitions compared=0 (A=0 B=0)
+OK   Africa/Khartoum transitions compared=34 (A=34 B=34)
+OK   Africa/Kigali transitions compared=0 (A=0 B=0)
+OK   Africa/Kinshasa transitions compared=0 (A=0 B=0)
+OK   Africa/Lagos transitions compared=0 (A=0 B=0)
+OK   Africa/Libreville transitions compared=0 (A=0 B=0)
+OK   Africa/Lome transitions compared=0 (A=0 B=0)
+OK   Africa/Luanda transitions compared=0 (A=0 B=0)
+OK   Africa/Lubumbashi transitions compared=0 (A=0 B=0)
+OK   Africa/Lusaka transitions compared=0 (A=0 B=0)
+OK   Africa/Malabo transitions compared=0 (A=0 B=0)
+OK   Africa/Maputo transitions compared=0 (A=0 B=0)
+OK   Africa/Maseru transitions compared=0 (A=0 B=0)
+OK   Africa/Mbabane transitions compared=0 (A=0 B=0)
+OK   Africa/Mogadishu transitions compared=0 (A=0 B=0)
+OK   Africa/Monrovia transitions compared=1 (A=1 B=1)
+OK   Africa/Nairobi transitions compared=0 (A=0 B=0)
+OK   Africa/Ndjamena transitions compared=2 (A=2 B=2)
+OK   Africa/Niamey transitions compared=0 (A=0 B=0)
+OK   Africa/Nouakchott transitions compared=0 (A=0 B=0)
+OK   Africa/Ouagadougou transitions compared=0 (A=0 B=0)
+OK   Africa/Porto-Novo transitions compared=0 (A=0 B=0)
+OK   Africa/Sao_Tome transitions compared=2 (A=2 B=2)
+OK   Africa/Timbuktu transitions compared=0 (A=0 B=0)
+OK   Africa/Tripoli transitions compared=22 (A=22 B=22)
+OK   Africa/Tunis transitions compared=18 (A=18 B=18)
+OK   Africa/Windhoek transitions compared=48 (A=48 B=48)
+OK   America/Adak transitions compared=139 (A=139 B=139)
+OK   America/Anchorage transitions compared=139 (A=139 B=139)
+OK   America/Anguilla transitions compared=0 (A=0 B=0)
+OK   America/Antigua transitions compared=0 (A=0 B=0)
+OK   America/Araguaina transitions compared=28 (A=28 B=28)
+OK   America/Argentina/Buenos_Aires transitions compared=16 (A=16 B=16)
+OK   America/Argentina/Catamarca transitions compared=16 (A=16 B=16)
+OK   America/Argentina/ComodRivadavia transitions compared=16 (A=16 B=16)
+OK   America/Argentina/Cordoba transitions compared=16 (A=16 B=16)
+OK   America/Argentina/Jujuy transitions compared=14 (A=14 B=14)
+OK   America/Argentina/La_Rioja transitions compared=17 (A=17 B=17)
+OK   America/Argentina/Mendoza transitions compared=16 (A=16 B=16)
+OK   America/Argentina/Rio_Gallegos transitions compared=16 (A=16 B=16)
+OK   America/Argentina/Salta transitions compared=14 (A=14 B=14)
+OK   America/Argentina/San_Juan transitions compared=17 (A=17 B=17)
+OK   America/Argentina/San_Luis transitions compared=17 (A=17 B=17)
+OK   America/Argentina/Tucuman transitions compared=18 (A=18 B=18)
+OK   America/Argentina/Ushuaia transitions compared=16 (A=16 B=16)
+OK   America/Aruba transitions compared=0 (A=0 B=0)
+OK   America/Asuncion transitions compared=101 (A=101 B=101)
+OK   America/Atikokan transitions compared=0 (A=0 B=0)
+OK   America/Atka transitions compared=139 (A=139 B=139)
+OK   America/Bahia transitions compared=38 (A=38 B=38)
+OK   America/Bahia_Banderas transitions compared=54 (A=54 B=54)
+OK   America/Barbados transitions compared=8 (A=8 B=8)
+OK   America/Belem transitions compared=6 (A=6 B=6)
+OK   America/Belize transitions compared=4 (A=4 B=4)
+OK   America/Blanc-Sablon transitions compared=0 (A=0 B=0)
+OK   America/Boa_Vista transitions compared=10 (A=8 B=10)
+OK   America/Bogota transitions compared=2 (A=2 B=2)
+OK   America/Boise transitions compared=140 (A=140 B=140)
+OK   America/Buenos_Aires transitions compared=16 (A=16 B=16)
+OK   America/Cambridge_Bay transitions compared=134 (A=134 B=134)
+OK   America/Campo_Grande transitions compared=68 (A=68 B=68)
+OK   America/Cancun transitions compared=41 (A=41 B=41)
+OK   America/Caracas transitions compared=2 (A=2 B=2)
+OK   America/Catamarca transitions compared=16 (A=16 B=16)
+OK   America/Cayenne transitions compared=0 (A=0 B=0)
+OK   America/Cayman transitions compared=0 (A=0 B=0)
+OK   America/Chicago transitions compared=140 (A=140 B=140)
+OK   America/Chihuahua transitions compared=52 (A=52 B=52)
+OK   America/Ciudad_Juarez transitions compared=87 (A=87 B=87)
+OK   America/Coral_Harbour transitions compared=0 (A=0 B=0)
+OK   America/Cordoba transitions compared=16 (A=16 B=16)
+OK   America/Costa_Rica transitions compared=8 (A=8 B=8)
+OK   America/Coyhaique transitions compared=108 (A=108 B=108)
+OK   America/Creston transitions compared=0 (A=0 B=0)
+OK   America/Cuiaba transitions compared=66 (A=66 B=66)
+OK   America/Curacao transitions compared=0 (A=0 B=0)
+OK   America/Danmarkshavn transitions compared=33 (A=33 B=33)
+OK   America/Dawson transitions compared=82 (A=82 B=82)
+OK   America/Dawson_Creek transitions compared=5 (A=5 B=5)
+OK   America/Denver transitions compared=140 (A=140 B=140)
+OK   America/Detroit transitions compared=134 (A=134 B=134)
+OK   America/Dominica transitions compared=0 (A=0 B=0)
+OK   America/Edmonton transitions compared=136 (A=136 B=136)
+OK   America/Eirunepe transitions compared=10 (A=10 B=10)
+OK   America/El_Salvador transitions compared=4 (A=4 B=4)
+OK   America/Ensenada transitions compared=128 (A=128 B=128)
+OK   America/Fort_Nelson transitions compared=91 (A=91 B=91)
+OK   America/Fort_Wayne transitions compared=70 (A=70 B=70)
+OK   America/Fortaleza transitions compared=16 (A=16 B=16)
+OK   America/Glace_Bay transitions compared=136 (A=136 B=136)
+OK   America/Godthab transitions compared=119 (A=119 B=119)
+OK   America/Goose_Bay transitions compared=140 (A=140 B=140)
+OK   America/Grand_Turk transitions compared=116 (A=116 B=116)
+OK   America/Grenada transitions compared=0 (A=0 B=0)
+OK   America/Guadeloupe transitions compared=0 (A=0 B=0)
+OK   America/Guatemala transitions compared=8 (A=8 B=8)
+OK   America/Guayaquil transitions compared=2 (A=2 B=2)
+OK   America/Guyana transitions compared=2 (A=2 B=2)
+OK   America/Halifax transitions compared=140 (A=140 B=140)
+OK   America/Havana transitions compared=136 (A=136 B=136)
+OK   America/Hermosillo transitions compared=6 (A=6 B=6)
+OK   America/Indiana/Indianapolis transitions compared=70 (A=70 B=70)
+OK   America/Indiana/Knox transitions compared=110 (A=110 B=110)
+OK   America/Indiana/Marengo transitions compared=78 (A=78 B=78)
+OK   America/Indiana/Petersburg transitions compared=81 (A=81 B=81)
+OK   America/Indiana/Tell_City transitions compared=69 (A=69 B=69)
+OK   America/Indiana/Vevay transitions compared=74 (A=74 B=74)
+OK   America/Indiana/Vincennes transitions compared=68 (A=68 B=68)
+OK   America/Indiana/Winamac transitions compared=69 (A=69 B=69)
+OK   America/Indianapolis transitions compared=70 (A=70 B=70)
+OK   America/Inuvik transitions compared=136 (A=136 B=136)
+OK   America/Iqaluit transitions compared=135 (A=135 B=135)
+OK   America/Jamaica transitions compared=20 (A=20 B=20)
+OK   America/Jujuy transitions compared=14 (A=14 B=14)
+OK   America/Juneau transitions compared=138 (A=138 B=138)
+OK   America/Kentucky/Louisville transitions compared=138 (A=138 B=138)
+OK   America/Kentucky/Monticello transitions compared=139 (A=139 B=139)
+OK   America/Knox_IN transitions compared=110 (A=110 B=110)
+OK   America/Kralendijk transitions compared=0 (A=0 B=0)
+OK   America/La_Paz transitions compared=0 (A=0 B=0)
+OK   America/Lima transitions compared=8 (A=8 B=8)
+OK   America/Los_Angeles transitions compared=140 (A=140 B=140)
+OK   America/Louisville transitions compared=138 (A=138 B=138)
+OK   America/Lower_Princes transitions compared=0 (A=0 B=0)
+OK   America/Maceio transitions compared=18 (A=18 B=18)
+OK   America/Managua transitions compared=14 (A=14 B=14)
+OK   America/Manaus transitions compared=8 (A=8 B=8)
+OK   America/Marigot transitions compared=0 (A=0 B=0)
+OK   America/Martinique transitions compared=2 (A=2 B=2)
+OK   America/Matamoros transitions compared=90 (A=90 B=90)
+OK   America/Mazatlan transitions compared=54 (A=54 B=54)
+OK   America/Mendoza transitions compared=16 (A=16 B=16)
+OK   America/Menominee transitions compared=133 (A=133 B=133)
+OK   America/Merida transitions compared=56 (A=56 B=56)
+OK   America/Metlakatla transitions compared=77 (A=77 B=77)
+OK   America/Mexico_City transitions compared=54 (A=54 B=54)
+OK   America/Miquelon transitions compared=107 (A=107 B=107)
+OK   America/Moncton transitions compared=138 (A=138 B=138)
+OK   America/Monterrey transitions compared=56 (A=56 B=56)
+OK   America/Montevideo transitions compared=51 (A=51 B=51)
+OK   America/Montreal transitions compared=140 (A=140 B=140)
+OK   America/Montserrat transitions compared=0 (A=0 B=0)
+OK   America/Nassau transitions compared=140 (A=140 B=140)
+OK   America/New_York transitions compared=140 (A=140 B=140)
+OK   America/Nipigon transitions compared=140 (A=140 B=140)
+OK   America/Nome transitions compared=140 (A=140 B=140)
+OK   America/Noronha transitions compared=16 (A=14 B=16)
+OK   America/North_Dakota/Beulah transitions compared=139 (A=139 B=139)
+OK   America/North_Dakota/Center transitions compared=139 (A=139 B=139)
+OK   America/North_Dakota/New_Salem transitions compared=139 (A=139 B=139)
+OK   America/Nuuk transitions compared=119 (A=119 B=119)
+OK   America/Ojinaga transitions compared=86 (A=86 B=86)
+OK   America/Panama transitions compared=0 (A=0 B=0)
+OK   America/Pangnirtung transitions compared=135 (A=135 B=135)
+OK   America/Paramaribo transitions compared=1 (A=1 B=1)
+OK   America/Phoenix transitions compared=0 (A=0 B=0)
+OK   America/Port-au-Prince transitions compared=88 (A=88 B=88)
+OK   America/Port_of_Spain transitions compared=0 (A=0 B=0)
+OK   America/Porto_Acre transitions compared=8 (A=8 B=8)
+OK   America/Porto_Velho transitions compared=6 (A=6 B=6)
+OK   America/Puerto_Rico transitions compared=0 (A=0 B=0)
+OK   America/Punta_Arenas transitions compared=92 (A=92 B=92)
+OK   America/Rainy_River transitions compared=140 (A=140 B=140)
+OK   America/Rankin_Inlet transitions compared=134 (A=134 B=134)
+OK   America/Recife transitions compared=16 (A=14 B=16)
+OK   America/Regina transitions compared=0 (A=0 B=0)
+OK   America/Resolute transitions compared=132 (A=132 B=132)
+OK   America/Rio_Branco transitions compared=8 (A=8 B=8)
+OK   America/Rosario transitions compared=16 (A=16 B=16)
+OK   America/Santa_Isabel transitions compared=128 (A=128 B=128)
+OK   America/Santarem transitions compared=7 (A=7 B=7)
+OK   America/Santiago transitions compared=138 (A=138 B=138)
+OK   America/Santo_Domingo transitions compared=12 (A=12 B=12)
+OK   America/Sao_Paulo transitions compared=68 (A=68 B=68)
+OK   America/Scoresbysund transitions compared=119 (A=119 B=119)
+OK   America/Shiprock transitions compared=140 (A=140 B=140)
+OK   America/Sitka transitions compared=140 (A=140 B=140)
+OK   America/St_Barthelemy transitions compared=0 (A=0 B=0)
+OK   America/St_Johns transitions compared=140 (A=140 B=140)
+OK   America/St_Kitts transitions compared=0 (A=0 B=0)
+OK   America/St_Lucia transitions compared=0 (A=0 B=0)
+OK   America/St_Thomas transitions compared=0 (A=0 B=0)
+OK   America/St_Vincent transitions compared=0 (A=0 B=0)
+OK   America/Swift_Current transitions compared=1 (A=1 B=1)
+OK   America/Tegucigalpa transitions compared=6 (A=6 B=6)
+OK   America/Thule transitions compared=98 (A=98 B=98)
+OK   America/Thunder_Bay transitions compared=140 (A=140 B=140)
+OK   America/Tijuana transitions compared=128 (A=128 B=128)
+OK   America/Toronto transitions compared=140 (A=140 B=140)
+OK   America/Tortola transitions compared=0 (A=0 B=0)
+OK   America/Vancouver transitions compared=140 (A=140 B=140)
+OK   America/Virgin transitions compared=0 (A=0 B=0)
+OK   America/Whitehorse transitions compared=81 (A=81 B=81)
+OK   America/Winnipeg transitions compared=140 (A=140 B=140)
+OK   America/Yakutat transitions compared=140 (A=140 B=140)
+OK   America/Yellowknife transitions compared=136 (A=136 B=136)
+OK   Antarctica/Casey transitions compared=16 (A=16 B=16)
+OK   Antarctica/Davis transitions compared=4 (A=4 B=4)
+OK   Antarctica/DumontDUrville transitions compared=0 (A=0 B=0)
+OK   Antarctica/Macquarie transitions compared=138 (A=138 B=138)
+OK   Antarctica/Mawson transitions compared=1 (A=1 B=1)
+OK   Antarctica/McMurdo transitions compared=131 (A=131 B=131)
+OK   Antarctica/Palmer transitions compared=70 (A=70 B=70)
+OK   Antarctica/Rothera transitions compared=1 (A=1 B=1)
+OK   Antarctica/South_Pole transitions compared=131 (A=131 B=131)
+OK   Antarctica/Syowa transitions compared=0 (A=0 B=0)
+OK   Antarctica/Troll transitions compared=70 (A=70 B=70)
+OK   Antarctica/Vostok transitions compared=3 (A=3 B=3)
+OK   Arctic/Longyearbyen transitions compared=120 (A=120 B=120)
+OK   Asia/Aden transitions compared=0 (A=0 B=0)
+OK   Asia/Almaty transitions compared=49 (A=49 B=49)
+OK   Asia/Amman transitions compared=85 (A=85 B=85)
+OK   Asia/Anadyr transitions compared=59 (A=59 B=59)
+OK   Asia/Aqtau transitions compared=45 (A=45 B=45)
+OK   Asia/Aqtobe transitions compared=46 (A=46 B=46)
+OK   Asia/Ashgabat transitions compared=22 (A=22 B=22)
+OK   Asia/Ashkhabad transitions compared=22 (A=22 B=22)
+OK   Asia/Atyrau transitions compared=44 (A=44 B=44)
+OK   Asia/Baghdad transitions compared=52 (A=52 B=52)
+OK   Asia/Bahrain transitions compared=1 (A=1 B=1)
+OK   Asia/Baku transitions compared=62 (A=62 B=62)
+OK   Asia/Bangkok transitions compared=0 (A=0 B=0)
+OK   Asia/Barnaul transitions compared=64 (A=64 B=64)
+OK   Asia/Beirut transitions compared=126 (A=126 B=126)
+OK   Asia/Bishkek transitions compared=48 (A=48 B=48)
+OK   Asia/Brunei transitions compared=0 (A=0 B=0)
+OK   Asia/Calcutta transitions compared=0 (A=0 B=0)
+OK   Asia/Chita transitions compared=63 (A=63 B=63)
+OK   Asia/Choibalsan transitions compared=49 (A=49 B=49)
+OK   Asia/Chongqing transitions compared=12 (A=12 B=12)
+OK   Asia/Chungking transitions compared=12 (A=12 B=12)
+OK   Asia/Colombo transitions compared=3 (A=3 B=3)
+OK   Asia/Dacca transitions compared=2 (A=2 B=2)
+OK   Asia/Damascus transitions compared=95 (A=95 B=95)
+OK   Asia/Dhaka transitions compared=2 (A=2 B=2)
+OK   Asia/Dili transitions compared=2 (A=2 B=2)
+OK   Asia/Dubai transitions compared=0 (A=0 B=0)
+OK   Asia/Dushanbe transitions compared=21 (A=21 B=21)
+OK   Asia/Famagusta transitions compared=128 (A=128 B=128)
+OK   Asia/Gaza transitions compared=118 (A=118 B=118)
+OK   Asia/Harbin transitions compared=12 (A=12 B=12)
+OK   Asia/Hebron transitions compared=120 (A=120 B=120)
+OK   Asia/Ho_Chi_Minh transitions compared=1 (A=1 B=1)
+OK   Asia/Hong_Kong transitions compared=16 (A=16 B=16)
+OK   Asia/Hovd transitions compared=49 (A=49 B=49)
+OK   Asia/Irkutsk transitions compared=62 (A=62 B=62)
+OK   Asia/Istanbul transitions compared=77 (A=77 B=77)
+OK   Asia/Jakarta transitions compared=0 (A=0 B=0)
+OK   Asia/Jayapura transitions compared=0 (A=0 B=0)
+OK   Asia/Jerusalem transitions compared=118 (A=118 B=118)
+OK   Asia/Kabul transitions compared=0 (A=0 B=0)
+OK   Asia/Kamchatka transitions compared=60 (A=60 B=60)
+OK   Asia/Karachi transitions compared=6 (A=6 B=6)
+OK   Asia/Kashgar transitions compared=0 (A=0 B=0)
+OK   Asia/Kathmandu transitions compared=1 (A=1 B=1)
+OK   Asia/Katmandu transitions compared=1 (A=1 B=1)
+OK   Asia/Khandyga transitions compared=64 (A=64 B=64)
+OK   Asia/Kolkata transitions compared=0 (A=0 B=0)
+OK   Asia/Krasnoyarsk transitions compared=62 (A=62 B=62)
+OK   Asia/Kuala_Lumpur transitions compared=1 (A=1 B=1)
+OK   Asia/Kuching transitions compared=0 (A=0 B=0)
+OK   Asia/Kuwait transitions compared=0 (A=0 B=0)
+OK   Asia/Macao transitions compared=16 (A=16 B=16)
+OK   Asia/Macau transitions compared=16 (A=16 B=16)
+OK   Asia/Magadan transitions compared=63 (A=63 B=63)
+OK   Asia/Makassar transitions compared=0 (A=0 B=0)
+OK   Asia/Manila transitions compared=4 (A=4 B=4)
+OK   Asia/Muscat transitions compared=0 (A=0 B=0)
+OK   Asia/Nicosia transitions compared=130 (A=130 B=130)
+OK   Asia/Novokuznetsk transitions compared=60 (A=60 B=60)
+OK   Asia/Novosibirsk transitions compared=64 (A=64 B=64)
+OK   Asia/Omsk transitions compared=62 (A=62 B=62)
+OK   Asia/Oral transitions compared=44 (A=44 B=44)
+OK   Asia/Phnom_Penh transitions compared=0 (A=0 B=0)
+OK   Asia/Pontianak transitions compared=1 (A=1 B=1)
+OK   Asia/Pyongyang transitions compared=2 (A=2 B=2)
+OK   Asia/Qatar transitions compared=1 (A=1 B=1)
+OK   Asia/Qostanay transitions compared=46 (A=46 B=46)
+OK   Asia/Qyzylorda transitions compared=44 (A=44 B=44)
+OK   Asia/Rangoon transitions compared=0 (A=0 B=0)
+OK   Asia/Riyadh transitions compared=0 (A=0 B=0)
+OK   Asia/Saigon transitions compared=1 (A=1 B=1)
+OK   Asia/Sakhalin transitions compared=62 (A=62 B=62)
+OK   Asia/Samarkand transitions compared=20 (A=20 B=20)
+OK   Asia/Seoul transitions compared=4 (A=4 B=4)
+OK   Asia/Shanghai transitions compared=12 (A=12 B=12)
+OK   Asia/Singapore transitions compared=1 (A=1 B=1)
+OK   Asia/Srednekolymsk transitions compared=62 (A=62 B=62)
+OK   Asia/Taipei transitions compared=6 (A=6 B=6)
+OK   Asia/Tashkent transitions compared=21 (A=21 B=21)
+OK   Asia/Tbilisi transitions compared=46 (A=46 B=46)
+OK   Asia/Tehran transitions compared=69 (A=69 B=69)
+OK   Asia/Tel_Aviv transitions compared=118 (A=118 B=118)
+OK   Asia/Thimbu transitions compared=1 (A=1 B=1)
+OK   Asia/Thimphu transitions compared=1 (A=1 B=1)
+OK   Asia/Tokyo transitions compared=0 (A=0 B=0)
+OK   Asia/Tomsk transitions compared=64 (A=64 B=64)
+OK   Asia/Ujung_Pandang transitions compared=0 (A=0 B=0)
+OK   Asia/Ulaanbaatar transitions compared=49 (A=49 B=49)
+OK   Asia/Ulan_Bator transitions compared=49 (A=49 B=49)
+OK   Asia/Urumqi transitions compared=0 (A=0 B=0)
+OK   Asia/Ust-Nera transitions compared=63 (A=63 B=63)
+OK   Asia/Vientiane transitions compared=0 (A=0 B=0)
+OK   Asia/Vladivostok transitions compared=62 (A=62 B=62)
+OK   Asia/Yakutsk transitions compared=62 (A=62 B=62)
+OK   Asia/Yangon transitions compared=0 (A=0 B=0)
+OK   Asia/Yekaterinburg transitions compared=62 (A=62 B=62)
+OK   Asia/Yerevan transitions compared=58 (A=58 B=58)
+OK   Atlantic/Azores transitions compared=118 (A=118 B=118)
+OK   Atlantic/Bermuda transitions compared=132 (A=132 B=132)
+OK   Atlantic/Canary transitions compared=120 (A=120 B=120)
+OK   Atlantic/Cape_Verde transitions compared=1 (A=1 B=1)
+OK   Atlantic/Faeroe transitions compared=118 (A=118 B=118)
+OK   Atlantic/Faroe transitions compared=118 (A=118 B=118)
+OK   Atlantic/Jan_Mayen transitions compared=120 (A=120 B=120)
+OK   Atlantic/Madeira transitions compared=116 (A=116 B=116)
+OK   Atlantic/Reykjavik transitions compared=0 (A=0 B=0)
+OK   Atlantic/South_Georgia transitions compared=0 (A=0 B=0)
+OK   Atlantic/St_Helena transitions compared=0 (A=0 B=0)
+OK   Atlantic/Stanley transitions compared=55 (A=55 B=55)
+OK   Australia/ACT transitions compared=137 (A=137 B=137)
+OK   Australia/Adelaide transitions compared=137 (A=137 B=137)
+OK   Australia/Brisbane transitions compared=8 (A=8 B=8)
+OK   Australia/Broken_Hill transitions compared=137 (A=137 B=137)
+OK   Australia/Canberra transitions compared=137 (A=137 B=137)
+OK   Australia/Currie transitions compared=140 (A=140 B=140)
+OK   Australia/Darwin transitions compared=0 (A=0 B=0)
+OK   Australia/Eucla transitions compared=12 (A=12 B=12)
+OK   Australia/Hobart transitions compared=140 (A=140 B=140)
+OK   Australia/LHI transitions compared=118 (A=118 B=118)
+OK   Australia/Lindeman transitions compared=12 (A=12 B=12)
+OK   Australia/Lord_Howe transitions compared=118 (A=118 B=118)
+OK   Australia/Melbourne transitions compared=137 (A=137 B=137)
+OK   Australia/NSW transitions compared=137 (A=137 B=137)
+OK   Australia/North transitions compared=0 (A=0 B=0)
+OK   Australia/Perth transitions compared=12 (A=12 B=12)
+OK   Australia/Queensland transitions compared=8 (A=8 B=8)
+OK   Australia/South transitions compared=137 (A=137 B=137)
+OK   Australia/Sydney transitions compared=137 (A=137 B=137)
+OK   Australia/Tasmania transitions compared=140 (A=140 B=140)
+OK   Australia/Victoria transitions compared=137 (A=137 B=137)
+OK   Australia/West transitions compared=12 (A=12 B=12)
+OK   Australia/Yancowinna transitions compared=137 (A=137 B=137)
+OK   Brazil/Acre transitions compared=8 (A=8 B=8)
+OK   Brazil/DeNoronha transitions compared=16 (A=14 B=16)
+OK   Brazil/East transitions compared=68 (A=68 B=68)
+OK   Brazil/West transitions compared=8 (A=8 B=8)
+OK   CET transitions compared=126 (A=126 B=126)
+OK   CST6CDT transitions compared=140 (A=140 B=140)
+OK   Canada/Atlantic transitions compared=140 (A=140 B=140)
+OK   Canada/Central transitions compared=140 (A=140 B=140)
+OK   Canada/Eastern transitions compared=140 (A=140 B=140)
+OK   Canada/Mountain transitions compared=136 (A=136 B=136)
+OK   Canada/Newfoundland transitions compared=140 (A=140 B=140)
+OK   Canada/Pacific transitions compared=140 (A=140 B=140)
+OK   Canada/Saskatchewan transitions compared=0 (A=0 B=0)
+OK   Canada/Yukon transitions compared=81 (A=81 B=81)
+OK   Chile/Continental transitions compared=138 (A=138 B=138)
+OK   Chile/EasterIsland transitions compared=137 (A=137 B=137)
+OK   Cuba transitions compared=136 (A=136 B=136)
+OK   EET transitions compared=130 (A=130 B=130)
+OK   EST transitions compared=0 (A=0 B=0)
+OK   EST5EDT transitions compared=140 (A=140 B=140)
+OK   Egypt transitions compared=122 (A=122 B=122)
+OK   Eire transitions compared=137 (A=137 B=137)
+OK   Etc/GMT transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+0 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+1 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+10 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+11 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+12 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+2 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+3 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+4 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+5 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+6 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+7 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+8 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT+9 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-0 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-1 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-10 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-11 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-12 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-13 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-14 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-2 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-3 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-4 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-5 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-6 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-7 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-8 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT-9 transitions compared=0 (A=0 B=0)
+OK   Etc/GMT0 transitions compared=0 (A=0 B=0)
+OK   Etc/Greenwich transitions compared=0 (A=0 B=0)
+OK   Etc/UCT transitions compared=0 (A=0 B=0)
+OK   Etc/UTC transitions compared=0 (A=0 B=0)
+OK   Etc/Universal transitions compared=0 (A=0 B=0)
+OK   Etc/Zulu transitions compared=0 (A=0 B=0)
+OK   Europe/Amsterdam transitions compared=126 (A=126 B=126)
+OK   Europe/Andorra transitions compared=110 (A=110 B=110)
+OK   Europe/Astrakhan transitions compared=60 (A=60 B=60)
+OK   Europe/Athens transitions compared=130 (A=130 B=130)
+OK   Europe/Belfast transitions compared=137 (A=137 B=137)
+OK   Europe/Belgrade transitions compared=114 (A=114 B=114)
+OK   Europe/Berlin transitions compared=120 (A=120 B=120)
+OK   Europe/Bratislava transitions compared=122 (A=122 B=122)
+OK   Europe/Brussels transitions compared=126 (A=126 B=126)
+OK   Europe/Bucharest transitions compared=122 (A=122 B=122)
+OK   Europe/Budapest transitions compared=120 (A=120 B=120)
+OK   Europe/Busingen transitions compared=118 (A=118 B=118)
+OK   Europe/Chisinau transitions compared=119 (A=119 B=119)
+OK   Europe/Copenhagen transitions compared=120 (A=120 B=120)
+OK   Europe/Dublin transitions compared=137 (A=137 B=137)
+OK   Europe/Gibraltar transitions compared=116 (A=116 B=116)
+OK   Europe/Guernsey transitions compared=137 (A=137 B=137)
+OK   Europe/Helsinki transitions compared=118 (A=118 B=118)
+OK   Europe/Isle_of_Man transitions compared=137 (A=137 B=137)
+OK   Europe/Istanbul transitions compared=77 (A=77 B=77)
+OK   Europe/Jersey transitions compared=137 (A=137 B=137)
+OK   Europe/Kaliningrad transitions compared=61 (A=61 B=61)
+OK   Europe/Kiev transitions compared=117 (A=117 B=117)
+OK   Europe/Kirov transitions compared=59 (A=59 B=59)
+OK   Europe/Kyiv transitions compared=117 (A=117 B=117)
+OK   Europe/Lisbon transitions compared=125 (A=125 B=125)
+OK   Europe/Ljubljana transitions compared=114 (A=114 B=114)
+OK   Europe/London transitions compared=137 (A=137 B=137)
+OK   Europe/Luxembourg transitions compared=126 (A=126 B=126)
+OK   Europe/Madrid transitions compared=132 (A=132 B=132)
+OK   Europe/Malta transitions compared=140 (A=140 B=140)
+OK   Europe/Mariehamn transitions compared=118 (A=118 B=118)
+OK   Europe/Minsk transitions compared=58 (A=58 B=58)
+OK   Europe/Monaco transitions compared=128 (A=128 B=128)
+OK   Europe/Moscow transitions compared=62 (A=62 B=62)
+OK   Europe/Nicosia transitions compared=130 (A=130 B=130)
+OK   Europe/Oslo transitions compared=120 (A=120 B=120)
+OK   Europe/Paris transitions compared=128 (A=128 B=128)
+OK   Europe/Podgorica transitions compared=114 (A=114 B=114)
+OK   Europe/Prague transitions compared=122 (A=122 B=122)
+OK   Europe/Riga transitions compared=115 (A=115 B=115)
+OK   Europe/Rome transitions compared=140 (A=140 B=140)
+OK   Europe/Samara transitions compared=58 (A=58 B=58)
+OK   Europe/San_Marino transitions compared=140 (A=140 B=140)
+OK   Europe/Sarajevo transitions compared=114 (A=114 B=114)
+OK   Europe/Saratov transitions compared=60 (A=60 B=60)
+OK   Europe/Simferopol transitions compared=65 (A=65 B=65)
+OK   Europe/Skopje transitions compared=114 (A=114 B=114)
+OK   Europe/Sofia transitions compared=122 (A=122 B=122)
+OK   Europe/Stockholm transitions compared=120 (A=120 B=120)
+OK   Europe/Tallinn transitions compared=113 (A=113 B=113)
+OK   Europe/Tirane transitions compared=132 (A=132 B=132)
+OK   Europe/Tiraspol transitions compared=119 (A=119 B=119)
+OK   Europe/Ulyanovsk transitions compared=62 (A=62 B=62)
+OK   Europe/Uzhgorod transitions compared=117 (A=117 B=117)
+OK   Europe/Vaduz transitions compared=118 (A=118 B=118)
+OK   Europe/Vatican transitions compared=140 (A=140 B=140)
+OK   Europe/Vienna transitions compared=120 (A=120 B=120)
+OK   Europe/Vilnius transitions compared=109 (A=109 B=109)
+OK   Europe/Volgograd transitions compared=61 (A=61 B=61)
+OK   Europe/Warsaw transitions compared=126 (A=126 B=126)
+OK   Europe/Zagreb transitions compared=114 (A=114 B=114)
+OK   Europe/Zaporozhye transitions compared=117 (A=117 B=117)
+OK   Europe/Zurich transitions compared=118 (A=118 B=118)
+OK   GB transitions compared=137 (A=137 B=137)
+OK   GB-Eire transitions compared=137 (A=137 B=137)
+OK   GMT transitions compared=0 (A=0 B=0)
+OK   GMT+0 transitions compared=0 (A=0 B=0)
+OK   GMT-0 transitions compared=0 (A=0 B=0)
+OK   GMT0 transitions compared=0 (A=0 B=0)
+OK   Greenwich transitions compared=0 (A=0 B=0)
+OK   HST transitions compared=0 (A=0 B=0)
+OK   Hongkong transitions compared=16 (A=16 B=16)
+OK   Iceland transitions compared=0 (A=0 B=0)
+OK   Indian/Antananarivo transitions compared=0 (A=0 B=0)
+OK   Indian/Chagos transitions compared=1 (A=1 B=1)
+OK   Indian/Christmas transitions compared=0 (A=0 B=0)
+OK   Indian/Cocos transitions compared=0 (A=0 B=0)
+OK   Indian/Comoro transitions compared=0 (A=0 B=0)
+OK   Indian/Kerguelen transitions compared=0 (A=0 B=0)
+OK   Indian/Mahe transitions compared=0 (A=0 B=0)
+OK   Indian/Maldives transitions compared=0 (A=0 B=0)
+OK   Indian/Mauritius transitions compared=4 (A=4 B=4)
+OK   Indian/Mayotte transitions compared=0 (A=0 B=0)
+OK   Indian/Reunion transitions compared=0 (A=0 B=0)
+OK   Iran transitions compared=69 (A=69 B=69)
+OK   Israel transitions compared=118 (A=118 B=118)
+OK   Jamaica transitions compared=20 (A=20 B=20)
+OK   Japan transitions compared=0 (A=0 B=0)
+OK   Kwajalein transitions compared=1 (A=1 B=1)
+OK   Libya transitions compared=22 (A=22 B=22)
+OK   MET transitions compared=126 (A=126 B=126)
+OK   MST transitions compared=0 (A=0 B=0)
+OK   MST7MDT transitions compared=140 (A=140 B=140)
+OK   Mexico/BajaNorte transitions compared=128 (A=128 B=128)
+OK   Mexico/BajaSur transitions compared=54 (A=54 B=54)
+OK   Mexico/General transitions compared=54 (A=54 B=54)
+OK   NZ transitions compared=131 (A=131 B=131)
+OK   NZ-CHAT transitions compared=131 (A=131 B=131)
+OK   Navajo transitions compared=140 (A=140 B=140)
+OK   PRC transitions compared=12 (A=12 B=12)
+OK   PST8PDT transitions compared=140 (A=140 B=140)
+OK   Pacific/Apia transitions compared=23 (A=23 B=23)
+OK   Pacific/Auckland transitions compared=131 (A=131 B=131)
+OK   Pacific/Bougainville transitions compared=1 (A=1 B=1)
+OK   Pacific/Chatham transitions compared=131 (A=131 B=131)
+OK   Pacific/Chuuk transitions compared=0 (A=0 B=0)
+OK   Pacific/Easter transitions compared=137 (A=137 B=137)
+OK   Pacific/Efate transitions compared=22 (A=22 B=22)
+OK   Pacific/Enderbury transitions compared=2 (A=2 B=2)
+OK   Pacific/Fakaofo transitions compared=1 (A=1 B=1)
+OK   Pacific/Fiji transitions compared=28 (A=28 B=28)
+OK   Pacific/Funafuti transitions compared=0 (A=0 B=0)
+OK   Pacific/Galapagos transitions compared=3 (A=3 B=3)
+OK   Pacific/Gambier transitions compared=0 (A=0 B=0)
+OK   Pacific/Guadalcanal transitions compared=0 (A=0 B=0)
+OK   Pacific/Guam transitions compared=10 (A=10 B=10)
+OK   Pacific/Honolulu transitions compared=0 (A=0 B=0)
+OK   Pacific/Johnston transitions compared=0 (A=0 B=0)
+OK   Pacific/Kanton transitions compared=2 (A=2 B=2)
+OK   Pacific/Kiritimati transitions compared=2 (A=2 B=2)
+OK   Pacific/Kosrae transitions compared=1 (A=1 B=1)
+OK   Pacific/Kwajalein transitions compared=1 (A=1 B=1)
+OK   Pacific/Majuro transitions compared=0 (A=0 B=0)
+OK   Pacific/Marquesas transitions compared=0 (A=0 B=0)
+OK   Pacific/Midway transitions compared=0 (A=0 B=0)
+OK   Pacific/Nauru transitions compared=1 (A=1 B=1)
+OK   Pacific/Niue transitions compared=0 (A=0 B=0)
+OK   Pacific/Norfolk transitions compared=44 (A=44 B=44)
+OK   Pacific/Noumea transitions compared=6 (A=6 B=6)
+OK   Pacific/Pago_Pago transitions compared=0 (A=0 B=0)
+OK   Pacific/Palau transitions compared=0 (A=0 B=0)
+OK   Pacific/Pitcairn transitions compared=1 (A=1 B=1)
+OK   Pacific/Pohnpei transitions compared=0 (A=0 B=0)
+OK   Pacific/Ponape transitions compared=0 (A=0 B=0)
+OK   Pacific/Port_Moresby transitions compared=0 (A=0 B=0)
+OK   Pacific/Rarotonga transitions compared=26 (A=26 B=26)
+OK   Pacific/Saipan transitions compared=10 (A=10 B=10)
+OK   Pacific/Samoa transitions compared=0 (A=0 B=0)
+OK   Pacific/Tahiti transitions compared=0 (A=0 B=0)
+OK   Pacific/Tarawa transitions compared=0 (A=0 B=0)
+OK   Pacific/Tongatapu transitions compared=8 (A=8 B=8)
+OK   Pacific/Truk transitions compared=0 (A=0 B=0)
+OK   Pacific/Wake transitions compared=0 (A=0 B=0)
+OK   Pacific/Wallis transitions compared=0 (A=0 B=0)
+OK   Pacific/Yap transitions compared=0 (A=0 B=0)
+OK   Poland transitions compared=126 (A=126 B=126)
+OK   Portugal transitions compared=125 (A=125 B=125)
+OK   ROC transitions compared=6 (A=6 B=6)
+OK   ROK transitions compared=4 (A=4 B=4)
+OK   Singapore transitions compared=1 (A=1 B=1)
+OK   Turkey transitions compared=77 (A=77 B=77)
+OK   UCT transitions compared=0 (A=0 B=0)
+OK   US/Alaska transitions compared=139 (A=139 B=139)
+OK   US/Aleutian transitions compared=139 (A=139 B=139)
+OK   US/Arizona transitions compared=0 (A=0 B=0)
+OK   US/Central transitions compared=140 (A=140 B=140)
+OK   US/East-Indiana transitions compared=70 (A=70 B=70)
+OK   US/Eastern transitions compared=140 (A=140 B=140)
+OK   US/Hawaii transitions compared=0 (A=0 B=0)
+OK   US/Indiana-Starke transitions compared=110 (A=110 B=110)
+OK   US/Michigan transitions compared=134 (A=134 B=134)
+OK   US/Mountain transitions compared=140 (A=140 B=140)
+OK   US/Pacific transitions compared=140 (A=140 B=140)
+OK   US/Samoa transitions compared=0 (A=0 B=0)
+OK   UTC transitions compared=0 (A=0 B=0)
+OK   Universal transitions compared=0 (A=0 B=0)
+OK   W-SU transitions compared=62 (A=62 B=62)
+OK   WET transitions compared=125 (A=125 B=125)
+OK   Zulu transitions compared=0 (A=0 B=0)
+
+zones checked: 597
+zones skipped: 1
+  SKIP Factory: zone name rejected by Intl
+transitions compared: 31144
+disagreements: 0
+result: PASS
+````
+
+### stderr
+
+````
+(empty)
+````
+
+## 5. build
 
 Command: `pnpm run build`
 
@@ -130,28 +821,35 @@ ESM Build start
 CLI Cleaning output folder
 ESM Build start
 CJS Build start
-ESM dist/index.js     108.00 B
-ESM dist/index.js.map 279.00 B
-ESM ⚡️ Build success in 5ms
 ESM dist/cli.js     774.00 B
 ESM dist/cli.js.map 1.96 KB
-ESM ⚡️ Build success in 9ms
-CJS dist/index.cjs     1.09 KB
-CJS dist/index.cjs.map 323.00 B
-CJS ⚡️ Build success in 6ms
+ESM ⚡️ Build success in 11ms
+ESM dist/index.js     26.74 KB
+ESM dist/index.js.map 63.45 KB
+ESM ⚡️ Build success in 24ms
+CJS dist/index.cjs     29.66 KB
+CJS dist/index.cjs.map 63.67 KB
+CJS ⚡️ Build success in 25ms
 DTS Build start
-DTS ⚡️ Build success in 457ms
-DTS dist/index.d.ts  195.00 B
-DTS dist/index.d.cts 195.00 B
+DTS ⚡️ Build success in 728ms
+DTS dist/index.d.ts  18.41 KB
+DTS dist/index.d.cts 18.41 KB
 ````
 
 ### stderr
 
 ````
-(empty)
+
+ WARN  [33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m"import.meta" is not available with the "cjs" output format and will be empty[0m [empty-import-meta]
+
+    src/tz/zoneinfo-source.ts:30:39:
+[37m      30 │   let dir = path.dirname(fileURLToPath([32mimport.meta[37m.url));
+         ╵                                        [32m~~~~~~~~~~~[0m
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
 ````
 
-## 5. CLI smoke
+## 6. CLI smoke
 
 Command: `node dist/cli.js --version`
 

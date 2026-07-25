@@ -18,6 +18,11 @@ const COMMANDS: CommandSpec[] = [
   { title: 'lint', command: 'pnpm', args: ['run', 'lint'] },
   { title: 'typecheck', command: 'pnpm', args: ['run', 'typecheck'] },
   { title: 'test (with coverage)', command: 'pnpm', args: ['run', 'test'] },
+  {
+    title: 'tz cross-check, all zones, 1970 to 2040, vendored root matching the Intl tzdb release',
+    command: 'pnpm',
+    args: ['run', 'crosscheck', '--root', 'vendor/zoneinfo'],
+  },
   { title: 'build', command: 'pnpm', args: ['run', 'build'] },
   {
     title: 'CLI smoke',

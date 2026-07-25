@@ -1,5 +1,7 @@
 /**
- * Library entry point. Phase 1 ships only the package identity;
- * the differential prover API lands in later phases.
+ * Library entry point. Phase 2 ships the dual-backend timezone
+ * engine; the differential prover API lands in later phases.
  */
 export const PACKAGE_NAME = 'cronproof';
+
+export * from './tz/index';

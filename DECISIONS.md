@@ -108,3 +108,108 @@ the code cannot contain the SHA of the commit that includes it (the
 SHA depends on the file's content). EVIDENCE.md records the SHA of
 HEAD at generation time plus a dirty flag, and the SHA line is
 excluded from the drift comparison.
+
+## 2026-07-25: Phase 2, cross-check compares both backends on the same tzdb release
+
+Measured on this machine: the Intl backend reads the tzdb bundled
+with Node 22.16.0's ICU, which reports process.versions.tz = 2025b,
+while /usr/share/zoneinfo carries 2026b (tzdata.zi header
+"# version 2026b"). Running the cross-check across those two roots
+produced 859 disagreements in 14 zones, for example
+America/Vancouver (first unmatched transition 2026-11-01T09:00:00Z,
+present only in the 2025b side) and America/Boa_Vista (transitions
+at 2000-10-08 and 2000-10-15 present only in the 2026b side). Those
+are differences between tzdb releases, not between the two
+implementations, so a cross-check spanning releases cannot separate
+code defects from data drift.
+
+Decision: the repo vendors zoneinfo compiled from the IANA source
+release matching the pinned runtime's ICU tzdb, and the evidence
+cross-check runs against that root. Vendored copy: tzdata2025b
+compiled with the system zic into vendor/zoneinfo (599 files), with
+the release's version file copied to +VERSION. Source, fetched
+2026-07-25:
+https://data.iana.org/time-zones/releases/tzdata2025b.tar.gz
+(sha512 7d83741f3cae81fac8131994b43c55b6da7328df18b706e5ee40e9b3212b
+c506e6f8fc90988b18da424ed59eff69bce593f2783b7b5f18eb483a17aeb94258d6).
+The version mismatch between system zoneinfo and ICU remains real
+and tzdbVersionWarning reports it loudly whenever the two sources
+disagree; the vendored root also serves as the documented fallback
+for systems without /usr/share/zoneinfo.
+
+## 2026-07-25: Phase 2, two-direction cross-check instead of naive list zip
+
+The Intl backend has no transition table; its transitionsBetween
+scans offsets with a 7-day probe and bisects each change. A pair of
+opposing transitions with zero net offset change inside one probe
+interval is invisible to that scan. This is not hypothetical:
+tzdb 2025b records DST in several Brazilian zones from 2000-10-08
+to 2000-10-15, six days and 23 hours apart with zero net change,
+and the scan misses the pair even though ICU's own data contains it
+(verified by direct offset queries at 2000-10-10 in
+America/Boa_Vista, America/Recife, and America/Noronha).
+
+Decision: the cross-check verifies in two directions. Every TZif
+transition is checked against the Intl backend's offsets one second
+before the instant and at the instant, which queries ICU data
+directly and does not depend on scan granularity. Every transition
+the Intl scan does find must exist in the TZif list with identical
+offsets. Every transition known to either backend is therefore
+compared; the only undetectable case is a transition pair absent
+from the TZif table that the Intl scan also misses, which the TZif
+side's completeness (a parsed table, not a scan) makes moot for
+zones the tzdb records.
+
+## 2026-07-25: Phase 2, legacy alias names that Intl remaps to other zones
+
+Measured via resolvedOptions().timeZone on this runtime: Intl
+canonicalizes legacy names to city zones (EET to Europe/Athens, WET
+to Europe/Lisbon, CET and MET to Europe/Brussels, EST5EDT to
+America/New_York). When the substituted zone's TZif data is
+identical to the named file's data over the check range, the
+comparison is still meaningful and the zone is checked (in tzdb
+2025b, EET is a link to Europe/Athens and their transition lists
+match exactly). When the substituted data differs in range, Intl is
+answering about a different zone and the zone is skipped with a
+printed reason rather than reported as a backend disagreement. In
+the 2025b evidence run the only skip is Factory, which Intl rejects
+outright.
+
+## 2026-07-25: Phase 2, isDst is reported raw and never consumed
+
+The TZif backend reports the isdst byte exactly as stored. The Intl
+backend has no DST bit; it marks an instant DST when the CLDR long
+name contains "Daylight" or "Summer", documented as a heuristic.
+The two encodings legitimately disagree: the vendored 2025b build
+of Europe/Dublin models winter GMT as the DST variant
+(offset 0, isDst true) and summer IST as standard time
+(offset 3600, isDst false), while Ubuntu's system build of the same
+zone uses the rearguard encoding with the flag reversed. Both are
+measured in this repo's tests and smoke runs. Consequence: no code
+in this repo uses isDst for offset math, season detection, or
+wall-clock resolution; resolveWallClock consumes offsets and
+transitions only, and the cross-check compares instants and offsets
+only. The acceptance tests pass identically against both encodings.
+
+## 2026-07-25: Phase 2, resolveWallClock result shapes
+
+Gap bounds for NONEXISTENT are reported as wall milliseconds (the
+skipped local readings encoded as if they were UTC) plus the UTC
+transition instant, because the skipped interval exists only on the
+wall clock; its UTC extent is a single instant. AMBIGUOUS carries
+both instants as earlierInstant and laterInstant plus a
+candidateInstants array; the array is future-proofing for the
+theoretical case of more than two candidates, and the fold duration
+is the wall overlap between the earliest and latest candidates.
+Local fields before the first recorded transition or after 2262
+were not special-cased; the backends answer whatever their data
+supports.
+
+## 2026-07-25: Phase 2, pre-first-transition type follows RFC 8536
+
+An earlier draft of the TZif parser used the old tzfile reader
+heuristic (first non-DST type) for timestamps before the first
+transition. RFC 8536 section 3.2 specifies time type 0. Fetched
+2026-07-25: https://www.rfc-editor.org/rfc/rfc8536. The parser now
+uses type 0, and the full cross-check passes against ICU with that
+rule.
