@@ -330,3 +330,136 @@ throw. Debian's distinction from Vixie is likewise behavioral, not
 syntactic: the two share the same parse surface here, and the DST
 branch that keys off the literal leading asterisk (preserved as
 startsWithAsterisk on the minute and hour fields) lands in phase 5.
+
+## 2026-07-27: Phase 4, severity model
+
+Severity ranks, most to least severe: critical, high, medium, low,
+info. Assignment:
+
+- DOUBLED: critical when the work is not idempotent, low when it is.
+  A duplicate run of non-idempotent work corrupts state (double
+  charge, double email, double ledger entry); a duplicate of
+  idempotent work is harmless. This is the brief's requirement that
+  DOUBLED outrank SKIPPED on non-idempotent work.
+- SKIPPED: high. A missed run delays or drops one execution but never
+  corrupts state, and it is usually recoverable by a catch-up run.
+  High, but below a non-idempotent double.
+- COUNT_ANOMALY: high. A calendar day that does not exist means a
+  daily job silently never runs that day; the silence is the danger.
+- INTERVAL_DRIFT: medium. Cadence stretches or compresses across the
+  transition, but no distinct run is lost or duplicated.
+- ZONE_UNSTABLE: info. Not a fault, a label: the region is a
+  prediction from POSIX footer extrapolation, not a recorded fact.
+
+Idempotence cannot be inferred from a cron line (nothing in
+`0 0 * * *` says whether the job is a backup or a payment), so it is
+an explicit per-schedule input flag, `idempotent`, defaulting to
+false. The default therefore treats every double as critical until a
+human asserts the work is safe to repeat. The flag changes only
+severity, never the hazard id, so baselines survive a change of the
+flag.
+
+## 2026-07-27: Phase 4, acceptance discrepancy, the November DOUBLED case
+
+The brief states: "`30 2 * * *` America/New_York over 2024: exactly
+one SKIPPED on March 10, one DOUBLED on November 3." The SKIPPED half
+is correct: 02:30 falls in the spring-forward gap. The DOUBLED half
+is not: America/New_York falls back at 02:00 to 01:00, so the hour
+that occurs twice is 01:00 to 01:59, and 02:30 occurs exactly once.
+
+Verified this session with the repo's own resolver against the
+vendored tzdata 2025b:
+- resolveWallClock(2024-11-03 02:30, America/New_York) = unique,
+  instant 2024-11-03T07:00:00Z.
+- resolveWallClock(2024-11-03 01:30, America/New_York) = ambiguous,
+  instants 2024-11-03T05:30:00Z and 2024-11-03T06:30:00Z.
+
+So `30 2 * * *` cannot produce a DOUBLED in New York; the expression
+that doubles at the fold is `30 1 * * *`. Per standing rule 1, the
+classifier is implemented to the tz facts, not to the brief's
+expected output, and the discrepancy is recorded here rather than
+worked around. The acceptance test asserts: `30 2` yields the SKIPPED
+on March 10 and is not doubled in November, and `30 1` yields the
+DOUBLED on November 3 with both instants. The hazard-table script
+prints both expressions and notes the correction.
+
+## 2026-07-27: Phase 4, interval-like detection and INTERVAL_DRIFT model
+
+A schedule is interval-like when its minute field literally begins
+with "*" and matches more than one value (a wildcard or a step such
+as */15). This reuses the startsWithAsterisk flag that phase 3
+preserves. For interval-like schedules the individual sub-hour slots
+are not distinct jobs, so a slot landing in a gap or a fold is not
+reported as SKIPPED or DOUBLED; instead each offset transition the
+schedule fires around produces one INTERVAL_DRIFT.
+
+The recorded intervals: expected is the nominal cadence (the modal
+spacing between consecutive firings away from a transition, 15 min
+for */15); actual is cadence plus the transition magnitude. For a
+one-hour transition and a 15-minute cadence the affected interval is
+75 minutes. On spring-forward this is the wall-clock gap with no
+firing (01:45 then 03:00); on fall-back it is the real-time gap
+between the last pre-transition firing and the first post-transition
+firing. The bracketing firing pair is recorded for context. This
+yields exactly two INTERVAL_DRIFT for `*/15 * * * *` in New York over
+2024, zero SKIPPED, and zero DOUBLED, as required.
+
+Schedules that fire at most once per hour (a single minute value,
+including `0 * * * *`) are treated as point schedules and use the
+per-firing SKIPPED/DOUBLED path, because each hourly run is a
+distinct job whose loss or duplication matters individually.
+
+## 2026-07-27: Phase 4, COUNT_ANOMALY is a whole-day structural check
+
+COUNT_ANOMALY groups firings by calendar day, takes the modal daily
+firing count, and flags a day whose count deviates, but only when the
+day is structurally anomalous: its midday resolves to nonexistent (a
+phantom day, the whole day skipped) or to ambiguous (a fully
+duplicated day). This is the "calendar day that does not exist" case,
+for example Pacific/Apia's December 30 2011, which the schedule
+`0 0 * * *` misses entirely.
+
+The structural guard is what keeps this distinct from the per-firing
+check. A normal day with one skipped DST hour (New York March 10 for
+`30 2`) also has a deviating count for that schedule, but its midday
+exists, so it is not a phantom day and is reported only as the
+per-firing SKIPPED, not additionally as a COUNT_ANOMALY. Apia's
+December 30 is reported as both a per-firing SKIPPED (the 00:00 slot
+is nonexistent) and a COUNT_ANOMALY (the day itself does not exist);
+both are true and both are shown. COUNT_ANOMALY is computed only for
+point schedules; interval-like schedules express their transition
+effects as INTERVAL_DRIFT.
+
+## 2026-07-27: Phase 4, ZONE_UNSTABLE scope
+
+The brief names two triggers: a transition whose rule changed in a
+recent tzdb release, and a window extending past the last recorded
+transition into POSIX footer extrapolation. The second is concrete
+and checkable from the compiled zone data, so it is implemented: a
+firing at or after the zone's last table transition, when the POSIX
+footer defines a DST rule, is labeled footer-extrapolation. When the
+footer is a constant offset (UTC, or Asia/Tehran after it abolished
+DST in 2022), extrapolation is exact and no label is emitted, because
+a constant offset is not a prediction that can be wrong.
+
+The first trigger, a recently changed rule, requires diffing two
+tzdb releases to know which transitions moved; that data is not
+available in a single compiled tree, so the reason is modeled in the
+type (recent-rule-change) but not emitted in this phase. Recorded
+here as a known limitation rather than faked. Measured boundary:
+America/New_York's last table transition in tzdata 2025b is
+2037-11-01T06:00:00Z, with footer EST5EDT,M3.2.0,M11.1.0; a 2038
+daily job is labeled ZONE_UNSTABLE.
+
+## 2026-07-27: Phase 4, hazard id
+
+The hazard id is "hz_" plus the first 16 hex characters of the
+SHA-256 of the identity tuple: expression, dialect, zone, intended
+local time (fixed-width, zone-free), and classification. It excludes
+resolved instants, severity, gap and fold durations, and the causing
+transition, so a tzdb update that shifts an instant, or a change to
+the idempotence flag that shifts severity, does not change the id. A
+hazard therefore keeps a stable id across runs and across unrelated
+refactors, so it can be baselined and suppressed in CI. A test pins
+the literal id hz_feef0ab468b6e246 for a known hazard so any change
+to the hash function fails loudly.

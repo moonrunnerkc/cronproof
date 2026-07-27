@@ -28,6 +28,11 @@ const COMMANDS: CommandSpec[] = [
     command: 'pnpm',
     args: ['run', 'dialect-table'],
   },
+  {
+    title: 'timezone hazard table for the acceptance cases',
+    command: 'pnpm',
+    args: ['run', 'hazard-table'],
+  },
   { title: 'build', command: 'pnpm', args: ['run', 'build'] },
   {
     title: 'CLI smoke',

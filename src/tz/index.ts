@@ -30,6 +30,7 @@ export { tzdbVersions, tzdbVersionWarning } from './versions';
 export type { TzdbVersions } from './versions';
 export {
   listZones,
+  readZoneFile,
   readZoneinfoVersion,
   resolveZoneinfoRoot,
   SYSTEM_ZONEINFO_ROOT,
