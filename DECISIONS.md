@@ -213,3 +213,120 @@ transition. RFC 8536 section 3.2 specifies time type 0. Fetched
 2026-07-25: https://www.rfc-editor.org/rfc/rfc8536. The parser now
 uses type 0, and the full cross-check passes against ICU with that
 rule.
+
+## 2026-07-27: Phase 3, enumeration duplicates civil calendar math
+
+The enumerator must be provably free of any timezone dependency: an
+acceptance test runs it with the tz module mocked to throw on any
+call, and a second test asserts identical output across different
+zone arguments. Importing the civil-date helpers from src/tz would
+put tz code in the enumerator's module graph and undermine that
+proof. src/cron/calendar.ts therefore reimplements the small
+civil-date core (leap year, days in month, days-from-civil,
+civil-from-days, weekday, and the last/nearest-weekday helpers the
+special tokens need). This is a deliberate exception to DRY-at-3: the
+two copies exist for an architectural reason (separation of
+enumeration from resolution), not by accident, and each is covered by
+its own tests.
+
+## 2026-07-27: Phase 3, GitHub Actions timezone, documentation discrepancy
+
+The phase brief says github-actions is "UTC only, timezone rejected."
+The current GitHub docs, fetched this session
+(https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows),
+state: "By default, scheduled workflows run in UTC. You can optionally
+specify a timezone using an IANA timezone string," with the timezone
+given as a sibling YAML key next to the cron string, not as a token
+inside the cron expression. The cron expression itself remains the
+five-field POSIX subset with operators * , - / and no nonstandard
+tokens. cronproof parses the cron STRING; the workflow-level
+timezone: key is outside that grammar. The github-actions dialect is
+therefore implemented as five-field, UTC-defaulted (utcOnly true on
+the spec), rejecting L, W, #, ? and @-macros, matching the documented
+cron-string grammar. The optional workflow timezone is out of scope
+for a cron-string parser and is recorded here rather than silently
+contradicting the brief.
+
+## 2026-07-27: Phase 3, the MON#5 example needs a #-supporting dialect
+
+The brief lists `0 0 * 2 MON#5` among the differential cases. The "#"
+nth-weekday token is supported only by Quartz and AWS EventBridge
+(Quartz docs: "6#3" means the third Friday;
+https://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html;
+AWS docs: "3#2 would be the second Tuesday";
+https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html).
+Both dialects require six or more fields, so the five-field form
+`0 0 * 2 MON#5` is valid in no dialect (and the parser rejects "#" in
+Vixie with a located error, which the rejection table asserts). The
+differential table covers the nth-weekday construct with the valid
+Quartz expression `0 0 0 ? * MON#5` and hand-verified fifth-Monday
+dates, and separately asserts that Vixie rejects the "#" token. This
+tests the construct the brief intends without asserting an
+expression no real dialect accepts.
+
+## 2026-07-27: Phase 3, day-of-month / day-of-week combination per dialect
+
+Vixie, Debian, k8s (robfig/cron), and GitHub Actions apply the POSIX
+OR quirk: when both day fields are restricted (neither is "*"), a day
+fires if EITHER matches. Sources fetched this session: crontab(5)
+("If both fields are restricted ... the command will be run when
+either field matches", https://man7.org/linux/man-pages/man5/crontab.5.html)
+and robfig/cron v3 docs (https://pkg.go.dev/github.com/robfig/cron/v3).
+Quartz and AWS EventBridge instead forbid restricting both at once
+and require "?" in one of the two day fields (Quartz: "you must
+currently use the '?' character in one of these fields"; AWS: "You
+can't use * in both Day-of-month and Day-of-week"). Those two
+dialects therefore set orQuirk false and requireQuestionMark true;
+because one day field is always unrestricted, the plain AND
+combination is correct for them. systemd combines weekday and date
+with AND (no quirk).
+
+## 2026-07-27: Phase 3, day-of-week numbering canonicalized to 0..6
+
+Internally day-of-week is always 0 (Sunday) through 6 (Saturday).
+Vixie and robfig accept 0 to 7 with both 0 and 7 as Sunday
+(crontab(5), robfig docs). Quartz and AWS number 1 to 7 with 1 as
+Sunday (Quartz/AWS docs above); those map value minus one. Names
+(SUN..SAT, full names) resolve directly to canonical numbers in every
+dialect. Ranges are expanded in the dialect's own number space first,
+then each value is canonicalized, so Vixie "0-7" yields the full week
+and Quartz "1-7" yields the full week without a spurious wrap.
+
+## 2026-07-27: Phase 3, year-field domains
+
+Quartz year domain is 1970 to 2099 and AWS EventBridge is 1970 to
+2199, taken from each product's documentation of the optional/required
+year field (Quartz CronTrigger; AWS EventBridge Scheduler cron table,
+which lists Year 1970-2199). Other dialects carry no year field.
+
+## 2026-07-27: Phase 3, systemd OnCalendar supported subset
+
+OnCalendar is a separate grammar (systemd.time(7),
+https://man7.org/linux/man-pages/man7/systemd.time.7.html), so it has
+its own parser producing the shared AST. The supported subset:
+weekday names with ".." ranges and "," lists; a date of
+Year-Month-Day or Month-Day with "*", integers, ".." ranges, ","
+lists, "/" steps, and the "~" from-end day operator; a time of
+Hour:Minute[:Second] with the same operators; and the shorthand
+keywords minutely, hourly, daily, weekly, monthly, yearly, annually,
+quarterly. Constructs outside this subset (timezone suffixes,
+sub-second precision, unclassifiable tokens) are rejected with a
+located reason rather than parsed loosely. This is enough to map
+OnCalendar onto the same firing semantics as the field dialects
+where they overlap, which is what the phase requires.
+
+## 2026-07-27: Phase 3, enumeration window is wall-clock, zone is carried not used
+
+The enumerator takes the schedule, a zone, and a window, and returns
+intended wall-clock firing tuples "before any timezone resolution."
+Converting a UTC instant to a wall-clock field tuple requires an
+offset, which is timezone work, so enumeration cannot consume a true
+UTC range without touching tz. The window is therefore expressed as
+naive wall-clock field bounds (from/to), and the zone is carried
+through as metadata for the later resolver but never read during
+enumeration. Two tests lock this in: output is identical across
+zone arguments, and enumeration succeeds with the tz module mocked to
+throw. Debian's distinction from Vixie is likewise behavioral, not
+syntactic: the two share the same parse surface here, and the DST
+branch that keys off the literal leading asterisk (preserved as
+startsWithAsterisk on the minute and hour fields) lands in phase 5.

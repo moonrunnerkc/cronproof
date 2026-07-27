@@ -23,6 +23,11 @@ const COMMANDS: CommandSpec[] = [
     command: 'pnpm',
     args: ['run', 'crosscheck', '--root', 'vendor/zoneinfo'],
   },
+  {
+    title: 'cron dialect acceptance and rejection table',
+    command: 'pnpm',
+    args: ['run', 'dialect-table'],
+  },
   { title: 'build', command: 'pnpm', args: ['run', 'build'] },
   {
     title: 'CLI smoke',
