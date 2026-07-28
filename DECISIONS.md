@@ -1195,3 +1195,85 @@ needs the network and the cache, which is gitignored), the same way the
 real-repo scan is a standalone script. The research unit tests do run
 under the evidence test step. The published out/ artifacts (manifest,
 exclusions, analysis, metrics, report) are the phase deliverable.
+
+## 2026-07-28: Phase 13 documentation
+
+Wrote README.md (restructured to the required order), docs/dst-semantics.md,
+docs/policy-models.md, a LICENSE (MIT; package.json declared MIT but no file
+existed), and a link checker (scripts/check-links.ts, npm run check-links).
+
+### Every external claim carries a URL fetched this session
+
+Per standing rule 4, each source was fetched this session before it was
+cited, and the claim was checked against what the page actually says:
+
+- cronsim README: "if CronSim evaluates an expression differently from
+  Debian's cron, that's a bug"; DST same as Debian.
+  https://github.com/cuu508/cronsim
+- cron-parser: IANA tz support through Luxon.
+  https://github.com/harrisiirak/cron-parser
+- Cronos: Vixie-derived DST policy, shifts a skipped time forward, folds a
+  non-interval job once. https://github.com/HangfireIO/Cronos
+- crontab.guru: no timezone or DST handling. https://crontab.guru/
+- Cronitor: alerts "when they fail or never start".
+  https://cronitor.io/cron-job-monitoring
+- Healthchecks: a "dead man's switch" that alerts when a ping "does not
+  arrive on time". https://healthchecks.io/docs/
+- Debian cron.8: skipped jobs "run soon after the change"; folded jobs
+  within 3h "will not be re-run"; wildcards "run based on the new time
+  immediately".
+  https://manpages.debian.org/bookworm/cron/cron.8.en.html
+- Kubernetes CronJob docs: unset timeZone means the controller-manager
+  local zone; startingDeadlineSeconds is a downtime deadline.
+  https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+- robfig/cron v3: "jobs scheduled during daylight-savings leap-ahead
+  transitions will not be run!" https://pkg.go.dev/github.com/robfig/cron/v3
+- Quartz CronTrigger: only warns of "a skip or a repeat", no defined
+  behavior.
+  https://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html
+- croniter: timezone-aware, fold behavior not documented (so measured).
+  https://github.com/kiorky/croniter
+- node-cron: timezone option; "across a daylight-saving fall-back the
+  repeated hour runs once". https://github.com/node-cron/node-cron
+- systemd.time.7: IANA timezone syntax documented, DST edge cases not.
+  https://man7.org/linux/man-pages/man7/systemd.time.7.html
+- IANA tz theory: tm_isdst "should be discouraged" and "does not work in
+  general for geographical timezones".
+  https://data.iana.org/time-zones/theory.html
+- IANA tz NEWS: releases 2026a/b/c, "Alberta moved to permanent -06 on
+  2026-06-18". https://data.iana.org/time-zones/tzdb/NEWS
+- RFC 8536: the footer TZ string computes "local time changes after the
+  last transition time". https://www.rfc-editor.org/rfc/rfc8536
+
+Where a scheduler's own docs do not state its DST behavior (croniter,
+systemd, quartz), the behavior claim is attributed to the committed
+fixture that measured it, not to the doc.
+
+### Claims deleted because they could not be verified
+
+- "The Kubernetes controller stops scheduling after more than 100 missed
+  start times and logs an error." The behavior is real and well known, but
+  the exact sentence containing the number 100 could not be fetched from
+  the CronJob docs page this session (the fetched page truncated before
+  it). It is not stated in docs/policy-models.md; the doc's "What is not
+  claimed" section records the omission and notes the catch-up limit is
+  orthogonal to DST resolution.
+
+### Numbers trace to EVIDENCE.md
+
+Every number in the docs comes from EVIDENCE.md: the gap and fold
+durations and the phantom-day count from the hazard table (section 6), the
+per-policy fire counts and verification statuses and fixtures from the
+differential table (section 7), the cross-check transition counts (section
+4), the tzdb release 2025b (run metadata and section 4), and the tzdb-check
+pass/fail tests (section 3). The corpus headline lives in
+research/out/report.md, linked from the README.
+
+### Link checker
+
+scripts/check-links.ts extracts every link and image target from README.md
+and docs/*.md and verifies external URLs return a non-error status,
+relative paths exist, and same-file anchors match a heading. It is not part
+of the hermetic `npm run evidence` set because it needs the network (like
+the corpus pipeline and the real-repo scan). Latest run: 45 links checked,
+0 failed.
