@@ -1119,3 +1119,79 @@ window.
   root) over 50 fixed cases and asserts the hazards, the severity tally,
   and the full scheduler differential are deep-equal. 50/50 pass, 42
   hazards total, 0 ZONE_UNSTABLE.
+
+## 2026-07-28: Phase 12 corpus study harness
+
+### Four-stage cache-backed pipeline
+
+research/ is a four-stage pipeline (collect, filter, analyze, report),
+each independently rerunnable. Only collect touches the network; filter,
+analyze, and report are pure functions of the cache, so a skeptic reruns
+the last three and gets the same numbers with no GitHub account. The raw
+search pages, file blobs (keyed by git blob sha), and repo metadata are
+all cached; collect is idempotent and preserves the original fetch
+timestamp per hit, so a warm-cache rerun makes zero network calls.
+
+### Pinned analysis window (choice recorded per standing rule 1)
+
+The spec asks for "the next 12 months", but a window anchored to the
+wall clock makes the report irreproducible, which conflicts with the
+hard reproducibility acceptance criterion. The window is therefore
+pinned to a fixed 2025-01-01 to 2026-01-01 (a full year of both
+hemispheres' DST) and the report states this. Reproducibility wins over
+a literally-rolling window; the transition physics are the same.
+
+### Content fetched by git blob sha, not the contents API
+
+GitHub code search returns each hit's git blob sha, not a commit ref.
+The first implementation passed that blob sha to the contents API as a
+`?ref=`, which 404s for every hit (a blob sha is not a commit-ish), so
+the first collect silently produced an empty corpus. Fixed to use the
+git blobs API (`/repos/{repo}/git/blobs/{sha}`), which takes a blob sha
+directly. A lesson in verifying the collector end to end before trusting
+a zero.
+
+### Robustness to malformed extracted zones
+
+A scanned k8s `timeZone` can be a quoted value with a trailing comment,
+which the scanner does not strip, yielding a non-IANA zone string. The
+first analyze run crashed on it. The analyzer now guards each schedule:
+any engine failure (unknown zone, unreadable table) marks the schedule
+not analyzable (`zoneResolvable: false`) and is counted separately
+rather than aborting the corpus run.
+
+### Exclusion rules and their order
+
+Rules run in a fixed order so each exclusion is charged to exactly one
+rule: vendored directory, then cron-library-or-fixture, then fork, then
+content dedup last on the survivors. Order is a documented choice; a hit
+matching two rules counts against the first. Fork exclusion uses
+GitHub's own fork flag, a conservative anti-inflation measure.
+
+### Results (this corpus, this run)
+
+Reproduced byte-identical across two full pipeline runs from cache
+(report.md and metrics.json sha256 unchanged).
+
+- Collected hits (after per-query dedup): 1052. Kept after exclusions:
+  962. Excluded: library-or-fixture 23, duplicate 67, vendored 0, fork 0.
+- Schedules extracted: 1413. Analyzable (parsed, concrete loadable
+  zone): 1170. Unknown zone: 185. Unparsed: 57. Non-loadable zone: 1.
+- Headline portability defect rate: of public Kubernetes CronJobs with
+  an explicit non-UTC timeZone, 4/91 (4.4%) fire a different number of
+  times under the k8s controller than under debian-cron over the window.
+  The four are spring-forward skips (k8s fires 0, debian 1) and a
+  fall-back double (k8s 2, debian 1) in America/New_York and
+  America/Chicago.
+- Secondary: 24/1170 (2.1%) analyzable schedules fire inside a
+  transition window. The rate is low because most collected schedules
+  are UTC-only Vercel and Wrangler crons (569 and 241), which the
+  platform breakdown in the report makes legible.
+
+### Evidence boundary
+
+The pipeline is not part of the hermetic `npm run evidence` set (it
+needs the network and the cache, which is gitignored), the same way the
+real-repo scan is a standalone script. The research unit tests do run
+under the evidence test step. The published out/ artifacts (manifest,
+exclusions, analysis, metrics, report) are the phase deliverable.

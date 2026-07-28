@@ -31,6 +31,8 @@ export default tseslint.config(
       'web/dist/**',
       '.stryker-tmp/**',
       'reports/**',
+      'research/cache/**',
+      'research/out/**',
     ],
   },
   js.configs.recommended,

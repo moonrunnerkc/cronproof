@@ -1,0 +1,97 @@
+{
+  "extracted": 1413,
+  "bySource": [
+    {
+      "sourceKind": "vercel",
+      "count": 569
+    },
+    {
+      "sourceKind": "crontab",
+      "count": 361
+    },
+    {
+      "sourceKind": "k8s-cronjob",
+      "count": 242
+    },
+    {
+      "sourceKind": "wrangler",
+      "count": 241
+    }
+  ],
+  "analyzable": 1170,
+  "unknownZone": 185,
+  "unparsed": 57,
+  "invalidZone": 1,
+  "headline": {
+    "numerator": 4,
+    "denominator": 91
+  },
+  "transitionWindow": {
+    "numerator": 24,
+    "denominator": 1170
+  },
+  "hazardDistribution": [
+    {
+      "kind": "SKIPPED",
+      "count": 13
+    },
+    {
+      "kind": "DOUBLED",
+      "count": 12
+    },
+    {
+      "kind": "INTERVAL_DRIFT",
+      "count": 9
+    },
+    {
+      "kind": "COUNT_ANOMALY",
+      "count": 0
+    },
+    {
+      "kind": "ZONE_UNSTABLE",
+      "count": 0
+    }
+  ],
+  "topZones": [
+    {
+      "zone": "America/New_York",
+      "hazardSchedules": 7
+    },
+    {
+      "zone": "America/Chicago",
+      "hazardSchedules": 3
+    },
+    {
+      "zone": "Europe/Berlin",
+      "hazardSchedules": 3
+    },
+    {
+      "zone": "Europe/Rome",
+      "hazardSchedules": 3
+    },
+    {
+      "zone": "America/Toronto",
+      "hazardSchedules": 2
+    },
+    {
+      "zone": "Europe/Paris",
+      "hazardSchedules": 2
+    },
+    {
+      "zone": "Europe/Tallinn",
+      "hazardSchedules": 2
+    },
+    {
+      "zone": "Europe/Amsterdam",
+      "hazardSchedules": 1
+    },
+    {
+      "zone": "Europe/London",
+      "hazardSchedules": 1
+    }
+  ],
+  "k8sVsDebianAllZones": {
+    "numerator": 4,
+    "denominator": 111
+  }
+}

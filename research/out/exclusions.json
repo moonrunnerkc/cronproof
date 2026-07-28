@@ -1,0 +1,26 @@
+{
+  "collected": 1052,
+  "kept": 962,
+  "excluded": [
+    {
+      "rule": "vendored",
+      "description": "file sits under a vendored dependency directory (vendor, node_modules, third_party, and similar)",
+      "count": 0
+    },
+    {
+      "rule": "library-or-fixture",
+      "description": "file is a cron-library repository or lives in a test-fixture directory (testdata, fixtures, golden)",
+      "count": 23
+    },
+    {
+      "rule": "fork",
+      "description": "repository is a fork, so its schedule is almost always a copy of an upstream already counted",
+      "count": 0
+    },
+    {
+      "rule": "duplicate",
+      "description": "identical file content (same sha256) as a row already kept",
+      "count": 67
+    }
+  ]
+}

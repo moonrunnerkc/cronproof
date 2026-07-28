@@ -34,6 +34,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit && tsc --noEmit -p web/tsconfig.json",
     "build:web": "tsx scripts/build-web.ts",
+    "research": "tsx research/src/pipeline.ts",
     "test": "vitest run --coverage --reporter=verbose",
     "crosscheck": "tsx scripts/cross-check.ts",
     "dialect-table": "tsx scripts/dialect-table.ts",
