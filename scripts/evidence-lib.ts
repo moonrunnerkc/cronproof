@@ -94,6 +94,11 @@ const VOLATILE_LINE = /^- (Generated|Git SHA|Repo root): .*$\n?/gm;
 const COVERAGE_BANNER = /^.*Coverage enabled with v8.*$\n?/gm;
 const DURATION = /\b\d+(?:\.\d+)?\s?(?:ms|s)\b/g;
 const CLOCK_TIME = /\b\d{2}:\d{2}:\d{2}\b/g;
+// The cli-demo prints the byte length of its json output. That length
+// includes the absolute vendored zoneinfo path in the receipt, which
+// differs by machine, so mask the count. The reproducibility signal that
+// matters, "bytes differing: 0" and "byte-identical: yes", is left exact.
+const DEMO_BYTES = /^run \d+: \d+ bytes$/gm;
 
 /**
  * Sorts the body of each top-level "## " section as one multiset. This
@@ -145,7 +150,10 @@ export function normalizeEvidence(markdown: string): string {
     normalized = normalized.split(rootMatch[1]).join('<repo>');
   }
   return sortLinesWithinSections(
-    normalized.replace(DURATION, '<duration>').replace(CLOCK_TIME, '<time>'),
+    normalized
+      .replace(DURATION, '<duration>')
+      .replace(CLOCK_TIME, '<time>')
+      .replace(DEMO_BYTES, 'run: <bytes>'),
   );
 }
 
