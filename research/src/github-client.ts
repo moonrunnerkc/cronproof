@@ -11,16 +11,26 @@ import type { RepoMeta, SearchHit } from './types';
 
 const API = 'https://api.github.com';
 
-function token(): string {
+let cachedToken: string | null = null;
+
+/**
+ * The GitHub token from the gh CLI, resolved lazily on first request and
+ * then cached. It is deliberately not read at module load, so importing
+ * this module (for example transitively from a stage-2 unit test) never
+ * requires an authenticated gh; only an actual network call does.
+ */
+function authToken(): string {
+  if (cachedToken !== null) {
+    return cachedToken;
+  }
   const result = spawnSync('gh', ['auth', 'token'], { encoding: 'utf8' });
   const value = (result.stdout ?? '').trim();
   if (value === '') {
     throw new Error('no GitHub token: run `gh auth login` first');
   }
+  cachedToken = value;
   return value;
 }
-
-const AUTH = token();
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -35,7 +45,7 @@ interface Fetched {
 async function once(url: string): Promise<Fetched> {
   const response = await fetch(url, {
     headers: {
-      authorization: `Bearer ${AUTH}`,
+      authorization: `Bearer ${authToken()}`,
       accept: 'application/vnd.github+json',
       'user-agent': 'cronproof-corpus-study',
       'x-github-api-version': '2022-11-28',
