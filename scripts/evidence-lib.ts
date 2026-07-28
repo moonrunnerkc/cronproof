@@ -91,7 +91,7 @@ const VOLATILE_LINE = /^- (Generated|Git SHA|Repo root): .*$\n?/gm;
 // The v8 coverage reporter prints this banner only in some environments
 // (it is gated on a TTY / reporter setting), so it appears on CI but not
 // locally. It is tooling noise, not evidence, so strip it on both sides.
-const COVERAGE_BANNER = /^Coverage enabled with v8\n?/gm;
+const COVERAGE_BANNER = /^.*Coverage enabled with v8.*$\n?/gm;
 const DURATION = /\b\d+(?:\.\d+)?\s?(?:ms|s)\b/g;
 const CLOCK_TIME = /\b\d{2}:\d{2}:\d{2}\b/g;
 
