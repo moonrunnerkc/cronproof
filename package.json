@@ -37,6 +37,8 @@
     "research": "tsx research/src/pipeline.ts",
     "check-links": "tsx scripts/check-links.ts",
     "phase:close": "tsx scripts/phase-close.ts",
+    "import-surface": "node --import tsx scripts/import-surface-scan.ts",
+    "hermetic": "tsx scripts/credential-skip-check.ts",
     "test": "vitest run --coverage --reporter=verbose",
     "crosscheck": "tsx scripts/cross-check.ts",
     "dialect-table": "tsx scripts/dialect-table.ts",

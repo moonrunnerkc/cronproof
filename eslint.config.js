@@ -51,6 +51,16 @@ export default tseslint.config(
     },
   },
   {
+    // Library modules must import cleanly in a fresh, offline,
+    // unauthenticated process. The two self-executing entrypoints
+    // (the CLI and the research pipeline) are exempt by design.
+    files: ['src/**/*.ts', 'research/src/**/*.ts'],
+    ignores: ['src/cli.ts', 'research/src/pipeline.ts'],
+    rules: {
+      'cronproof/no-module-load-side-effects': 'error',
+    },
+  },
+  {
     // The service worker runs in the ServiceWorkerGlobalScope, not Node.
     files: ['web/sw.js'],
     languageOptions: {

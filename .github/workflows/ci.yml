@@ -30,3 +30,28 @@ jobs:
         with:
           path: "."
           fail-on: high
+
+  hermetic:
+    name: hermetic suite (no secrets)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # The full suite runs with every credential cleared from the
+      # environment: no GITHUB_TOKEN and no gh auth, so gh cannot mint a
+      # token. Any module that reaches for a credential at import throws
+      # and the import-surface test fails. The only network the tests
+      # need is the registry fetch above; the suite itself is offline.
+      - name: full suite with no credentials
+        env:
+          GITHUB_TOKEN: ""
+          GH_TOKEN: ""
+          GH_ENTERPRISE_TOKEN: ""
+        run: pnpm exec tsx scripts/credential-skip-check.ts

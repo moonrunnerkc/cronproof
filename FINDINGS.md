@@ -97,3 +97,43 @@ that a faked wall clock cannot accelerate, so it was observed by
 running its own scheduler under an intercepted Date and timer set (a
 virtual clock), which is a faithful observation of its scheduling
 decisions. See test/differential/harness.
+
+## Finding 6: a GitHub token resolved at module load, latent for a phase
+
+Root cause of the phase 12 to 13 CI failure, stated precisely.
+
+The module was `research/src/github-client.ts`. The symbol was a
+module-scope constant, `AUTH`, initialized by a call to the local
+`token()` function at import time. `token()` shells out with
+`spawnSync('gh', ['auth', 'token'])` and, when the command returns no
+token, executes `throw new Error('no GitHub token: run \`gh auth login\`
+first')`. Because the initializer ran at module load, importing anything
+that transitively pulled this module required an authenticated `gh`, and
+without one the import itself threw.
+
+The original failing line, verbatim:
+
+    const AUTH = token();
+
+It was introduced by commit `abe517c`
+(`phase-12: corpus study harness`, full sha
+abe517cad8e600bf8af395dc57ca90dfaf1c1a58), which added the whole
+research pipeline including this client. Nothing imported the module in
+a credential-free context in phase 12, so it stayed latent. In phase 13,
+`tests/research/filter.test.ts` imported `applyFilter` from
+`research/src/stage2-filter.ts`, which imports `readCollected` from
+`research/src/stage1-collect.ts`, which imports `research/src/github-client.ts`.
+That transitive import ran `const AUTH = token()` in the credential-free
+CI runner, threw, and failed the vitest step, which failed
+`evidence:check`, which failed CI. Local runs passed only because the
+developer's `gh` was authenticated.
+
+The applied fix (commit `59a9f24`) made that one token lazy: `authToken()`
+resolves and caches on first request instead of at load. That fixes the
+instance, not the class. Remediation 2 eliminates the class: a lint rule
+that bans credential, network, subprocess, top-level-await, and
+top-level-throw work at module scope (tools/eslint/rules/no-module-load-side-effects.js),
+an import-surface test that imports every module under a scrubbed
+environment with network and credential access removed
+(tests/import-surface/import-surface.test.ts), and a hermetic CI job
+with no secrets that runs the full suite.

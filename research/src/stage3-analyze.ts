@@ -37,17 +37,21 @@ function zoneOf(finding: ScheduleFinding): { zone: string | null; kind: string }
   return { zone: source.zone, kind: source.kind };
 }
 
-function backend(): TzifBackend {
+/** Resolves the vendored zoneinfo root lazily, throwing when absent. */
+function resolveRoot(): string {
   const root = vendoredZoneinfoRoot();
   if (root === null) {
     throw new Error('vendored zoneinfo not found; run the phase 2 vendoring step');
   }
-  return createTzifBackend({ zoneinfoRoot: root });
+  return root;
 }
 
-const ROOT = vendoredZoneinfoRoot() ?? undefined;
-
-function analyzeFinding(finding: ScheduleFinding, row: CorpusRow, tz: TzifBackend): AnalyzedSchedule {
+function analyzeFinding(
+  finding: ScheduleFinding,
+  row: CorpusRow,
+  tz: TzifBackend,
+  root: string,
+): AnalyzedSchedule {
   const { zone, kind: zoneSourceKind } = zoneOf(finding);
   const base: AnalyzedSchedule = {
     repo: row.repo,
@@ -83,7 +87,7 @@ function analyzeFinding(finding: ScheduleFinding, row: CorpusRow, tz: TzifBacken
       zone,
       from: WINDOW_FROM,
       to: WINDOW_TO,
-      ...(ROOT === undefined ? {} : { zoneinfoRoot: ROOT }),
+      zoneinfoRoot: root,
     });
     const hazardKinds = [...new Set(hazards.map((hazard) => hazard.kind))].sort();
 
@@ -119,7 +123,8 @@ function analyzeFinding(finding: ScheduleFinding, row: CorpusRow, tz: TzifBacken
  * yield no schedule (a query false positive) contribute nothing.
  */
 export function analyze(): AnalyzedSchedule[] {
-  const tz = backend();
+  const root = resolveRoot();
+  const tz = createTzifBackend({ zoneinfoRoot: root });
   const rows = readCorpus();
   const results: AnalyzedSchedule[] = [];
   for (const row of rows) {
@@ -130,7 +135,7 @@ export function analyze(): AnalyzedSchedule[] {
     const file = { path: row.path, absPath: row.path, text };
     for (const scanner of scannersFor(file)) {
       for (const finding of scanner(file)) {
-        results.push(analyzeFinding(finding, row, tz));
+        results.push(analyzeFinding(finding, row, tz, root));
       }
     }
   }

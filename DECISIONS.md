@@ -1306,3 +1306,59 @@ Two choices recorded per standing rule 1:
 CLAUDE.md rules 2 and 8 were amended: a phase is complete only when
 `pnpm phase:close <n>` exits 0 and its output is pasted, and a green local
 evidence run is explicitly necessary but not sufficient.
+
+## 2026-07-28: Remediation 2, module-load side effect ban and hermetic job
+
+Root cause written to FINDINGS.md finding 6 (module research/src/github-client.ts,
+symbol const AUTH = token(), throw "no GitHub token", introduced by abe517c).
+This entry records the class elimination.
+
+### credential-skipped-tests: 0
+
+No test in the suite requires a credential or network access the hermetic
+job does not provide, so the credential-skip count is 0. If a test starts
+requiring one, it must call credentialSkip(reason) from
+tests/support/credential-skip.ts and this number must be updated with the
+reason, or scripts/credential-skip-check.ts fails.
+
+### Lint rule scope and the two entrypoints
+
+tools/eslint/rules/no-module-load-side-effects.js bans, at module scope in
+src/** and research/src/**: network and subprocess primitive calls, calls
+to an in-file function that itself does such work (the exact bug shape),
+top-level await, top-level throw, process.env reads, and construction of
+anything but a pure built-in. The two self-executing entrypoints, src/cli.ts
+(top-level await runCli) and research/src/pipeline.ts (main()), are exempt by
+design: they are meant to run when executed, and they are excluded from both
+the rule and the import-surface scanner.
+
+### Module audit
+
+Every library module under src/ and research/src/ was audited by two
+machine checks that now pass: the lint rule above (eslint . clean) and the
+import-surface scanner that imports all 108 non-entrypoint modules in a
+scrubbed, offline, unauthenticated process (tests/import-surface,
+0 failures).
+
+- Found and fixed a load-time side effect: research/src/github-client.ts
+  (const AUTH = token(), a gh subprocess and throw at import; made lazy in
+  remediation 1) and research/src/stage3-analyze.ts (const ROOT =
+  vendoredZoneinfoRoot(), an eager filesystem read at import with no throw
+  and no network; threaded through as a function parameter in this
+  remediation).
+- Checked and already fine, module-scope code is pure computation only:
+  research/src/config.ts, cache.ts, stage1-collect.ts, stage2-filter.ts,
+  stage4-report.ts, metrics.ts (path joins, fileURLToPath, and new Set);
+  src/tz/intl-backend.ts (new Map cache), src/tz/zoneinfo-source.ts and
+  src/scan/detect.ts (new Set constants), src/cli/format-human.ts
+  (String.fromCharCode). No module reads env, opens a socket, spawns a
+  process, awaits, or throws at import.
+
+### Hermetic CI job
+
+A new ci.yml job "hermetic suite (no secrets)" runs the full suite with
+GITHUB_TOKEN, GH_TOKEN, and GH_ENTERPRISE_TOKEN cleared, so gh cannot mint a
+token: this is real, not simulated. It runs scripts/credential-skip-check.ts,
+which runs vitest and enforces the credential-skipped-tests count above. The
+only network it uses is the pnpm registry install; the tests themselves are
+offline, enforced at import by the import-surface scanner's socket guards.
