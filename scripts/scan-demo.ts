@@ -8,13 +8,14 @@
  * DECISIONS.md.
  */
 
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { dispatchCli } from '../src/cli/index';
 import { readOwnVersion } from '../src/cli-main';
 
-const REPO_ROOT = path.resolve(fileURLToPath(import.meta.url), '..', '..');
-const FIXTURE = path.join(REPO_ROOT, 'tests', 'scan', 'fixture');
+// Relative on purpose: an absolute path would land in the receipt's input
+// and result hashes (and the scan inputs), which cannot be path-normalized
+// and would make evidence:check differ between machines. The evidence
+// runner invokes this with the repo root as the working directory.
+const FIXTURE = 'tests/scan/fixture';
 
 function capture(argv: string[], version: string): { stdout: string; exit: number } {
   let stdout = '';
@@ -36,9 +37,7 @@ async function main(): Promise<number> {
   const version = await readOwnVersion();
   process.stdout.write('== cronproof scan, fixture repo, human format ==\n\n');
   const human = capture(['scan', FIXTURE], version);
-  // The fixture path is machine-specific; strip it so the output is
-  // reproducible across checkouts and comparable in evidence:check.
-  process.stdout.write(human.stdout.split(`${FIXTURE}/`).join('').split(FIXTURE).join('.'));
+  process.stdout.write(human.stdout);
   process.stdout.write(`\nexit code: ${human.exit}\n`);
   return 0;
 }

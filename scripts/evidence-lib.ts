@@ -91,32 +91,47 @@ const VOLATILE_LINE = /^- (Generated|Git SHA|Repo root): .*$\n?/gm;
 // The v8 coverage reporter prints this banner only in some environments
 // (it is gated on a TTY / reporter setting), so it appears on CI but not
 // locally. It is tooling noise, not evidence, so strip it on both sides.
-const COVERAGE_BANNER = /^Coverage enabled with v8\n?/gm;
+const COVERAGE_BANNER = /^.*Coverage enabled with v8.*$\n?/gm;
 const DURATION = /\b\d+(?:\.\d+)?\s?(?:ms|s)\b/g;
 const CLOCK_TIME = /\b\d{2}:\d{2}:\d{2}\b/g;
+// The cli-demo prints the byte length of its json output. That length
+// includes the absolute vendored zoneinfo path in the receipt, which
+// differs by machine, so mask the count. The reproducibility signal that
+// matters, "bytes differing: 0" and "byte-identical: yes", is left exact.
+const DEMO_BYTES = /^run \d+: \d+ bytes$/gm;
+// Some tools emit ANSI color even under NO_COLOR; color must not affect the
+// comparison, so strip escape sequences everywhere.
+// eslint-disable-next-line no-control-regex
+const ANSI = /\x1b\[[0-9;]*m/g;
 
-function sortLinesInsideFences(markdown: string): string {
+/**
+ * Sorts the body of each top-level "## " section as one multiset. This
+ * merges a command's stdout and stderr before comparison, because which
+ * stream a tool writes a given line to is not stable across
+ * environments (vitest, for one, splits its reporter and coverage
+ * output across the two streams differently on CI than locally). The
+ * content and the exit code of each command must still match exactly;
+ * only line order and stream attribution within a command are relaxed.
+ */
+function sortLinesWithinSections(markdown: string): string {
   const lines = markdown.split('\n');
   const output: string[] = [];
-  let block: string[] | null = null;
+  let buffer: string[] = [];
+  const flush = (): void => {
+    if (buffer.length > 0) {
+      output.push(...buffer.toSorted());
+      buffer = [];
+    }
+  };
   for (const line of lines) {
-    if (line === FENCE) {
-      if (block === null) {
-        block = [];
-      } else {
-        output.push(...block.toSorted());
-        block = null;
-      }
-      output.push(line);
-    } else if (block === null) {
+    if (line.startsWith('## ')) {
+      flush();
       output.push(line);
     } else {
-      block.push(line);
+      buffer.push(line);
     }
   }
-  if (block !== null) {
-    output.push(...block);
-  }
+  flush();
   return output.join('\n');
 }
 
@@ -138,8 +153,12 @@ export function normalizeEvidence(markdown: string): string {
   if (rootMatch !== null && rootMatch[1] !== undefined) {
     normalized = normalized.split(rootMatch[1]).join('<repo>');
   }
-  return sortLinesInsideFences(
-    normalized.replace(DURATION, '<duration>').replace(CLOCK_TIME, '<time>'),
+  return sortLinesWithinSections(
+    normalized
+      .replace(ANSI, '')
+      .replace(DURATION, '<duration>')
+      .replace(CLOCK_TIME, '<time>')
+      .replace(DEMO_BYTES, 'run: <bytes>'),
   );
 }
 
