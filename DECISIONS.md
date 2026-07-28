@@ -1277,3 +1277,32 @@ relative paths exist, and same-file anchors match a heading. It is not part
 of the hermetic `npm run evidence` set because it needs the network (like
 the corpus pipeline and the real-repo scan). Latest run: 45 links checked,
 0 failed.
+
+## 2026-07-28: Remediation 1, phase-close gate
+
+Built scripts/phase-close.ts (pnpm phase:close <n>). It runs six independent
+checks against the exact checked-out and pushed SHA and exits 0 only when all
+six pass: clean working tree, HEAD pushed and matching origin, CI concluded
+success for that SHA via the GitHub check-runs API (in-progress or missing
+checks are failures, never a wait), EVIDENCE.md regenerating byte-identically,
+the phase-n acceptance tests passing, and no gate-spawned process surviving.
+
+Two choices recorded per standing rule 1:
+
+- Criterion 6 tracks only the pids the gate itself spawns (all via synchronous
+  spawnSync) and fails if any survive. An earlier version also ran
+  `pgrep -P <self>`, but tsx keeps a persistent esbuild service child alive
+  for the script's own runtime, which that heuristic flagged as an orphan.
+  The spec's instruction is to track spawned pids, so the gate does exactly
+  that and does not police its own interpreter's helpers.
+
+- Acceptance tests live in test/acceptance/phase-<n>.test.ts as the spec
+  dictates. vitest.config.ts include was extended to cover
+  test/acceptance/**/*.test.ts so both the gate and the normal suite (and
+  therefore CI) discover them. With none backfilled yet, the suite is
+  unchanged and EVIDENCE.md does not move; remediation 6 backfills phases
+  1 through 13.
+
+CLAUDE.md rules 2 and 8 were amended: a phase is complete only when
+`pnpm phase:close <n>` exits 0 and its output is pasted, and a green local
+evidence run is explicitly necessary but not sufficient.

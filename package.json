@@ -36,6 +36,7 @@
     "build:web": "tsx scripts/build-web.ts",
     "research": "tsx research/src/pipeline.ts",
     "check-links": "tsx scripts/check-links.ts",
+    "phase:close": "tsx scripts/phase-close.ts",
     "test": "vitest run --coverage --reporter=verbose",
     "crosscheck": "tsx scripts/cross-check.ts",
     "dialect-table": "tsx scripts/dialect-table.ts",

@@ -4,9 +4,13 @@ STANDING RULES FOR THIS REPO
    the option that best satisfies the written spec, record the choice and the
    reasoning in DECISIONS.md, and continue.
 
-2. Never claim a phase is complete without evidence. A completion claim must
-   include: the exact command run, the real unedited output, and the file
-   paths touched. If you did not run it, do not claim it.
+2. A phase is complete when `pnpm phase:close <n>` exits 0 and its full
+   unedited output is pasted, and at no other time. A green local
+   `npm run evidence` run is not completion: it is only one of the six
+   checks the gate runs, and it passes locally even when CI on the pushed
+   SHA is red, which is exactly how phases 12 and 13 were reported done
+   over failing CI. Do not declare a phase done, and do not move to the
+   next phase, on any weaker signal. If you did not run it, do not claim it.
 
 3. Never write a number into docs, README, or commit messages that you did not
    measure in this repo. No estimated coverage, no "approximately", no
@@ -29,6 +33,10 @@ STANDING RULES FOR THIS REPO
    partially implement and describe it as done. Do not stub a function and
    move on. A failing acceptance criterion is a finding, report it as one.
 
-8. After each phase, run `npm run evidence` and paste its output. That script
-   regenerates EVIDENCE.md from real command output. Claims in EVIDENCE.md
-   that were not produced by that script are prohibited.
+8. After each phase, run `npm run evidence`. That script regenerates
+   EVIDENCE.md from real command output, and claims in EVIDENCE.md that were
+   not produced by that script are prohibited. A passing evidence run is
+   necessary but not sufficient for completion: completion is decided only
+   by `pnpm phase:close <n>` (see rule 2), which additionally requires a
+   clean pushed tree, green CI on that exact SHA, and passing acceptance
+   tests.
