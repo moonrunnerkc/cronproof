@@ -795,3 +795,79 @@ files scanned, 137 findings (all cron-parser call sites), 0
 diagnostics, no crash. The run is a standalone script rather than part
 of npm run evidence because it needs network; pinning the SHA keeps it
 deterministic.
+
+## 2026-07-28: Phase 9, CI gate and composite action
+
+Phase 8 delivered discovery; phase 9 turns scan into a gate. Each
+discovered schedule with a real zone and a parseable expression is run
+through the phase-4 hazard classifier over a fixed window (2025-01-01
+to 2027-01-01, chosen to span several spring-forward and fall-back
+transitions so DST hazards are actually reached; overridable with
+--from/--to). The resulting hazards are emitted as SARIF results
+carrying the finding's physical file, line, and column, so a
+code-scanning annotation lands on the exact source line.
+
+### UNKNOWN and UNRESOLVED are hazards, not just notes
+
+A finding whose zone is UNKNOWN (cannot be proven safe) or whose
+expression is UNRESOLVED (a template) is surfaced as its own hazard at
+medium severity, with a stable id hashed from the file and the
+expression. This keeps the tool's core thesis (a schedule that cannot
+be proven safe is a finding) inside the gate, not just the report.
+
+### SARIF paths are repo-relative
+
+For an annotation to map onto a pull-request file, the SARIF
+artifactLocation uri must be relative to the repo root. scanRepo gained
+a pathBase option; the CLI passes the working directory, so scanning a
+subdirectory from the repo root still yields repo-relative paths. The
+library default (relative to the scan root) is unchanged, so the
+phase-8 tests and API are untouched.
+
+### Baseline
+
+cronproof baseline writes the current hazard ids to a small, sorted,
+timestamp-free JSON file; scan --baseline accepts those ids so only
+hazards introduced after the baseline fail. Hazard ids hash the
+schedule's meaning (expression, dialect, zone, intended local time,
+kind), not its line, so a baseline survives refactors and stays valid
+until the schedule itself changes. Without this, no existing codebase
+adopts the gate, because day-one it is all red.
+
+### tzdb drift check
+
+--tzdb-check <release> compares the runner's ICU tzdb against a pin and
+fails with exit 3 on any difference. The failure mode is real: time
+zone rules are political and change between tzdata releases. Concrete
+example, tzdb release 2020a: "Canada's Yukon advanced to -07 year-round,
+beginning with its spring-forward transition on 2020-03-08, and will not
+fall back on 2020-11-01." Source, fetched 2026-07-28:
+https://data.iana.org/time-zones/tzdb/NEWS
+A verdict computed before that release and trusted after it would be
+stale; the pin forces a deliberate re-verification instead of a silent
+stale pass. It is compared against the ICU tzdb because that is the
+release the runtime carries and the one that varies from runner to
+runner.
+
+### The action builds from source
+
+action/action.yml is a composite action. Rather than depend on an
+unpublished npm package or a committed prebuilt bundle that could drift
+from source, it builds cronproof from the action's own repo checkout
+(github.action_path/..) and runs the CLI against the consumer's
+workspace. SARIF is uploaded even when the gate fails (the upload step
+runs before the failing step) so annotations still appear on a failing
+PR.
+
+### CI layout
+
+- ci.yml: the existing evidence:check job plus a dogfood job that runs
+  the action on this repo (scan ., clean via .cronproofignore which
+  excludes the test fixtures that carry intentional hazards).
+- scheduled-scan.yml: a weekly run that re-scans and re-checks the tzdb
+  pin, so a tzdb release that moved a DST boundary is caught on a cron.
+- cronproof-demo.yml: runs on pull requests and demonstrates the three
+  acceptance cases: the gate fails on the hazard fixture and uploads
+  SARIF annotations; a baseline suppresses the known hazards while a
+  newly introduced schedule still fails; a wrong tzdb pin fires with
+  exit 3 while the correct pin passes.
