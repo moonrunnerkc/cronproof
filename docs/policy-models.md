@@ -73,10 +73,26 @@ cron-parser-luxon 1, node-cron 1, systemd-timer 1.
   across both transitions.
 - **Behavior:** a gap does not fire (the robfig warning), and a fold fires
   twice, because the controller computes schedule times with no fall-back
-  suppression. `startingDeadlineSeconds` governs catch-up of runs missed
-  while the controller was down, which is orthogonal to a DST gap or fold
-  (a nonexistent local time has no instant to have missed), so it is
-  modeled as a parameter, not a DST branch.
+  suppression. `startingDeadlineSeconds` and the missed-schedule limit
+  govern catch-up of runs missed while the controller was down, which is
+  orthogonal to a DST gap or fold (a nonexistent local time has no instant
+  to have missed), so they are modeled as functions
+  (`k8sWouldCatchUp`, `k8sTooManyMissedTimes`), not DST branches.
+- **Missed-schedule limit:** the controller uses a fixed threshold of 100.
+  In the current v2 controller, more than 100 missed schedules records a
+  `TooManyMissedTimes` warning event and then still schedules the most
+  recent unmet time. Verified in the controller source at a pinned tag,
+  not the prose docs (which truncated on fetch): kubernetes/kubernetes
+  v1.31.0 `pkg/controller/cronjob/utils.go` line 172
+  (`case numberOfMissedSchedules > 100`) and line 220 (the event emit),
+  [utils.go at v1.31.0](https://github.com/kubernetes/kubernetes/blob/v1.31.0/pkg/controller/cronjob/utils.go#L172).
+  The threshold is unchanged from the older v1 controller, where the same
+  100 was instead a hard error (`FailedNeedsStart`): v1.20.0
+  `pkg/controller/cronjob/utils.go` line 147,
+  [utils.go at v1.20.0](https://github.com/kubernetes/kubernetes/blob/v1.20.0/pkg/controller/cronjob/utils.go#L147).
+  The model implements this as `k8sTooManyMissedTimes`
+  (`> DEFAULT_K8S_MISSED_LIMIT`, which is 100); the boundary is asserted in
+  tests/policy/k8s-missed-schedule.test.ts.
 
 ## quartz (ASSERTED)
 
@@ -148,13 +164,3 @@ cron-parser-luxon 1, node-cron 1, systemd-timer 1.
   systemd 249.
 - **Behavior:** monotonic next-elapse computation, so a fold fires once and
   a gap is dropped.
-
-## What is not claimed
-
-The Kubernetes controller has a documented limit on how many missed start
-times it will catch up on before it stops scheduling and logs an error.
-This document does not state the specific threshold, because the exact
-sentence containing it could not be fetched from the CronJob docs page this
-session (the page truncated before it). The catch-up limit is a
-controller-downtime concern orthogonal to DST resolution and does not
-affect any hazard verdict here.

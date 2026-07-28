@@ -1362,3 +1362,41 @@ token: this is real, not simulated. It runs scripts/credential-skip-check.ts,
 which runs vitest and enforces the credential-skipped-tests count above. The
 only network it uses is the pnpm registry install; the tests themselves are
 offline, enforced at import by the import-surface scanner's socket guards.
+
+## 2026-07-28: Remediation 4, k8s missed-schedule claim restored from source
+
+The claim that the Kubernetes CronJob controller uses a 100 missed-start-times
+threshold was deleted in phase 13 because the rendered docs page truncated on
+fetch. That was a tooling failure recorded as an unverifiable claim. It is now
+verified from primary source (raw controller code, not rendered docs) at a
+pinned tag.
+
+- Threshold and branch: kubernetes/kubernetes v1.31.0
+  pkg/controller/cronjob/utils.go line 172,
+  `case numberOfMissedSchedules > 100: missedSchedules = manyMissed`.
+- Warning emit: same file line 220, inside nextScheduleTime,
+  `recorder.Eventf(cj, corev1.EventTypeWarning, "TooManyMissedTimes", ...)`.
+- The threshold has NOT moved between implementations: the old v1 controller
+  used the same 100, but as a hard error (FailedNeedsStart) rather than a
+  warning, at kubernetes/kubernetes v1.20.0 pkg/controller/cronjob/utils.go
+  line 147 (`if len(starts) > 100 { return ..., fmt.Errorf("too many missed
+  start time (> 100). ...") }`). All three URLs fetched 2026-07-28.
+
+Fetcher fix: the claim was verified by fetching raw source with curl
+(raw.githubusercontent.com and the git contents API), which does not truncate,
+instead of the rendered docs page. Reviewing the rest of the policy-models.md
+claim set, no other claim had been dropped or softened for the truncation
+reason: the systemd, croniter, and quartz behaviors were attributed to their
+committed fixtures (not to a doc that failed to load), and every other cited
+page (the scheduler READMEs, the man pages, the RFC) fetched in full. So the
+k8s claim is the only status change: DELETED to VERIFIED.
+
+Docs and code reconciled: src/policy/models/k8s-cronjob.ts exported
+DEFAULT_K8S_MISSED_LIMIT = 100 but did not implement the threshold decision.
+It now also exports k8sTooManyMissedTimes (numberOfMissedSchedules > 100),
+matching the source's strict comparison, and the module and docs cite the
+pinned lines. This is a downtime concern the DST decider correctly does not
+use (a DST gap has no instant to have missed), so it is a function, not a DST
+branch, consistent with the model's existing k8sWouldCatchUp. Boundary
+asserted in tests/policy/k8s-missed-schedule.test.ts (100 is not too many,
+101 is).

@@ -24,7 +24,7 @@ export {
   policyVerification,
 } from './registry';
 export type { PolicyEntry } from './registry';
-export { k8sWouldCatchUp, DEFAULT_K8S_MISSED_LIMIT } from './models/k8s-cronjob';
+export { k8sWouldCatchUp, k8sTooManyMissedTimes, DEFAULT_K8S_MISSED_LIMIT } from './models/k8s-cronjob';
 export { runDifferential, pairRelation } from './differential';
 export type {
   DecisionPoint,
