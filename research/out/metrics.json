@@ -1,9 +1,9 @@
 {
-  "extracted": 1413,
+  "extracted": 1418,
   "bySource": [
     {
       "sourceKind": "vercel",
-      "count": 569
+      "count": 572
     },
     {
       "sourceKind": "crontab",
@@ -11,24 +11,24 @@
     },
     {
       "sourceKind": "k8s-cronjob",
-      "count": 242
+      "count": 243
     },
     {
       "sourceKind": "wrangler",
-      "count": 241
+      "count": 242
     }
   ],
-  "analyzable": 1170,
+  "analyzable": 1175,
   "unknownZone": 185,
   "unparsed": 57,
   "invalidZone": 1,
   "headline": {
     "numerator": 4,
-    "denominator": 91
+    "denominator": 92
   },
   "transitionWindow": {
     "numerator": 24,
-    "denominator": 1170
+    "denominator": 1175
   },
   "hazardDistribution": [
     {
@@ -92,6 +92,6 @@
   ],
   "k8sVsDebianAllZones": {
     "numerator": 4,
-    "denominator": 111
+    "denominator": 112
   }
 }

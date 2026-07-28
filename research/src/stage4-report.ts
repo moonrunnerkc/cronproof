@@ -129,6 +129,30 @@ function limitationsSection(): string {
   );
 }
 
+function reproducibilitySection(): string {
+  return (
+    `## Reproducibility and credentials\n\n` +
+    `Which stages need credentials, stated exactly:\n\n` +
+    `- **Stage 1, collect** needs the network and a GitHub token (read through ` +
+    `the gh CLI) for the code-search rate limit. It cannot run without one.\n` +
+    `- **Stages 2 to 4, filter, analyze, and report** need no credentials and ` +
+    `no network. They are pure functions of the cache, and two runs from the ` +
+    `same cache produce byte-identical out/ (verified: the report and metrics ` +
+    `sha256 are unchanged across a second run).\n\n` +
+    `The reproducibility claim is scoped accordingly. A third party cannot ` +
+    `rerun collect against the exact same GitHub index (code search is not ` +
+    `stable over time), but they can reconstruct this exact corpus from the ` +
+    `published manifest, out/corpus.jsonl, which lists repo, path, git blob ` +
+    `sha, and sha256 for every kept file. Each file's content is fetchable ` +
+    `from its public repository by blob sha through the unauthenticated GitHub ` +
+    `git blobs API (no token, only a lower rate limit), and each fetched ` +
+    `file's sha256 must equal the recorded content hash. With the reconstructed ` +
+    `cache, filter, analyze, and report reproduce these numbers. The published ` +
+    `out/analysis.jsonl additionally lets report be re-run with no network at ` +
+    `all, so the numbers below can be rechecked offline from published data.\n`
+  );
+}
+
 function render(metrics: Metrics, exclusions: ExclusionsFile): string {
   return [
     `# cronproof corpus study: timezone hazards in public cron schedules\n`,
@@ -137,6 +161,7 @@ function render(metrics: Metrics, exclusions: ExclusionsFile): string {
     scheduleSection(metrics),
     headlineSection(metrics),
     secondarySection(metrics),
+    reproducibilitySection(),
     limitationsSection(),
   ].join('\n');
 }

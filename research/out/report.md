@@ -13,7 +13,7 @@ Every hit's raw response, file content, and repository metadata are cached, so s
 
 ## Corpus construction
 
-Collected hits (raw, after per-query dedup): **1052**. Kept after exclusions: **962**.
+Collected hits (raw, after per-query dedup): **1055**. Kept after exclusions: **965**.
 
 | exclusion rule | excluded | what it removes |
 | --- | --- | --- |
@@ -24,34 +24,34 @@ Collected hits (raw, after per-query dedup): **1052**. Kept after exclusions: **
 
 ## Schedules extracted
 
-Total schedules extracted from the corpus: **1413**. Analyzable (expression parsed and a concrete, loadable zone): **1170**. Zone not knowable from source: **185**. Concrete zone but expression did not parse: **57**. Concrete but non-loadable zone string: **1**.
+Total schedules extracted from the corpus: **1418**. Analyzable (expression parsed and a concrete, loadable zone): **1175**. Zone not knowable from source: **185**. Concrete zone but expression did not parse: **57**. Concrete but non-loadable zone string: **1**.
 
 | source platform | schedules |
 | --- | --- |
-| vercel | 569 |
+| vercel | 572 |
 | crontab | 361 |
-| k8s-cronjob | 242 |
-| wrangler | 241 |
+| k8s-cronjob | 243 |
+| wrangler | 242 |
 
 ## Headline: Kubernetes CronJob portability defect rate
 
 Of public Kubernetes CronJobs with an explicit non-UTC `timeZone` whose expression parsed, the fraction that would fire a different number of times under the Kubernetes controller than under debian-cron for the same expression and zone, over 2025-01-01 to 2026-01-01 (UTC wall-clock):
 
-> **4/91 (4.4%)**
+> **4/92 (4.3%)**
 
 The denominator is every qualifying CronJob; the numerator is those whose k8s-cronjob and debian-cron firing counts differ at the transition decision points. A difference means a job ported between the two schedulers would run a different number of times across a DST change.
 
-Across all analyzable k8s CronJobs regardless of zone (UTC included, where the two always agree): **4/111 (3.6%)**.
+Across all analyzable k8s CronJobs regardless of zone (UTC included, where the two always agree): **4/112 (3.6%)**.
 
 ## Secondary: firings inside a transition window
 
 Of analyzable schedules, the fraction with at least one firing inside a transition window over 2025-01-01 to 2026-01-01 (UTC wall-clock):
 
-> **24/1170 (2.1%)**
+> **24/1175 (2.0%)**
 
 ### Distribution across hazard classes
 
-Analyzable schedules carrying each hazard kind (a schedule can carry more than one), out of 1170 analyzable:
+Analyzable schedules carrying each hazard kind (a schedule can carry more than one), out of 1175 analyzable:
 
 | hazard class | schedules |
 | --- | --- |
@@ -74,6 +74,15 @@ Analyzable schedules carrying each hazard kind (a schedule can carry more than o
 | Europe/Tallinn | 2 |
 | Europe/Amsterdam | 1 |
 | Europe/London | 1 |
+
+## Reproducibility and credentials
+
+Which stages need credentials, stated exactly:
+
+- **Stage 1, collect** needs the network and a GitHub token (read through the gh CLI) for the code-search rate limit. It cannot run without one.
+- **Stages 2 to 4, filter, analyze, and report** need no credentials and no network. They are pure functions of the cache, and two runs from the same cache produce byte-identical out/ (verified: the report and metrics sha256 are unchanged across a second run).
+
+The reproducibility claim is scoped accordingly. A third party cannot rerun collect against the exact same GitHub index (code search is not stable over time), but they can reconstruct this exact corpus from the published manifest, out/corpus.jsonl, which lists repo, path, git blob sha, and sha256 for every kept file. Each file's content is fetchable from its public repository by blob sha through the unauthenticated GitHub git blobs API (no token, only a lower rate limit), and each fetched file's sha256 must equal the recorded content hash. With the reconstructed cache, filter, analyze, and report reproduce these numbers. The published out/analysis.jsonl additionally lets report be re-run with no network at all, so the numbers below can be rechecked offline from published data.
 
 ## Sampling limitations
 

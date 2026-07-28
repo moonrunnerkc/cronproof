@@ -1400,3 +1400,55 @@ use (a DST gap has no instant to have missed), so it is a function, not a DST
 branch, consistent with the model's existing k8sWouldCatchUp. Boundary
 asserted in tests/policy/k8s-missed-schedule.test.ts (100 is not too many,
 101 is).
+
+## 2026-07-28: Remediation 3, corpus numbers re-derived from a cold cache
+
+Phase 12 was signed off while CI was red, so its numbers were treated as
+unproven and re-derived from nothing: the research cache was wiped entirely
+and collect, filter, analyze, report were run from scratch.
+
+Two-run reproducibility: after the cold collect, filter/analyze/report were
+run twice from the cache and out/report.md and out/metrics.json are
+byte-identical across the two runs (sha256 unchanged). So stages 2 to 4 are
+deterministic, as claimed.
+
+Before/after (published phase-12 snapshot vs cold re-derivation). Every
+numerator held; the denominators grew by the handful of files GitHub's index
+gained since phase 12. The per-rule exclusion counts are identical, now
+independently re-verified.
+
+```
+metric                       before        after         changed
+collected                    1052          1055          yes
+kept                         962           965           yes
+exclusion vendored           0             0             no
+exclusion library-or-fixture 23            23            no
+exclusion fork               0             0             no
+exclusion duplicate          67            67            no
+extracted schedules          1413          1418          yes
+analyzable                   1170          1175          yes
+unknownZone                  185           185           no
+unparsed                     57            57            no
+invalidZone                  1             1             no
+headline (defect rate)       4/91 (4.4%)   4/92 (4.3%)   yes (denominator +1)
+k8s vs debian all zones      4/111 (3.6%)  4/112 (3.6%)  yes (denominator +1)
+transition window            24/1170       24/1175       yes (denominator +5)
+```
+
+README correction: the README does not quote the corpus headline number. It
+describes the tool conceptually and links to research/out/report.md, which is
+regenerated here to the cold values (headline 4/92). So no hardcoded README
+number required correction; the published report and metrics carry the
+re-derived numbers.
+
+Credential scope (item 4): stage 1 collect requires the network and a GitHub
+token; stages 2 to 4 require neither and reproduce byte-identically from the
+cache. The published manifest (out/corpus.jsonl: repo, path, blob sha,
+sha256) lets any third party reconstruct the exact corpus without a token,
+by fetching each file by blob sha from its public repository through the
+unauthenticated git blobs API and checking its sha256 against the manifest,
+then rerunning stages 2 to 4. out/analysis.jsonl additionally lets report be
+rerun offline. This is stated in the report's new Reproducibility section.
+The 6.3 MiB of third-party file contents are deliberately not committed, for
+the licensing reason the cache was gitignored in phase 12; the manifest with
+hashes provides verifiable provenance instead.

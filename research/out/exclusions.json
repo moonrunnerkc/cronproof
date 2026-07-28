@@ -1,6 +1,6 @@
 {
-  "collected": 1052,
-  "kept": 962,
+  "collected": 1055,
+  "kept": 965,
   "excluded": [
     {
       "rule": "vendored",
