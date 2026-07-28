@@ -43,6 +43,11 @@ const COMMANDS: CommandSpec[] = [
     command: 'pnpm',
     args: ['run', 'verify:status'],
   },
+  {
+    title: 'cli human output for the Berlin fall-back and the json double-run byte diff',
+    command: 'pnpm',
+    args: ['run', 'cli-demo'],
+  },
   { title: 'build', command: 'pnpm', args: ['run', 'build'] },
   {
     title: 'CLI smoke',

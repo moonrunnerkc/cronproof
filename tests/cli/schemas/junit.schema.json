@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cronproof.dev/schemas/junit.schema.json",
+  "title": "JUnit XML report (parsed structure)",
+  "description": "Schema for the JUnit XML cronproof emits, validated against the object a standard XML parser produces (attributes prefixed with @_, testsuite and testcase always arrays). Numeric attributes are strings because XML attributes are text.",
+  "type": "object",
+  "required": ["testsuites"],
+  "additionalProperties": false,
+  "properties": {
+    "?xml": {},
+    "testsuites": {
+      "type": "object",
+      "required": ["@_name", "@_tests", "@_failures", "@_errors", "testsuite"],
+      "additionalProperties": false,
+      "properties": {
+        "@_name": { "type": "string" },
+        "@_tests": { "type": "string", "pattern": "^[0-9]+$" },
+        "@_failures": { "type": "string", "pattern": "^[0-9]+$" },
+        "@_errors": { "type": "string", "pattern": "^[0-9]+$" },
+        "testsuite": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["@_name", "@_tests", "@_failures", "@_errors", "testcase"],
+            "additionalProperties": false,
+            "properties": {
+              "@_name": { "type": "string" },
+              "@_tests": { "type": "string", "pattern": "^[0-9]+$" },
+              "@_failures": { "type": "string", "pattern": "^[0-9]+$" },
+              "@_errors": { "type": "string", "pattern": "^[0-9]+$" },
+              "@_time": { "type": "string" },
+              "properties": {
+                "type": "object",
+                "required": ["property"],
+                "additionalProperties": false,
+                "properties": {
+                  "property": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["@_name", "@_value"],
+                      "additionalProperties": false,
+                      "properties": {
+                        "@_name": { "type": "string" },
+                        "@_value": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              },
+              "testcase": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["@_name", "@_classname"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "@_name": { "type": "string" },
+                    "@_classname": { "type": "string" },
+                    "@_time": { "type": "string" },
+                    "failure": {
+                      "type": "object",
+                      "required": ["@_message", "@_type"],
+                      "properties": {
+                        "@_message": { "type": "string" },
+                        "@_type": { "type": "string" },
+                        "#text": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -619,3 +619,47 @@ contradicted; the divergences the runs surfaced (croniter double-fires
 a daily job at fall-back, cron-parser shifts a skipped time forward)
 are recorded in FINDINGS.md as portability hazards and upstream-report
 material.
+
+## 2026-07-27: Phase 7, CLI architecture and format-agnostic result model
+
+Every command builds one format-agnostic ResultModel (a title, echoed
+inputs, a hazard list, ordered display sections, and a structured data
+payload); five formatters render it to human, json, sarif, junit, or
+markdown. That separation is what lets the same analysis render five
+ways and keeps json byte-for-byte reproducible: the json object is
+built in a fixed key order, contains no wall-clock timestamp, and the
+receipt hashes are taken over a key-sorted serialization, so two runs
+on identical inputs and tzdb produce identical bytes. A test runs the
+command twice and asserts the buffers are equal.
+
+## 2026-07-27: Phase 7, exit codes and the internal-verification gate
+
+Exit codes: 0 clean, 1 hazards at or above --fail-on (default high; the
+gate commands check and scan only, so explain and zones stay
+informational and exit 0), 2 usage or parse error, 3 internal
+verification failure. Exit 3 is a real guard, not a placeholder:
+before computing hazards, the CLI runs the phase-2 backend cross-check
+on the zone over the window and compares the two tzdb versions, and
+fails with code 3 if the backends disagree or ICU and the zoneinfo
+tree report different tzdb releases. The zoneinfo root therefore
+defaults to the copy vendored with this package, which matches the
+runtime ICU tzdb, so a default run does not trip the check; pointing
+--zoneinfo-root at a divergent tree (for example the system
+/usr/share/zoneinfo when it is ahead of ICU) is caught and reported.
+
+## 2026-07-27: Phase 7, SARIF and JUnit schema validation
+
+SARIF maps hazard severity to the SARIF level (critical and high to
+error, medium to warning, low and info to note) and uses the stable
+hazard id as the rule id, so a specific hazard is suppressible by id
+through the standard SARIF/GitHub mechanism. Output is validated in
+tests against the official SARIF 2.1.0 schema (vendored at
+tests/cli/schemas/sarif-2.1.0.json, fetched 2026-07-27 from
+raw.githubusercontent.com/oasis-tcs/sarif-spec) with ajv, not by
+inspection. JUnit is XML and there is no single official JUnit XSD, and
+a pure-JS XSD validator needs a native library; so the JUnit XML is
+parsed with fast-xml-parser and the parsed structure is validated
+against a JSON Schema of the JUnit format (tests/cli/schemas/
+junit.schema.json), which is stricter than eyeballing and needs no
+native dependency. ajv, ajv-formats, and fast-xml-parser are
+test-only devDependencies; the CLI itself pulls in no runtime deps.

@@ -1,9 +1,23 @@
-import { readFile } from 'node:fs/promises';
+/**
+ * CLI entry glue. Reads this package's version (the package.json path
+ * is robust for both the source and bundled layouts because this file
+ * sits one level above package.json in each), then hands off to the
+ * dispatcher in src/cli.
+ */
 
-/** Options controlling how the CLI writes its output. */
+import { readFile } from 'node:fs/promises';
+import { dispatchCli } from './cli/index';
+
+/** Options the host passes to the CLI. */
 export interface CliOptions {
-  /** Writer invoked once per line of standard output. */
-  writeLine: (line: string) => void;
+  /** Arguments after the node binary and the script path. */
+  argv: string[];
+  /** Raw stdout writer. */
+  writeOut: (text: string) => void;
+  /** Raw stderr writer. */
+  writeError: (text: string) => void;
+  /** Whether stdout is a TTY. */
+  isTty: boolean;
 }
 
 /**
@@ -25,13 +39,8 @@ export async function readOwnVersion(): Promise<string> {
   return parsed.version;
 }
 
-/**
- * Runs the phase 1 CLI stub: prints the package name and version,
- * then reports exit code 0. Argument handling arrives in a later
- * phase; every invocation currently prints the version.
- */
+/** Runs the CLI: reads the version, then dispatches, returning the exit code. */
 export async function runCli(options: CliOptions): Promise<number> {
   const version = await readOwnVersion();
-  options.writeLine(`cronproof ${version}`);
-  return 0;
+  return dispatchCli({ ...options, version });
 }
