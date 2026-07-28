@@ -871,3 +871,47 @@ PR.
   SARIF annotations; a baseline suppresses the known hazards while a
   newly introduced schedule still fails; a wrong tzdb pin fires with
   exit 3 while the correct pin passes.
+
+## 2026-07-28: Phase 9 acceptance evidence (live CI)
+
+All three cases were demonstrated on real GitHub Actions runs in
+moonrunnerkc/cronproof. URLs verified this session with gh.
+
+Main branch CI, both jobs green (evidence:check and the dogfood scan of
+this repo):
+https://github.com/moonrunnerkc/cronproof/actions/runs/30385198522
+
+Demo pull request (PR #1) and its "cronproof demo" workflow run:
+https://github.com/moonrunnerkc/cronproof/pull/1
+https://github.com/moonrunnerkc/cronproof/actions/runs/30385345264
+
+Case 1, the gate fails on hazards and uploads SARIF. The "gate fails on
+hazards and uploads SARIF" job ran the composite action on the fixture,
+logged "cronproof exit code: 1", "Uploading results", and "cronproof
+gate failed with exit code 1" (the check is red). Eight code-scanning
+alerts appeared on the PR, anchored to the exact source line. Their
+verbatim annotation text, on tests/ci/fixture/pr-demo.crontab:3:1 and
+tests/ci/fixture/app.crontab:3:1:
+  SKIPPED at 2025-03-30T02:30:00 (Europe/Berlin): local time does not exist (spring-forward gap of 60m); run is skipped
+  SKIPPED at 2026-03-29T02:30:00 (Europe/Berlin): local time does not exist (spring-forward gap of 60m); run is skipped
+  DOUBLED at 2025-10-26T02:30:00 (Europe/Berlin): local time occurs twice (fall-back fold of 60m); run may double
+  DOUBLED at 2026-10-25T02:30:00 (Europe/Berlin): local time occurs twice (fall-back fold of 60m); run may double
+
+Case 2, baseline suppresses known while a new one fails. The "baseline
+suppresses known, a new hazard fails" job (green) logged:
+  baseline written / hazards accepted 4
+  (scan with baseline) hazards (gating) 0, hazards (baselined) 8, exit=0
+  PASS: baseline suppressed all known hazards (exit 0)
+  (after adding a new schedule) hazards (gating) 2, hazards (baselined) 8, exit=1
+  PASS: new hazard failed the gate (exit 1) while baselined ones stayed quiet
+
+Case 3, the tzdb pin fires on drift. The "tzdb pin passes when matched,
+fires when wrong" job (green) logged:
+  runner tzdb: 2025b / cronproof: tzdb pin ok (2025b) / exit=0
+  PASS: correct tzdb pin passed (exit 0)
+  cronproof: tzdb drift: pinned 1999z but the runner's ICU tzdb is 2025b. [...] exit=3
+  PASS: wrong tzdb pin fired (exit 3)
+
+The demo hazard fixture (tests/ci/fixture) lives under a path the root
+.cronproofignore excludes, so the dogfood scan of the whole repo stays
+green while the demo job scans that directory directly.
