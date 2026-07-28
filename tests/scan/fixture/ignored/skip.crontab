@@ -1,0 +1,2 @@
+# this file lives under an ignored directory and must not be scanned
+0 0 * * * /bin/never

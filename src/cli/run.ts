@@ -40,7 +40,7 @@ Commands:
   check "<expr>" --tz <zone> --from <date> --to <date>   hazards + policy differential
   explain "<expr>" --tz <zone> --at <instant>            deep dive on one transition
   zones --hazard-window <FROM..TO>                       zones with transitions in a window
-  scan <path>                                            file scanning (wired in phase 8)
+  scan <path>                                            find schedules in a repo with file/line/column and zone source
 
 Options:
   --format human|json|sarif|junit|markdown  (default human)

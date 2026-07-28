@@ -1,0 +1,9 @@
+# application crontab: exercises CRON_TZ inheritance
+# this entry appears before any CRON_TZ, so its zone is UNKNOWN
+15 2 * * * /usr/bin/backup
+CRON_TZ=America/New_York
+# inherited America/New_York from the line above
+30 3 * * * /usr/bin/report
+CRON_TZ=Europe/Berlin
+# mid-file redeclaration: only entries after it see Europe/Berlin
+0 4 * * * /usr/bin/rotate

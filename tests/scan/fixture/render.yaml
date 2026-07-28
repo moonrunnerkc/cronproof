@@ -1,0 +1,6 @@
+services:
+  - type: cron
+    name: nightly-cleanup
+    env: node
+    schedule: "0 5 * * *"
+    startCommand: node cleanup.js

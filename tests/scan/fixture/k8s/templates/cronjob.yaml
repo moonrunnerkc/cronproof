@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-helm
+spec:
+  schedule: "{{ .Values.schedule }}"
+  timeZone: "{{ .Values.timeZone }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: helm-job
+              image: helm-job:latest

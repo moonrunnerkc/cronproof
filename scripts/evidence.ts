@@ -48,6 +48,11 @@ const COMMANDS: CommandSpec[] = [
     command: 'pnpm',
     args: ['run', 'cli-demo'],
   },
+  {
+    title: 'repository scan of the fixture repo with file, line, and column per finding',
+    command: 'pnpm',
+    args: ['run', 'scan-demo'],
+  },
   { title: 'build', command: 'pnpm', args: ['run', 'build'] },
   {
     title: 'CLI smoke',

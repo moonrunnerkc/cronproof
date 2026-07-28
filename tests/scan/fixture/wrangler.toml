@@ -1,0 +1,6 @@
+name = "edge-worker"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[triggers]
+crons = ["0 */6 * * *", "30 3 * * 1"]

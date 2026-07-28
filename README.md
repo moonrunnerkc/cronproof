@@ -30,7 +30,17 @@ Commands:
 - `cronproof zones --hazard-window <FROM..TO>`
   Which zones have offset transitions in a window.
 - `cronproof scan <path>`
-  File scanning (wired in phase 8).
+  Walk a repo (or a single file) and report every schedule a supported platform
+  understands, each with its file, line, and column and where its timezone came
+  from (explicit, inherited from CRON_TZ, a platform default such as UTC, or
+  UNKNOWN). Recognized sources: crontab and /etc/crontab (CRON_TZ/TZ
+  inheritance), Kubernetes CronJob manifests (Helm templates reported
+  UNRESOLVED, never guessed), GitHub Actions `on.schedule.cron`, systemd
+  `.timer` units, wrangler.toml, vercel.json, render.yaml, netlify.toml,
+  Terraform Cloud Scheduler and EventBridge, and node-cron, cron-parser, Spring
+  `@Scheduled`, and Celery beat call sites. Honors `.cronproofignore` and inline
+  `cronproof-ignore: <reason>` comments, which must state a reason or they are
+  rejected.
 
 Options:
 

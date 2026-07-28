@@ -16,5 +16,6 @@
     "isolatedModules": true,
     "resolveJsonModule": true
   },
-  "include": ["src", "scripts", "tests", "vitest.config.ts", "tsup.config.ts"]
+  "include": ["src", "scripts", "tests", "vitest.config.ts", "tsup.config.ts"],
+  "exclude": ["tests/scan/fixture"]
 }

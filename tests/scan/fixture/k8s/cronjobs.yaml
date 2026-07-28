@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: report-with-zone
+spec:
+  schedule: "0 2 * * *"
+  timeZone: "America/Los_Angeles"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: report
+              image: reporter:latest
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: report-without-zone
+spec:
+  schedule: "30 1 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: report
+              image: reporter:latest

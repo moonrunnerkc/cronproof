@@ -22,7 +22,13 @@ const repoRules = {
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'test/differential/**'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'coverage/**',
+      'test/differential/**',
+      'tests/scan/fixture/**',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

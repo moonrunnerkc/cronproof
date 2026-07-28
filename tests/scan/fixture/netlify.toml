@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"
+
+[functions."heartbeat"]
+  schedule = "@hourly"
+
+[functions."digest"]
+  schedule = "0 9 * * *"

@@ -1,0 +1,17 @@
+name: nightly
+on:
+  schedule:
+    # run at local midnight for the ops team
+    - cron: '0 0 * * *'
+    - cron: '15 6 * * 1'
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo build
+  weekly-utc:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo weekly

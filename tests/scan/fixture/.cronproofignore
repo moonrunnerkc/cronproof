@@ -1,0 +1,2 @@
+# exclude vendored or decommissioned trees from the scan
+ignored/

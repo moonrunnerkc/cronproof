@@ -47,11 +47,22 @@ describe('all five formats emit output for every command', () => {
     expect(parsed.data.zones.some((z) => z.zone === 'Europe/Berlin')).toBe(true);
   });
 
-  test('scan is recognized and emits a valid, empty result', () => {
-    const { stdout, exit } = invoke(['scan', './crontab', '--format', 'json']);
+  test('scan finds schedules in a repo and reports them as json', () => {
+    const { stdout, exit } = invoke(['scan', 'tests/scan/fixture', '--format', 'json']);
     expect(exit).toBe(0);
-    const parsed = JSON.parse(stdout) as { command: string; hazards: unknown[] };
+    const parsed = JSON.parse(stdout) as {
+      command: string;
+      data: { findings: { file: string; line: number; column: number }[] };
+    };
     expect(parsed.command).toBe('scan');
-    expect(parsed.hazards).toEqual([]);
+    expect(parsed.data.findings.length).toBeGreaterThan(0);
+    const first = parsed.data.findings[0];
+    expect(first?.line).toBeGreaterThan(0);
+    expect(first?.column).toBeGreaterThan(0);
+  });
+
+  test('scan of a nonexistent path is a usage error', () => {
+    const { exit } = invoke(['scan', './does-not-exist-xyz', '--format', 'json']);
+    expect(exit).toBe(2);
   });
 });

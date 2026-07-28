@@ -40,6 +40,8 @@
     "differential-table": "tsx scripts/differential-table.ts",
     "verify:status": "tsx scripts/verify-status.ts",
     "cli-demo": "tsx scripts/cli-demo.ts",
+    "scan-demo": "tsx scripts/scan-demo.ts",
+    "scan:real": "tsx scripts/real-repo-scan.ts",
     "verify:real": "bash test/differential/regenerate.sh",
     "build": "tsup",
     "evidence": "tsx scripts/evidence.ts",

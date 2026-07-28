@@ -663,3 +663,135 @@ against a JSON Schema of the JUnit format (tests/cli/schemas/
 junit.schema.json), which is stricter than eyeballing and needs no
 native dependency. ajv, ajv-formats, and fast-xml-parser are
 test-only devDependencies; the CLI itself pulls in no runtime deps.
+
+## 2026-07-28: Phase 8, repository scanners
+
+The scanner in src/scan/ walks a tree (or a single file), routes each
+file to the scanners its path and a cheap content sniff select, and
+records every schedule with a file, line, and column so a finding maps
+back to the exact source token. Column points at the first character
+of the schedule value as it appears in source (the opening quote for a
+quoted value; the first field character for an unquoted crontab or
+OnCalendar value).
+
+### Lexical scanning, not a full parser or a YAML/TOML/HCL dependency
+
+The repo has no runtime dependencies and this phase keeps it that way.
+Two consequences, both deliberate:
+
+- Config formats (YAML, JSON, TOML, HCL) are read with line- and
+  key-oriented matching plus brace/paren counting, not a format
+  parser. This is enough to locate spec.schedule, crons, schedule,
+  time_zone, and schedule_expression with positions, and it cannot be
+  fooled into "parsing" a value it should not: a Helm-templated
+  schedule ({{ ... }}) or a Spring property placeholder (${...}) is
+  reported UNRESOLVED, never guessed at.
+- The application-level JS/TS pass (node-cron, cron-parser) is a
+  lexical pass, not a TypeScript AST. It masks comment and string
+  bodies first so a commented-out or quoted call is not read as live,
+  then brace-matches on the masked text. A full AST would mean taking
+  typescript as a runtime dependency for a cron library, which is not
+  justified. The first string argument is accepted only when it is
+  schedule-shaped (a space-separated cron or an @macro), so a date or
+  URL passed as an option before a variable expression is not
+  mistaken for the schedule. Trade-off recorded: a call whose
+  expression is a non-literal (a variable or a built string) is not
+  reported, because there is no literal to locate or prove.
+
+### Zone source is a first-class, cited part of every finding
+
+Every finding records where its timezone came from: explicit in the
+file, inherited from a CRON_TZ or TZ line earlier in the same file,
+defaulted by a platform rule, or UNKNOWN. UNKNOWN is itself a finding,
+because a schedule whose zone cannot be determined cannot be proven
+safe. The platform-default rules below each carry a URL fetched in
+this session (2026-07-28):
+
+- GitHub Actions runs scheduled workflows in UTC: "By default,
+  scheduled workflows run in UTC."
+  https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
+- Kubernetes CronJob without spec.timeZone is NOT assumed UTC; it is
+  UNKNOWN: "For CronJobs with no time zone specified, the
+  kube-controller-manager interprets schedules relative to its local
+  time zone." That is a cluster property the manifest cannot reveal.
+  https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+- Cloudflare Workers Cron Triggers run in UTC: "Cron Triggers execute
+  on UTC time."
+  https://developers.cloudflare.com/workers/configuration/cron-triggers/
+- Vercel Cron Jobs run in UTC: "The timezone is always UTC."
+  https://vercel.com/docs/cron-jobs
+- Render cron jobs run in UTC: "All day and time ranges use UTC."
+  https://render.com/docs/cronjobs
+- Netlify Scheduled Functions run in UTC: schedules are "executed
+  according to the UTC timezone."
+  https://docs.netlify.com/functions/scheduled-functions/
+- Google Cloud Scheduler defaults to UTC when time_zone is unset: "If
+  a time zone is not specified, the default will be in UTC (also known
+  as GMT)." The Terraform provider surfaces this default as the tz
+  database name Etc/UTC.
+  https://docs.cloud.google.com/scheduler/docs/reference/rest/v1/projects.locations.jobs
+  https://raw.githubusercontent.com/hashicorp/terraform-provider-google/main/website/docs/r/cloud_scheduler_job.html.markdown
+- AWS EventBridge rules evaluate cron in UTC: "All scheduled events
+  use UTC+0 time zone."
+  https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-rule-schedule.html
+- AWS EventBridge Scheduler (aws_scheduler_schedule) defaults to UTC
+  unless schedule_expression_timezone is set: "Timezone in which the
+  scheduling expression is evaluated. Defaults to UTC."
+  https://raw.githubusercontent.com/hashicorp/terraform-provider-aws/main/website/docs/r/scheduler_schedule.html.markdown
+- systemd calendar events accept a trailing timezone and otherwise run
+  in local time: "Timezone can be specified as the literal string
+  UTC, or the local timezone ... or the timezone in the IANA timezone
+  database format." So a systemd OnCalendar with no trailing zone and
+  no unit Timezone is UNKNOWN.
+  https://manpages.debian.org/testing/systemd/systemd.time.7.en.html
+- Spring @Scheduled has a zone attribute and otherwise uses the
+  server's default zone: "You can also use the zone attribute to
+  specify the time zone in which the cron expression is resolved." No
+  zone means the finding's zone is UNKNOWN.
+  https://docs.spring.io/spring-framework/reference/integration/scheduling.html
+- Celery crontab fields default to '*' (each of minute, hour,
+  day_of_week, day_of_month, month_of_year), and periodic tasks run in
+  the configured timezone: "The periodic task schedules uses the UTC
+  time zone by default, but you can change the time zone used using
+  the timezone setting." That setting is app-level, not on the crontab
+  call, so a scanned crontab() entry has an UNKNOWN zone.
+  https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html
+  https://docs.celeryq.dev/en/stable/reference/celery.schedules.html
+
+### CRON_TZ and TZ inheritance
+
+A crontab is walked top to bottom. A CRON_TZ or TZ assignment sets the
+zone for entries that appear after it, and a later assignment
+overrides an earlier one, so a mid-file redeclaration affects only the
+entries below it. An entry before any such line has an UNKNOWN zone,
+because a bare crontab runs in the daemon's local time.
+
+### Suppressions must state a reason
+
+.cronproofignore uses a small gitignore-flavored matcher (root-anchor,
+trailing-slash dir rules, * and ** globs), with .git and node_modules
+always ignored. An inline "cronproof-ignore" comment silences the
+finding on its own line or the line directly above it, but only when
+it carries a reason: a bare "cronproof-ignore" never suppresses and is
+always reported as a suppression-missing-reason diagnostic, so a
+hazard cannot be quietly buried.
+
+### Scan reports discovery; hazard gating is a later phase
+
+Phase 8 delivers discovery: what schedules exist, where, and how their
+zone is known. The scan command therefore reports findings and exits
+0; turning UNKNOWN and UNRESOLVED findings into non-zero exit gates is
+deferred to a later phase, consistent with the phase-8 acceptance
+criteria, which cover location, zone source, and UNRESOLVED, not exit
+codes.
+
+### Real public repo run
+
+Acceptance requires a real public repo scanned without crashing.
+scripts/real-repo-scan.ts fetches one pinned SHA and scans it:
+harrisiirak/cron-parser at
+aeb2a1513fd33365a6414f4137516c9482f831ed. Measured this session: 33
+files scanned, 137 findings (all cron-parser call sites), 0
+diagnostics, no crash. The run is a standalone script rather than part
+of npm run evidence because it needs network; pinning the SHA keeps it
+deterministic.

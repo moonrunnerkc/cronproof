@@ -1,0 +1,4 @@
+# a valid suppression carries a reason and removes the finding
+0 0 * * * /bin/true  # cronproof-ignore: legacy job, decommissioned 2026 Q4
+# a reasonless suppression is rejected: the finding stays and is reported
+0 1 * * * /bin/false  # cronproof-ignore
