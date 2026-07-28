@@ -915,3 +915,126 @@ fires when wrong" job (green) logged:
 The demo hazard fixture (tests/ci/fixture) lives under a path the root
 .cronproofignore excludes, so the dogfood scan of the whole repo stays
 green while the demo job scans that directory directly.
+
+## 2026-07-28: Phase 10 property tests, adversarial zones, mutation testing
+
+### Property tests (fast-check)
+
+Six properties under tests/property, each with a pinned seed and case
+count so a failure reproduces exactly. The backend is built on the
+vendored 2025b zoneinfo root.
+
+- Partition and the resolved-count invariant (hazard-invariants.property,
+  seed 0x1a2b3c4d, 300 runs). Every intended firing resolves to exactly
+  one of unique, nonexistent (SKIPPED), or ambiguous (DOUBLED); the three
+  buckets are disjoint and cover the whole firing set. For point
+  schedules the classifier's SKIPPED and DOUBLED hazards match the
+  nonexistent and ambiguous buckets one for one. The named invariant,
+  resolved = intended - skipped + doubled, is checked in resolved-instant
+  terms (unique contributes one instant, ambiguous two, nonexistent
+  none). Four explicit fast-check examples (New_York spring gap and fall
+  fold, on both the interval-like and point paths) guarantee the corpus
+  exercises real skips and doubles rather than passing vacuously: the run
+  reports firings=24797 skipped=61 doubled=62.
+- Reverse iteration (hazard-invariants.property). Unioning the per-day
+  slices of a window in reverse day order yields the same firing set as
+  one forward pass. The enumerator exposes no reverse API, so this is
+  expressed as traversal-order independence of enumerate over adjacent
+  sub-windows, the checkable behavior behind "reverse iteration produces
+  the same set". Choice recorded per standing rule 1: adding a reverse
+  enumerator to production purely to satisfy a test was rejected in
+  favor of testing the equivalent observable property of the existing
+  code.
+- UTC yields zero hazards (hazard-invariants.property, 300 runs).
+  classifyHazards in UTC is empty for every generated expression and
+  window.
+- The two backends never disagree (backend-agreement.property, seed
+  0x5eed7a11). 5,000 random (zone, instant) pairs across all 597
+  Intl-nameable vendored zones agree on offsetSeconds; 400 random
+  (zone, window) pairs produce zero crossCheckZone disagreements.
+  "Factory" is the one vendored zone ICU does not expose; excluding it
+  keeps a disagreement a real finding, not a naming artifact. A prior
+  full sweep of all 598 vendored zones over 1970 to 2040 confirmed zero
+  disagreements this session.
+- Hazard ids collision-free (hazard-id.property, seed 0xc0111de5). A
+  deterministic 60,000-identity sweep and 20,000 random identities each
+  produce as many distinct ids as distinct identities, zero collisions.
+
+### Adversarial zone corpus
+
+One named test per zone under tests/adversarial, each asserting that
+zone's specific weirdness against the vendored TZif data (measured this
+session). gaps-and-folds.test.ts: America/New_York (1h spring gap, 1h
+fall fold), Europe/Dublin (negative DST, DST flag set in winter at
+offset 0), Australia/Lord_Howe (30-minute shift), Pacific/Chatham
+(45-minute offset component), Antarctica/Troll (2-hour gap),
+Europe/Lisbon (ordinary EU rule, as a control). date-line-and-rules
+.test.ts: Pacific/Apia (the 1892 move steps the offset back a full day,
+the 2011 move forward a full day and erases 2011-12-30),
+Pacific/Kiritimati (1994 move UTC-10 to UTC+14 erases 1994-12-31),
+Asia/Tehran and America/Sao_Paulo (DST abolished, constant footer, no
+ZONE_UNSTABLE), Africa/Casablanca (four transitions in 2017 from the
+Ramadan pause, the +1h base dropping to 0 during Ramadan 2024), Asia/Gaza
+(spring transition in April on dates that move earlier each year, not the
+EU last Sunday of March), America/Santiago (southern hemisphere, January
+daylight time and July standard time), Asia/Kolkata (constant +5:30
+half-hour offset, last transition in 1945 so the footer governs every
+modern firing), and a DST footer governing firings past the last
+recorded transition (America/New_York, a 2039 window beyond the 2037
+table end is ZONE_UNSTABLE with the 2037 transition as its boundary).
+
+### Mutation testing
+
+Stryker 9.6.1 with the vitest runner and perTest coverage, mutating only
+src/hazard and src/tz (stryker.config.json). The mutation harness is
+vitest.mutation.config.ts, scoped to the tz, hazard, and adversarial
+suites. The fast-check property suites are deliberately excluded from the
+mutation harness: their large generated windows and instant ranges
+amplify a mutant with a broken loop bound into an out-of-memory hang that
+crashes the vitest worker before Stryker's timeout can fire, which only
+adds runner-restart overhead without changing the verdict. The cron
+suites are excluded because they import only src/cron and so never cover
+a src/hazard or src/tz mutant under perTest.
+
+The score is reported as measured. No target was invented and nothing is
+gated on it.
+
+Total: 1404 mutants. 884 killed, 34 timeout, 320 survived, 166 no
+coverage, 0 errors.
+- mutation score (total)   = 65.38%  (killed + timeout) / all valid
+- mutation score (covered) = 74.15%  (killed + timeout) / (killed + timeout + survived)
+
+Per file:
+
+```
+File                                score%  killed timeout  surv  nocov  total
+src/hazard/build-hazard.ts          100.00       3       0     0      0      3
+src/hazard/classify.ts               36.11      13       0    11     12     36
+src/hazard/count-anomaly.ts          74.55      41       0    12      2     55
+src/hazard/hazard-id.ts              92.31      12       0     1      0     13
+src/hazard/interval-drift.ts         52.85      62       3    40     18    123
+src/hazard/per-firing.ts            100.00      25       0     0      0     25
+src/hazard/resolve-firings.ts       100.00       5       0     0      0      5
+src/hazard/severity.ts               63.16      12       0     7      0     19
+src/hazard/transitions.ts            35.00       7       0    13      0     20
+src/hazard/zone-unstable.ts          78.57      44       0     8      4     56
+src/tz/civil-date.ts                 90.08     109       0     8      4    121
+src/tz/cross-check.ts                57.45      27       0    11      9     47
+src/tz/intl-backend.ts               76.92      70      20    21      6    117
+src/tz/posix-tz.ts                   78.16     158       3    35     10    206
+src/tz/resolve-wall-clock.ts         67.52      79       0    28     10    117
+src/tz/tzif-backend.ts               55.19      93       8    74      8    183
+src/tz/tzif-parse.ts                 79.63      86       0    18      4    108
+src/tz/versions.ts                   58.33      21       0    14      1     36
+src/tz/zoneinfo-source.ts            14.91      17       0    19     78    114
+ALL                                  65.38     884      34   320    166   1404
+```
+
+The single biggest drag is src/tz/zoneinfo-source.ts at 14.91%, whose
+listZones, isTzifFile, and version-reading paths are exercised by the
+excluded backend-agreement property and by the crosscheck script rather
+than by the mutation harness, so most of its 78 no-coverage mutants
+reflect the harness scope, not an untested unit. The full per-mutant
+list of all 486 surviving and no-coverage mutants is committed at
+reports/mutation/mutation-report.md, with the raw Stryker output at
+reports/mutation/mutation.json.
