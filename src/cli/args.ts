@@ -19,7 +19,7 @@ const DIALECTS: DialectId[] = [
   'github-actions',
   'aws-eventbridge',
 ];
-const COMMANDS: Command[] = ['check', 'scan', 'explain', 'zones'];
+const COMMANDS: Command[] = ['check', 'scan', 'explain', 'zones', 'baseline'];
 
 /** Fully parsed and validated CLI invocation. */
 export interface ParsedArgs {
@@ -35,6 +35,9 @@ export interface ParsedArgs {
   idempotent: boolean;
   zoneinfoRoot: string | null;
   hazardWindow: { from: DateArg; to: DateArg } | null;
+  baseline: string | null;
+  out: string | null;
+  tzdbCheck: string | null;
 }
 
 /** Result of parsing: a command, or a usage error to print on stderr. */
@@ -192,6 +195,9 @@ export function parseArgs(argv: string[]): ParseResult {
       idempotent: booleans.has('idempotent'),
       zoneinfoRoot: values.get('zoneinfo-root') ?? null,
       hazardWindow,
+      baseline: values.get('baseline') ?? null,
+      out: values.get('out') ?? null,
+      tzdbCheck: values.get('tzdb-check') ?? null,
     },
   };
 }

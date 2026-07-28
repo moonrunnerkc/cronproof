@@ -12,8 +12,8 @@ import type { HazardKind, Severity } from '../hazard/index';
 /** Output formats the CLI can emit. */
 export type Format = 'human' | 'json' | 'sarif' | 'junit' | 'markdown';
 
-/** The four subcommands. */
-export type Command = 'check' | 'scan' | 'explain' | 'zones';
+/** The subcommands. */
+export type Command = 'check' | 'scan' | 'explain' | 'zones' | 'baseline';
 
 /** Exit codes, documented in README and asserted in tests. */
 export const EXIT = {
@@ -27,12 +27,30 @@ export const EXIT = {
   internal: 3,
 } as const;
 
+/**
+ * A hazard category as it appears in a view. Beyond the classifier's
+ * own kinds, scan surfaces two discovery hazards that are not DST
+ * classifications: a schedule whose zone is UNKNOWN (cannot be proven
+ * safe) and one whose expression is UNRESOLVED (a template).
+ */
+export type HazardViewKind = HazardKind | 'ZONE_UNKNOWN' | 'UNRESOLVED';
+
+/** A physical source location, for anchoring a SARIF annotation to a line. */
+export interface HazardLocation {
+  /** Repo-relative path of the file the schedule lives in. */
+  file: string;
+  /** 1-based line. */
+  line: number;
+  /** 1-based column. */
+  column: number;
+}
+
 /** A hazard flattened for rendering, independent of the classifier internals. */
 export interface HazardView {
   /** Stable hazard id, used as the SARIF rule id. */
   id: string;
   /** Classification. */
-  kind: HazardKind;
+  kind: HazardViewKind;
   /** Severity. */
   severity: Severity;
   /** IANA zone. */
@@ -45,6 +63,8 @@ export interface HazardView {
   instantsUtc: string[];
   /** One-line human message. */
   message: string;
+  /** Physical location for scan hazards; absent for expression-only commands. */
+  location?: HazardLocation;
 }
 
 /** A renderable section of a result: a table, key/value pairs, or text. */

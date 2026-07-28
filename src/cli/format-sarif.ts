@@ -30,16 +30,28 @@ function ruleFor(hazard: HazardView): Record<string, unknown> {
   };
 }
 
+function locationFor(hazard: HazardView): Record<string, unknown> {
+  const logicalLocations = [
+    { name: hazard.zone, fullyQualifiedName: `${hazard.zone} ${hazard.expression}` },
+  ];
+  if (hazard.location === undefined) {
+    return { logicalLocations };
+  }
+  return {
+    logicalLocations,
+    physicalLocation: {
+      artifactLocation: { uri: hazard.location.file },
+      region: { startLine: hazard.location.line, startColumn: hazard.location.column },
+    },
+  };
+}
+
 function resultFor(hazard: HazardView): Record<string, unknown> {
   return {
     ruleId: hazard.id,
     level: levelFor(hazard.severity),
     message: { text: `${hazard.kind} at ${hazard.localIso} (${hazard.zone}): ${hazard.message}` },
-    locations: [
-      {
-        logicalLocations: [{ name: hazard.zone, fullyQualifiedName: `${hazard.zone} ${hazard.expression}` }],
-      },
-    ],
+    locations: [locationFor(hazard)],
     properties: {
       severity: hazard.severity,
       kind: hazard.kind,

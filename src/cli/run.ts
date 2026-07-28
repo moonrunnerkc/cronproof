@@ -8,10 +8,12 @@
 
 import { parseArgs, type ParsedArgs } from './args';
 import { resolveRoot, severityOrder } from './analyze';
+import { runBaseline } from './commands/baseline';
 import { runCheck } from './commands/check';
 import { runExplain } from './commands/explain';
 import { runScan } from './commands/scan';
 import { runZones } from './commands/zones';
+import { checkTzdb } from './tzdb-check';
 import { formatHuman } from './format-human';
 import { formatJson } from './format-json';
 import { formatJunit } from './format-junit';
@@ -40,16 +42,19 @@ Commands:
   check "<expr>" --tz <zone> --from <date> --to <date>   hazards + policy differential
   explain "<expr>" --tz <zone> --at <instant>            deep dive on one transition
   zones --hazard-window <FROM..TO>                       zones with transitions in a window
-  scan <path>                                            find schedules in a repo with file/line/column and zone source
+  scan <path>                                            find and classify schedules in a repo
+  baseline <path> --out <file>                           write accepted hazard ids to a baseline
 
 Options:
   --format human|json|sarif|junit|markdown  (default human)
   --dialect vixie|debian|quartz|k8s|systemd|github-actions|aws-eventbridge
   --fail-on info|low|medium|high|critical   (default high)
   --idempotent                              treat double runs as harmless
+  --baseline <file>                         accept the hazards listed in a baseline (scan)
+  --tzdb-check <release>                     fail if the runner tzdb differs from this pin
   --zoneinfo-root <path>                    tzdb tree to read (default: vendored)
 
-Exit codes: 0 clean, 1 hazards at/above --fail-on, 2 usage/parse error, 3 internal failure.
+Exit codes: 0 clean, 1 hazards at/above --fail-on, 2 usage/parse error, 3 internal/tzdb failure.
 `;
 
 function dispatch(args: ParsedArgs): { model: ResultModel } | { usageError: string } {
@@ -62,6 +67,8 @@ function dispatch(args: ParsedArgs): { model: ResultModel } | { usageError: stri
       return runZones(args);
     case 'scan':
       return runScan(args);
+    case 'baseline':
+      return runBaseline(args);
   }
 }
 
@@ -109,6 +116,14 @@ export function dispatchCli(options: RunOptions): number {
   if (!parsed.ok) {
     options.writeError(`cronproof: ${parsed.message}\n`);
     return EXIT.usage;
+  }
+  if (parsed.args.tzdbCheck !== null) {
+    const check = checkTzdb(parsed.args.tzdbCheck, resolveRoot(parsed.args.zoneinfoRoot));
+    if (!check.ok) {
+      options.writeError(`cronproof: ${check.message}\n`);
+      return EXIT.internal;
+    }
+    options.writeError(`cronproof: tzdb pin ok (${check.actual})\n`);
   }
   let outcome: { model: ResultModel } | { usageError: string };
   let receipt: Receipt;
