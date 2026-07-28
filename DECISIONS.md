@@ -463,3 +463,105 @@ hazard therefore keeps a stable id across runs and across unrelated
 refactors, so it can be baselined and suppressed in CI. A test pins
 the literal id hz_feef0ab468b6e246 for a known hazard so any change
 to the hash function fails loudly.
+
+## 2026-07-27: Phase 5, policy models are behavioral outcomes, not simulations
+
+Each scheduler model answers one question about one firing that a
+zone made nonexistent or ambiguous: FIRES_ONCE_AT, FIRES_TWICE_AT,
+DOES_NOT_FIRE, FIRES_AT_CATCHUP, or UNDEFINED. A firing whose local
+time is unique is not a decision point; every scheduler fires it once
+at the same instant, so the differential compares policies only at
+the hazard firings. This keeps the models small and pure: a decision
+is a function of the resolution plus, for Debian, the source shape,
+and needs no clock or simulation.
+
+## 2026-07-27: Phase 5, VERIFIED vs ASSERTED, and why everything is ASSERTED now
+
+Every model carries a verification status. VERIFIED means phase 6 ran
+the real scheduler and confirmed the behavior; ASSERTED means the
+model came from documentation or, for naive, from definition. In this
+phase every model is ASSERTED, because phase 6 has not run. A test
+enforces that no model is VERIFIED yet (no model may default to
+VERIFIED), and each model carries a basis string naming where it came
+from, which the differential script prints so ASSERTED is never shown
+as fact. naive is ASSERTED as a definitional straw model: there is no
+real "naive scheduler" to run, it is the pure wall-clock behavior we
+define, so it cannot be VERIFIED against an external tool and is
+honestly ASSERTED.
+
+## 2026-07-27: Phase 5, debian-cron model grounded in cron(8)
+
+The Debian model follows cron(8) verbatim, fetched 2026-07-27
+(https://manpages.debian.org/bookworm/cron/cron.8.en.html):
+
+  "Special considerations exist when the clock is changed by less
+  than 3 hours [...] If the time has moved forwards, those jobs which
+  would have run in the time that was skipped will be run soon after
+  the change. Conversely, if the time has moved backwards by less
+  than 3 hours, those jobs that fall into the repeated time will not
+  be re-run. Only jobs that run at a particular time (not specified
+  [...] with '*' in the hour or minute specifier) are affected. Jobs
+  which are specified with wildcards are run based on the new time
+  immediately. Clock changes of more than 3 hours [...] the new time
+  is used immediately."
+
+So special handling requires a fixed-time job (neither the minute nor
+the hour field begins with '*', which is the textual startsWithAsterisk
+flag phase 3 preserves, not a semantic test) and a shift under three
+hours. Forward: the skipped fixed-time job fires once as a catch-up
+at the transition instant. Backward: the fixed-time job in the
+repeated hour fires once, at the first occurrence. Wildcard jobs, and
+any shift of three hours or more, get no compensation and behave
+exactly as the naive model. This is why the wildcard schedule in the
+acceptance (*/10) makes debian-cron and naive agree.
+
+## 2026-07-27: Phase 5, the other eight models and where UNDEFINED lives
+
+- naive: gap does not fire, fold fires twice. Definitional.
+- k8s-cronjob: the controller computes schedule times in the
+  configured timeZone with robfig/cron. robfig documents that "jobs
+  scheduled during daylight-savings leap-ahead transitions will not
+  be run" (https://pkg.go.dev/github.com/robfig/cron/v3, fetched
+  2026-07-27), so a gap does not fire; with no fold suppression a
+  repeated time fires twice (Kubernetes CronJob docs, fetched
+  2026-07-27). startingDeadlineSeconds and the missed-schedule limit
+  are modeled as parameters but govern controller-downtime catch-up,
+  not a DST gap or fold, so they do not change the DST outcome.
+- node-cron: its README "Timezones and DST" (fetched 2026-07-27,
+  https://github.com/node-cron/node-cron) says the repeated hour runs
+  once and the gap pauses, so fold fires once and gap does not fire.
+- cronie: separate codebase from Debian; not run this session; do not
+  assume it matches Debian. Both hazard branches UNDEFINED.
+- quartz: misfire instructions modeled as parameters (SMART_POLICY
+  the documented default, Quartz tutorial fetched 2026-07-27), but
+  misfire governs missed-fire recovery, not DST. No DST source
+  fetched, so gap and fold UNDEFINED.
+- croniter and cron-parser-luxon: their READMEs claim correct DST
+  handling but do not document the gap or fold convention (both
+  fetched 2026-07-27), matching the phase 1 finding that the policy
+  is implicit in the implementation. Both hazard branches UNDEFINED.
+- systemd-timer: Persistent= modeled as a parameter (systemd.timer(5)
+  fetched 2026-07-27), governing boot-time catch-up of missed timers,
+  not DST. The man page does not specify DST elapse, so gap and fold
+  UNDEFINED.
+
+UNDEFINED is a real answer here, not a placeholder for a guess: five
+of the nine models decline to assert a DST branch this project could
+not ground or observe. Phase 6 will replace those it can confirm.
+
+## 2026-07-27: Phase 5, differential verdict semantics
+
+The differential runs every policy over a schedule and compares
+firing instants at the decision points. Two policies AGREE when they
+fire the same instants at every decision point, DIFFER when both are
+defined and any decision point differs, and UNDETERMINED when either
+is UNDEFINED somewhere (agreement cannot be certified). The verdict
+is total-agreement (safe to port) only when there are no decision
+points, or every policy is defined and identical at all of them; any
+definite difference or any UNDEFINED branch makes it a disagreement,
+which is a portability hazard distinct from the DST hazard. Berlin
+30 2 at the 2023 fall-back has debian-cron fire once, k8s and naive
+fire twice, node-cron fire once, and the rest UNDEFINED: definite
+disagreements between debian-cron, k8s, naive, and node-cron, so it
+is not safe to port. A 04:00 schedule has no decision points in the
+zones tested, so it is total agreement, the safe case.

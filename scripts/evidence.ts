@@ -33,6 +33,11 @@ const COMMANDS: CommandSpec[] = [
     command: 'pnpm',
     args: ['run', 'hazard-table'],
   },
+  {
+    title: 'scheduler policy differential matrix and verification table',
+    command: 'pnpm',
+    args: ['run', 'differential-table'],
+  },
   { title: 'build', command: 'pnpm', args: ['run', 'build'] },
   {
     title: 'CLI smoke',

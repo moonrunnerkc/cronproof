@@ -7,3 +7,4 @@ export const PACKAGE_NAME = 'cronproof';
 export * from './tz/index';
 export * from './cron/index';
 export * from './hazard/index';
+export * from './policy/index';

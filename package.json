@@ -37,6 +37,7 @@
     "crosscheck": "tsx scripts/cross-check.ts",
     "dialect-table": "tsx scripts/dialect-table.ts",
     "hazard-table": "tsx scripts/hazard-table.ts",
+    "differential-table": "tsx scripts/differential-table.ts",
     "build": "tsup",
     "evidence": "tsx scripts/evidence.ts",
     "evidence:check": "tsx scripts/evidence.ts --check"

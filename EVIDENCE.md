@@ -5,8 +5,8 @@ Command output below is captured verbatim.
 
 ## Run metadata
 
-- Generated: 2026-07-27T23:31:13.850Z
-- Git SHA: ec73348dc78019709ff84010059c06b0e73ef1b3 (working tree dirty)
+- Generated: 2026-07-28T01:45:53.003Z
+- Git SHA: 11fa665d4136e5405e886cdcb5dc4562bb5408fb (working tree dirty)
 - Repo root: /home/brad/projects/cronproof
 - Node: v22.16.0
 - ICU: 77.1
@@ -69,23 +69,75 @@ Exit code: 0
  RUN  v4.1.10 /home/brad/projects/cronproof
       Coverage enabled with v8
 
- ✓ tests/tz/tzif-parse.test.ts > TZif binary parsing > reads the 64-bit transition table and footer of America/New_York 4ms
- ✓ tests/tz/tzif-parse.test.ts > TZif binary parsing > reads a constant zone with no transitions 0ms
- ✓ tests/tz/tzif-parse.test.ts > TZif binary parsing > preserves sub-minute historical offsets (Africa/Monrovia, UTC-00:44:30 until 1972) 0ms
- ✓ tests/tz/tzif-parse.test.ts > TZif binary parsing > rejects input that is not TZif 1ms
- ✓ tests/cron/differential.test.ts > day-of-month / day-of-week combination > Vixie OR quirk: with both day fields restricted, the 13th fires even though it is not a Friday 5ms
- ✓ tests/cron/differential.test.ts > day-of-month / day-of-week combination > day-of-week wildcard forces AND: only the 13th of February fires 1ms
+ ✓ tests/cron/differential.test.ts > day-of-month / day-of-week combination > Vixie OR quirk: with both day fields restricted, the 13th fires even though it is not a Friday 4ms
+ ✓ tests/cron/differential.test.ts > day-of-month / day-of-week combination > day-of-week wildcard forces AND: only the 13th of February fires 0ms
  ✓ tests/cron/differential.test.ts > day-of-month / day-of-week combination > day-of-month wildcard forces AND: only the Fridays of February fire 0ms
- ✓ tests/cron/differential.test.ts > step-on-range > 5-30/7 in the minute field fires at 5, 12, 19, 26 1ms
+ ✓ tests/cron/differential.test.ts > step-on-range > 5-30/7 in the minute field fires at 5, 12, 19, 26 0ms
  ✓ tests/cron/differential.test.ts > Quartz and AWS special day tokens > MON#5 fires only in the months that have a fifth Monday 1ms
- ✓ tests/cron/differential.test.ts > Quartz and AWS special day tokens > L in day-of-month fires on the actual last day of each month 1ms
- ✓ tests/cron/differential.test.ts > Quartz and AWS special day tokens > LW moves the last-of-month to the preceding Friday when the last day is a weekend 1ms
+ ✓ tests/cron/differential.test.ts > Quartz and AWS special day tokens > L in day-of-month fires on the actual last day of each month 0ms
+ ✓ tests/cron/differential.test.ts > Quartz and AWS special day tokens > LW moves the last-of-month to the preceding Friday when the last day is a weekend 0ms
  ✓ tests/cron/differential.test.ts > Quartz and AWS special day tokens > nW picks the weekday nearest the target, staying inside the month 1ms
  ✓ tests/cron/differential.test.ts > Quartz and AWS special day tokens > AWS 6L fires on the last Friday of each month 1ms
  ✓ tests/cron/differential.test.ts > systemd OnCalendar maps to the same firing semantics > Mon..Fri weekday range fires on weekdays only 1ms
  ✓ tests/cron/differential.test.ts > systemd OnCalendar maps to the same firing semantics > the ~ operator fires on the third-to-last day of February 1ms
- ✓ tests/cron/dialect-rejection.test.ts > dialect acceptance and rejection > 'vixie' false for "'0 0 0 1 1 ?'": 'Vixie is 5-field; a seconds field is …' 3ms
- ✓ tests/cron/dialect-rejection.test.ts > dialect acceptance and rejection > 'debian' false for "'0 0 1 1 ?'": 'Debian (Vixie extensions) has no "?" …' 1ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > parses a US-style rule with east-positive offsets 3ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > parses angle-bracket names, explicit DST offsets, and rule times (Antarctica/Troll footer) 1ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > parses the reversed-season Dublin footer where standard time is the summer offset 0ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > parses a constant-offset zone with no DST 0ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > returns null on malformed input 0ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > computes the 2024 US spring-forward instant from the rule 0ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > resolves week 5 to the last weekday of the month 0ms
+ ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > julian day rules skip February 29 while zero-based day rules count it 0ms
+ ✓ tests/cron/tz-isolation.test.ts > enumeration is independent of the timezone module > the mocked timezone module throws when any export is called 22ms
+ ✓ tests/cron/tz-isolation.test.ts > enumeration is independent of the timezone module > enumeration produces firings while the timezone module is mocked to throw 3ms
+ ✓ tests/cron/tz-isolation.test.ts > enumeration is independent of the timezone module > enumeration output is identical regardless of the zone argument 2ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > 2024-03-10T02:30 America/New_York is nonexistent with a one-hour gap 5ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > 2024-11-03T01:30 America/New_York is ambiguous with a one-hour fold 1ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > Australia/Lord_Howe 2024-10-06: 02:15 nonexistent and 02:45 unique, because the shift is 30 minutes 1ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > Antarctica/Troll 2024-03-31 produces a 2-hour gap 1ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > Europe/Dublin resolves correctly under negative DST: winter offset 0, summer offset +1h, gap and fold at the transitions 1ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > Pacific/Apia 2011-12-30 is a fully nonexistent calendar day 1ms
+ ✓ tests/tz/acceptance.test.ts > tzif backend > Asia/Tehran shows transitions before 2022 and none after 1ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > 2024-03-10T02:30 America/New_York is nonexistent with a one-hour gap 25ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > 2024-11-03T01:30 America/New_York is ambiguous with a one-hour fold 1ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > Australia/Lord_Howe 2024-10-06: 02:15 nonexistent and 02:45 unique, because the shift is 30 minutes 2ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > Antarctica/Troll 2024-03-31 produces a 2-hour gap 1ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > Europe/Dublin resolves correctly under negative DST: winter offset 0, summer offset +1h, gap and fold at the transitions 2ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > Pacific/Apia 2011-12-30 is a fully nonexistent calendar day 2ms
+ ✓ tests/tz/acceptance.test.ts > intl backend > Asia/Tehran shows transitions before 2022 and none after 56ms
+ ✓ tests/tz/acceptance.test.ts > negative DST data is reported raw, never as a season proxy > vendored TZif reports Europe/Dublin winter as the DST variant at offset 0 and summer as standard time at +1h 2ms
+ ✓ tests/hazard/severity.test.ts > severity model > a double of non-idempotent work outranks a skip 2ms
+ ✓ tests/hazard/severity.test.ts > severity model > marking work idempotent drops a double below a skip 0ms
+ ✓ tests/hazard/severity.test.ts > severity model > non-idempotent double is critical and skip is high by default 0ms
+ ✓ tests/hazard/severity.test.ts > severity model > the idempotence flag flips a real doubled hazard from critical to low without changing anything else 45ms
+ ✓ tests/hazard/hazard-id.test.ts > hazard id stability > the id of a known hazard equals a pinned literal 3ms
+ ✓ tests/hazard/hazard-id.test.ts > hazard id stability > the classifier assigns that same id to the hazard it produces 22ms
+ ✓ tests/hazard/hazard-id.test.ts > hazard id stability > the id changes when any identity field changes 2ms
+ ✓ tests/hazard/hazard-id.test.ts > hazard id stability > the id does not depend on severity, so the idempotence flag cannot change it 30ms
+ ✓ tests/policy/differential.test.ts > 30 2 * * * Europe/Berlin at the 2023 fall-back > debian-cron fires once, k8s-cronjob fires twice, naive fires twice, and the disagreement is reported 14ms
+ ✓ tests/policy/differential.test.ts > */10 * * * * at spring forward > debian-cron and naive agree, because the wildcard path disables special handling 9ms
+ ✓ tests/policy/differential.test.ts > a 04:00 schedule is the safe case > total agreement across all policies in Europe/Berlin 15ms
+ ✓ tests/policy/differential.test.ts > a 04:00 schedule is the safe case > total agreement across all policies in America/New_York 25ms
+ ✓ tests/policy/differential.test.ts > a 04:00 schedule is the safe case > total agreement across all policies in Australia/Lord_Howe 9ms
+ ✓ tests/policy/differential.test.ts > a 04:00 schedule is the safe case > total agreement across all policies in Pacific/Apia 5ms
+ ✓ tests/hazard/acceptance.test.ts > 30 2 * * * America/New_York over 2024 > exactly one SKIPPED on March 10, at 02:30, caused by the spring-forward transition 47ms
+ ✓ tests/hazard/acceptance.test.ts > the November fall-back doubles 01:30, not 02:30 (documented correction) > 30 2 * * * is unique on November 3 (02:30 is not in the folded hour) 15ms
+ ✓ tests/hazard/acceptance.test.ts > the November fall-back doubles 01:30, not 02:30 (documented correction) > 30 1 * * * has exactly one DOUBLED on November 3 at 01:30 with both instants 21ms
+ ✓ tests/hazard/acceptance.test.ts > */15 * * * * America/New_York over 2024 > zero SKIPPED, zero DOUBLED, exactly two INTERVAL_DRIFT 99ms
+ ✓ tests/hazard/zone-and-null.test.ts > null test: UTC schedules produce zero hazards > */15 * * * * in vixie dialect yields no hazards in any UTC zone 182ms
+ ✓ tests/hazard/acceptance.test.ts > 0 0 * * * Pacific/Apia over 2011 > COUNT_ANOMALY for December 30, the calendar day that does not exist 12ms
+ ✓ tests/hazard/acceptance.test.ts > Australia/Lord_Howe October 30-minute transition > 15 2 * * * is SKIPPED at the October 2024 transition 6ms
+ ✓ tests/hazard/acceptance.test.ts > Australia/Lord_Howe October 30-minute transition > 45 2 * * * produces no hazards, because 02:45 exists after the 30-minute shift 5ms
+ ✓ tests/tz/cross-check.test.ts > backend cross-check > both backends agree on every transition instant and offset for hazard-heavy zones, 1970 to 2040 338ms
+ ✓ tests/tz/tzif-parse.test.ts > TZif binary parsing > reads the 64-bit transition table and footer of America/New_York 7ms
+ ✓ tests/tz/tzif-parse.test.ts > TZif binary parsing > reads a constant zone with no transitions 1ms
+ ✓ tests/tz/tzif-parse.test.ts > TZif binary parsing > preserves sub-minute historical offsets (Africa/Monrovia, UTC-00:44:30 until 1972) 0ms
+ ✓ tests/tz/tzif-parse.test.ts > TZif binary parsing > rejects input that is not TZif 1ms
+ ✓ tests/tz/cross-check.test.ts > backend cross-check > a one-week DST stint shorter than the scan probe is still verified through direct offset queries (America/Boa_Vista, October 2000) 3ms
+ ✓ tests/tz/cross-check.test.ts > backend cross-check > a backend reporting shifted transition instants is caught, naming the zone and instant 1ms
+ ✓ tests/tz/cross-check.test.ts > backend cross-check > a transition missing from the TZif list is caught by the scan direction 1ms
+ ✓ tests/cron/dialect-rejection.test.ts > dialect acceptance and rejection > 'vixie' false for "'0 0 0 1 1 ?'": 'Vixie is 5-field; a seconds field is …' 4ms
+ ✓ tests/cron/dialect-rejection.test.ts > dialect acceptance and rejection > 'debian' false for "'0 0 1 1 ?'": 'Debian (Vixie extensions) has no "?" …' 2ms
  ✓ tests/cron/dialect-rejection.test.ts > dialect acceptance and rejection > 'k8s' true for "'0 0 1 1 ?'": 'robfig/cron (k8s) accepts "?" as a bl…' 1ms
  ✓ tests/cron/dialect-rejection.test.ts > dialect acceptance and rejection > 'k8s' false for "'0 0 L * ?'": 'the robfig standard parser has no "L"…' 0ms
  ✓ tests/cron/dialect-rejection.test.ts > dialect acceptance and rejection > 'k8s' false for "'0 0 0 ? * MON#5'": 'the k8s parser is 5-field; the Quartz…' 0ms
@@ -103,102 +155,85 @@ Exit code: 0
  ✓ tests/cron/dialect-rejection.test.ts > dialect acceptance and rejection > 'quartz' false for "'@yearly'": 'Quartz has no @-macros' 0ms
  ✓ tests/cron/dialect-rejection.test.ts > dialect acceptance and rejection > 'vixie' true for "'@yearly'": 'Vixie accepts @yearly' 0ms
  ✓ tests/cron/dialect-rejection.test.ts > dialect acceptance and rejection > every dialect rejects at least one expression that another dialect accepts 1ms
- ✓ tests/cron/tz-isolation.test.ts > enumeration is independent of the timezone module > the mocked timezone module throws when any export is called 19ms
- ✓ tests/cron/tz-isolation.test.ts > enumeration is independent of the timezone module > enumeration produces firings while the timezone module is mocked to throw 3ms
- ✓ tests/cron/tz-isolation.test.ts > enumeration is independent of the timezone module > enumeration output is identical regardless of the zone argument 2ms
- ✓ tests/tz/acceptance.test.ts > tzif backend > 2024-03-10T02:30 America/New_York is nonexistent with a one-hour gap 5ms
- ✓ tests/tz/acceptance.test.ts > tzif backend > 2024-11-03T01:30 America/New_York is ambiguous with a one-hour fold 2ms
- ✓ tests/tz/acceptance.test.ts > tzif backend > Australia/Lord_Howe 2024-10-06: 02:15 nonexistent and 02:45 unique, because the shift is 30 minutes 1ms
- ✓ tests/tz/acceptance.test.ts > tzif backend > Antarctica/Troll 2024-03-31 produces a 2-hour gap 1ms
- ✓ tests/tz/acceptance.test.ts > tzif backend > Europe/Dublin resolves correctly under negative DST: winter offset 0, summer offset +1h, gap and fold at the transitions 1ms
- ✓ tests/tz/acceptance.test.ts > tzif backend > Pacific/Apia 2011-12-30 is a fully nonexistent calendar day 1ms
- ✓ tests/tz/acceptance.test.ts > tzif backend > Asia/Tehran shows transitions before 2022 and none after 1ms
- ✓ tests/tz/acceptance.test.ts > intl backend > 2024-03-10T02:30 America/New_York is nonexistent with a one-hour gap 20ms
- ✓ tests/tz/acceptance.test.ts > intl backend > 2024-11-03T01:30 America/New_York is ambiguous with a one-hour fold 0ms
- ✓ tests/tz/acceptance.test.ts > intl backend > Australia/Lord_Howe 2024-10-06: 02:15 nonexistent and 02:45 unique, because the shift is 30 minutes 1ms
- ✓ tests/tz/acceptance.test.ts > intl backend > Antarctica/Troll 2024-03-31 produces a 2-hour gap 1ms
- ✓ tests/tz/acceptance.test.ts > intl backend > Europe/Dublin resolves correctly under negative DST: winter offset 0, summer offset +1h, gap and fold at the transitions 1ms
- ✓ tests/tz/acceptance.test.ts > intl backend > Pacific/Apia 2011-12-30 is a fully nonexistent calendar day 1ms
- ✓ tests/tz/acceptance.test.ts > intl backend > Asia/Tehran shows transitions before 2022 and none after 52ms
- ✓ tests/tz/acceptance.test.ts > negative DST data is reported raw, never as a season proxy > vendored TZif reports Europe/Dublin winter as the DST variant at offset 0 and summer as standard time at +1h 1ms
- ✓ tests/hazard/severity.test.ts > severity model > a double of non-idempotent work outranks a skip 2ms
- ✓ tests/hazard/severity.test.ts > severity model > marking work idempotent drops a double below a skip 0ms
- ✓ tests/hazard/severity.test.ts > severity model > non-idempotent double is critical and skip is high by default 0ms
- ✓ tests/hazard/severity.test.ts > severity model > the idempotence flag flips a real doubled hazard from critical to low without changing anything else 46ms
- ✓ tests/hazard/hazard-id.test.ts > hazard id stability > the id of a known hazard equals a pinned literal 3ms
- ✓ tests/hazard/hazard-id.test.ts > hazard id stability > the classifier assigns that same id to the hazard it produces 32ms
- ✓ tests/hazard/hazard-id.test.ts > hazard id stability > the id changes when any identity field changes 2ms
- ✓ tests/hazard/hazard-id.test.ts > hazard id stability > the id does not depend on severity, so the idempotence flag cannot change it 29ms
- ✓ tests/hazard/acceptance.test.ts > 30 2 * * * America/New_York over 2024 > exactly one SKIPPED on March 10, at 02:30, caused by the spring-forward transition 31ms
- ✓ tests/hazard/acceptance.test.ts > the November fall-back doubles 01:30, not 02:30 (documented correction) > 30 2 * * * is unique on November 3 (02:30 is not in the folded hour) 20ms
- ✓ tests/hazard/acceptance.test.ts > the November fall-back doubles 01:30, not 02:30 (documented correction) > 30 1 * * * has exactly one DOUBLED on November 3 at 01:30 with both instants 18ms
- ✓ tests/hazard/acceptance.test.ts > */15 * * * * America/New_York over 2024 > zero SKIPPED, zero DOUBLED, exactly two INTERVAL_DRIFT 72ms
- ✓ tests/hazard/zone-and-null.test.ts > null test: UTC schedules produce zero hazards > */15 * * * * in vixie dialect yields no hazards in any UTC zone 150ms
- ✓ tests/hazard/acceptance.test.ts > 0 0 * * * Pacific/Apia over 2011 > COUNT_ANOMALY for December 30, the calendar day that does not exist 4ms
- ✓ tests/hazard/acceptance.test.ts > Australia/Lord_Howe October 30-minute transition > 15 2 * * * is SKIPPED at the October 2024 transition 10ms
- ✓ tests/hazard/acceptance.test.ts > Australia/Lord_Howe October 30-minute transition > 45 2 * * * produces no hazards, because 02:45 exists after the 30-minute shift 11ms
- ✓ tests/tz/cross-check.test.ts > backend cross-check > both backends agree on every transition instant and offset for hazard-heavy zones, 1970 to 2040 324ms
- ✓ tests/tz/cross-check.test.ts > backend cross-check > a one-week DST stint shorter than the scan probe is still verified through direct offset queries (America/Boa_Vista, October 2000) 2ms
- ✓ tests/tz/cross-check.test.ts > backend cross-check > a backend reporting shifted transition instants is caught, naming the zone and instant 1ms
- ✓ tests/tz/cross-check.test.ts > backend cross-check > a transition missing from the TZif list is caught by the scan direction 1ms
+ ✓ tests/hazard/zone-and-null.test.ts > null test: UTC schedules produce zero hazards > 30 2 * * * in vixie dialect yields no hazards in any UTC zone 40ms
+ ✓ tests/hazard/zone-and-null.test.ts > null test: UTC schedules produce zero hazards > 0 0 * * * in vixie dialect yields no hazards in any UTC zone 14ms
+ ✓ tests/hazard/zone-and-null.test.ts > null test: UTC schedules produce zero hazards > 30 5 * * 1-5 in github-actions dialect yields no hazards in any UTC zone 17ms
+ ✓ tests/hazard/zone-and-null.test.ts > ZONE_UNSTABLE labels predicted regions past the last recorded transition > a daily job the year after New York's last table transition is labeled footer-extrapolation 33ms
  ✓ tests/tz/resolve-wall-clock.test.ts > resolveWallClock input handling > an ordinary local time resolves to a unique instant with its offset 5ms
  ✓ tests/tz/resolve-wall-clock.test.ts > resolveWallClock input handling > rejects out-of-range calendar fields with RangeError 1ms
  ✓ tests/tz/resolve-wall-clock.test.ts > resolveWallClock input handling > propagates an error for a zone the backend cannot load 1ms
- ✓ tests/tz/versions.test.ts > tzdb version reporting > reports the Intl tzdb version and the zoneinfo tzdb version separately 3ms
- ✓ tests/tz/versions.test.ts > tzdb version reporting > stays silent when both sources carry the same release 0ms
- ✓ tests/tz/versions.test.ts > tzdb version reporting > warns loudly when the releases disagree, naming both versions 1ms
- ✓ tests/tz/versions.test.ts > tzdb version reporting > warns when a version cannot be determined at all 0ms
- ✓ tests/cron/parse.test.ts > source-level detail preserved for later phases > a literal leading asterisk is recorded distinctly from an equivalent value set 6ms
- ✓ tests/cron/parse.test.ts > day-of-week numbering canonicalizes to 0 (Sunday) through 6 > Vixie treats both 0 and 7 as Sunday 2ms
+ ✓ tests/hazard/zone-and-null.test.ts > ZONE_UNSTABLE labels predicted regions past the last recorded transition > a constant-offset zone past its last transition is not labeled unstable (extrapolation is exact) 7ms
+ ✓ tests/cron/parse.test.ts > source-level detail preserved for later phases > a literal leading asterisk is recorded distinctly from an equivalent value set 5ms
+ ✓ tests/cron/parse.test.ts > day-of-week numbering canonicalizes to 0 (Sunday) through 6 > Vixie treats both 0 and 7 as Sunday 1ms
  ✓ tests/cron/parse.test.ts > day-of-week numbering canonicalizes to 0 (Sunday) through 6 > Quartz numbers Sunday as 1, so 1 canonicalizes to 0 and 7 to Saturday 1ms
  ✓ tests/cron/parse.test.ts > day-of-week numbering canonicalizes to 0 (Sunday) through 6 > weekday and month names resolve case-insensitively to the same canonical values 1ms
  ✓ tests/cron/parse.test.ts > macros > @midnight and @daily expand to the same midnight schedule 1ms
- ✓ tests/cron/parse.test.ts > macros > @reboot parses as a reboot schedule that enumerates to nothing 1ms
+ ✓ tests/cron/parse.test.ts > macros > @reboot parses as a reboot schedule that enumerates to nothing 0ms
  ✓ tests/cron/parse.test.ts > error locations > an out-of-range value reports the offset of the offending field 1ms
- ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > parses a US-style rule with east-positive offsets 4ms
- ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > parses angle-bracket names, explicit DST offsets, and rule times (Antarctica/Troll footer) 2ms
- ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > parses the reversed-season Dublin footer where standard time is the summer offset 1ms
- ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > parses a constant-offset zone with no DST 0ms
- ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > returns null on malformed input 0ms
- ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > computes the 2024 US spring-forward instant from the rule 1ms
- ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > resolves week 5 to the last weekday of the month 0ms
- ✓ tests/tz/posix-tz.test.ts > POSIX TZ footer parsing > julian day rules skip February 29 while zero-based day rules count it 0ms
- ✓ tests/cli-main.test.ts > cronproof CLI stub > prints "cronproof <version>" using the version from package.json 6ms
- ✓ tests/cli-main.test.ts > cronproof CLI stub > reports exit code 0 0ms
- ✓ tests/hazard/zone-and-null.test.ts > null test: UTC schedules produce zero hazards > 30 2 * * * in vixie dialect yields no hazards in any UTC zone 44ms
- ✓ tests/hazard/zone-and-null.test.ts > null test: UTC schedules produce zero hazards > 0 0 * * * in vixie dialect yields no hazards in any UTC zone 14ms
- ✓ tests/hazard/zone-and-null.test.ts > null test: UTC schedules produce zero hazards > 30 5 * * 1-5 in github-actions dialect yields no hazards in any UTC zone 20ms
- ✓ tests/hazard/zone-and-null.test.ts > ZONE_UNSTABLE labels predicted regions past the last recorded transition > a daily job the year after New York's last table transition is labeled footer-extrapolation 16ms
- ✓ tests/hazard/zone-and-null.test.ts > ZONE_UNSTABLE labels predicted regions past the last recorded transition > a constant-offset zone past its last transition is not labeled unstable (extrapolation is exact) 3ms
+ ✓ tests/cli-main.test.ts > cronproof CLI stub > prints "cronproof <version>" using the version from package.json 4ms
+ ✓ tests/cli-main.test.ts > cronproof CLI stub > reports exit code 0 2ms
  ✓ tests/evidence-lib.test.ts > normalizeEvidence > makes two runs equal when they differ only in timestamp, git SHA, repo root, clock times, and durations 3ms
  ✓ tests/evidence-lib.test.ts > normalizeEvidence > keeps two runs different when command output genuinely differs 1ms
  ✓ tests/evidence-lib.test.ts > normalizeEvidence > treats output lines inside a block as an order-insensitive multiset, since concurrent build tools interleave log lines 0ms
  ✓ tests/evidence-lib.test.ts > normalizeEvidence > keeps exit codes visible after normalization 0ms
  ✓ tests/evidence-lib.test.ts > firstDifference > returns null for identical documents 0ms
  ✓ tests/evidence-lib.test.ts > firstDifference > names the first line where two documents diverge 0ms
+ ✓ tests/policy/models.test.ts > every policy fires a unique time once at its instant > naive fires a unique time once 3ms
+ ✓ tests/policy/models.test.ts > every policy fires a unique time once at its instant > debian-cron fires a unique time once 0ms
+ ✓ tests/policy/models.test.ts > every policy fires a unique time once at its instant > cronie fires a unique time once 0ms
+ ✓ tests/policy/models.test.ts > every policy fires a unique time once at its instant > k8s-cronjob fires a unique time once 0ms
+ ✓ tests/policy/models.test.ts > every policy fires a unique time once at its instant > quartz fires a unique time once 0ms
+ ✓ tests/policy/models.test.ts > every policy fires a unique time once at its instant > croniter fires a unique time once 0ms
+ ✓ tests/policy/models.test.ts > every policy fires a unique time once at its instant > cron-parser-luxon fires a unique time once 0ms
+ ✓ tests/policy/models.test.ts > every policy fires a unique time once at its instant > node-cron fires a unique time once 0ms
+ ✓ tests/policy/models.test.ts > every policy fires a unique time once at its instant > systemd-timer fires a unique time once 0ms
+ ✓ tests/policy/models.test.ts > debian-cron follows the cron(8) rule > fixed-time fall-back under three hours fires once, at the first occurrence 0ms
+ ✓ tests/policy/models.test.ts > debian-cron follows the cron(8) rule > fixed-time spring-forward under three hours fires as a catch-up after the jump 0ms
+ ✓ tests/policy/models.test.ts > debian-cron follows the cron(8) rule > wildcard fall-back gets no compensation and fires twice 0ms
+ ✓ tests/policy/models.test.ts > debian-cron follows the cron(8) rule > wildcard spring-forward gets no compensation and does not fire 0ms
+ ✓ tests/policy/models.test.ts > debian-cron follows the cron(8) rule > a shift of three hours or more disables special handling even for fixed-time jobs 0ms
+ ✓ tests/policy/models.test.ts > naive fires on every wall-clock occurrence > fall-back fires twice 0ms
+ ✓ tests/policy/models.test.ts > naive fires on every wall-clock occurrence > spring-forward does not fire 0ms
+ ✓ tests/policy/models.test.ts > k8s-cronjob has no fold suppression and skips gaps > fall-back fires twice 0ms
+ ✓ tests/policy/models.test.ts > k8s-cronjob has no fold suppression and skips gaps > spring-forward does not fire 0ms
+ ✓ tests/policy/models.test.ts > node-cron fires the folded hour once > fall-back fires once at the first occurrence 0ms
+ ✓ tests/policy/models.test.ts > node-cron fires the folded hour once > spring-forward does not fire 0ms
+ ✓ tests/policy/models.test.ts > unverified schedulers are UNDEFINED at the hazard, never guessed > cronie is UNDEFINED on both fold and gap 0ms
+ ✓ tests/policy/models.test.ts > unverified schedulers are UNDEFINED at the hazard, never guessed > quartz is UNDEFINED on both fold and gap 0ms
+ ✓ tests/policy/models.test.ts > unverified schedulers are UNDEFINED at the hazard, never guessed > croniter is UNDEFINED on both fold and gap 0ms
+ ✓ tests/policy/models.test.ts > unverified schedulers are UNDEFINED at the hazard, never guessed > cron-parser-luxon is UNDEFINED on both fold and gap 0ms
+ ✓ tests/policy/models.test.ts > unverified schedulers are UNDEFINED at the hazard, never guessed > systemd-timer is UNDEFINED on both fold and gap 0ms
+ ✓ tests/policy/verification.test.ts > verification discipline > no model defaults to VERIFIED in this phase; every model is ASSERTED 2ms
+ ✓ tests/policy/verification.test.ts > verification discipline > every model records a non-empty basis so the CLI can show where it came from 1ms
+ ✓ tests/policy/verification.test.ts > verification discipline > all nine schedulers are registered 1ms
+ ✓ tests/tz/versions.test.ts > tzdb version reporting > reports the Intl tzdb version and the zoneinfo tzdb version separately 2ms
+ ✓ tests/tz/versions.test.ts > tzdb version reporting > stays silent when both sources carry the same release 0ms
+ ✓ tests/tz/versions.test.ts > tzdb version reporting > warns loudly when the releases disagree, naming both versions 0ms
+ ✓ tests/tz/versions.test.ts > tzdb version reporting > warns when a version cannot be determined at all 0ms
  ✓ tests/tz/civil-date.test.ts > civil date math > matches Date.UTC across ordinary, leap, and century boundaries 2ms
  ✓ tests/tz/civil-date.test.ts > civil date math > day counts round-trip through civil dates 0ms
  ✓ tests/tz/civil-date.test.ts > civil date math > weekday matches the known epoch anchor and a known Sunday 0ms
  ✓ tests/tz/civil-date.test.ts > civil date math > wall fields round-trip through wall milliseconds 1ms
 
 [property] seed=0xc0ffee5 cases=10000 parsed=10000 totalFirings=1084685
- ✓ tests/cron/property.test.ts > randomly generated valid expressions > enumerate deterministically and in strict wall-clock order over a one-year window (seed 0xc0ffee5, 10000 cases) 12857ms
+ ✓ tests/cron/property.test.ts > randomly generated valid expressions > enumerate deterministically and in strict wall-clock order over a one-year window (seed 0xc0ffee5, 10000 cases) 13040ms
 
- Test Files  18 passed (18)
-      Tests  112 passed (112)
-   Start at  23:30:48
-   Duration  13.37s (transform 1.69s, setup 0ms, import 2.78s, tests 13.95s, environment 2ms)
+ Test Files  21 passed (21)
+      Tests  146 passed (146)
+   Start at  01:45:26
+   Duration  13.58s (transform 1.74s, setup 0ms, import 3.13s, tests 14.34s, environment 3ms)
 
  % Coverage report from v8
 -------------------|---------|----------|---------|---------|-------------------
 File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
 -------------------|---------|----------|---------|---------|-------------------
-All files          |   77.11 |     68.8 |   79.58 |   77.14 |                   
- scripts           |   18.95 |    14.28 |      20 |   18.84 |                   
+All files          |   75.22 |       69 |   77.63 |   75.31 |                   
+ scripts           |    14.7 |    12.25 |      15 |   14.77 |                   
   cross-check.ts   |       0 |        0 |       0 |       0 | 22-155            
   dialect-table.ts |       0 |        0 |       0 |       0 | 12-54             
+  ...tial-table.ts |       0 |        0 |       0 |       0 | 30-162            
   evidence-lib.ts  |   95.23 |    79.16 |     100 |   95.12 | 114,162           
-  evidence.ts      |       0 |        0 |       0 |       0 | 14-132            
+  evidence.ts      |       0 |        0 |       0 |       0 | 14-137            
   hazard-table.ts  |       0 |        0 |       0 |       0 | 30-132            
  src               |   66.66 |    83.33 |   66.66 |   66.66 |                   
   cli-main.ts      |   88.88 |    83.33 |     100 |   88.88 | 23                
@@ -219,6 +254,12 @@ All files          |   77.11 |     68.8 |   79.58 |   77.14 |
   ...rval-drift.ts |   88.67 |       65 |     100 |      88 | ...,86,89,108,118 
   transitions.ts   |    92.3 |       50 |     100 |    92.3 | 52                
   zone-unstable.ts |      85 |    77.77 |     100 |      85 | 35,42,64          
+ src/policy        |   93.67 |       92 |   94.44 |   93.15 |                   
+  differential.ts  |   96.72 |    94.73 |     100 |   96.36 | 118,172           
+  fixed-time.ts    |      75 |    71.42 |     100 |      75 | 26,44             
+  registry.ts      |   83.33 |      100 |      75 |   83.33 | 95                
+ src/policy/models |      90 |    87.09 |   88.88 |      90 |                   
+  k8s-cronjob.ts   |   63.63 |    42.85 |      50 |   63.63 | 35-39             
  src/tz            |   87.89 |    76.76 |   93.54 |   87.55 |                   
   civil-date.ts    |     100 |    90.47 |     100 |     100 | 18,63             
   cross-check.ts   |   93.54 |       80 |     100 |   93.54 | 93,115            
@@ -232,10 +273,10 @@ All files          |   77.11 |     68.8 |   79.58 |   77.14 |
 -------------------|---------|----------|---------|---------|-------------------
 
 =============================== Coverage summary ===============================
-Statements   : 77.11% ( 1041/1350 )
-Branches     : 68.8% ( 655/952 )
-Functions    : 79.58% ( 152/191 )
-Lines        : 77.14% ( 1016/1317 )
+Statements   : 75.22% ( 1151/1530 )
+Branches     : 69% ( 728/1055 )
+Functions    : 77.63% ( 177/228 )
+Lines        : 75.31% ( 1120/1487 )
 ================================================================================
 ````
 
@@ -977,7 +1018,86 @@ result: PASS
 (empty)
 ````
 
-## 7. build
+## 7. scheduler policy differential matrix and verification table
+
+Command: `pnpm run differential-table`
+
+Exit code: 0
+
+### stdout
+
+````
+
+> cronproof@0.1.0 differential-table /home/brad/projects/cronproof
+> tsx scripts/differential-table.ts
+
+cronproof differential disagreement matrix (vendored zoneinfo)
+
+== 30 2 * * *  Europe/Berlin
+  1 decision point(s): 2023-10-29T02:30:00 (ambiguous)
+    naive              ASSERTED  fires=2  FIRES_TWICE_AT(2023-10-29T00:30:00.000Z, 2023-10-29T01:30:00.000Z)
+    debian-cron        ASSERTED  fires=1  FIRES_ONCE_AT(2023-10-29T00:30:00.000Z)
+    cronie             ASSERTED  fires=0  UNDEFINED
+    k8s-cronjob        ASSERTED  fires=2  FIRES_TWICE_AT(2023-10-29T00:30:00.000Z, 2023-10-29T01:30:00.000Z)
+    quartz             ASSERTED  fires=0  UNDEFINED
+    croniter           ASSERTED  fires=0  UNDEFINED
+    cron-parser-luxon  ASSERTED  fires=0  UNDEFINED
+    node-cron          ASSERTED  fires=1  FIRES_ONCE_AT(2023-10-29T00:30:00.000Z)
+    systemd-timer      ASSERTED  fires=0  UNDEFINED
+  verdict: disagreement (safe to port: false)
+  definite disagreement: naive vs debian-cron
+  definite disagreement: naive vs node-cron
+  definite disagreement: debian-cron vs k8s-cronjob
+  definite disagreement: k8s-cronjob vs node-cron
+  undetermined pairs (an unverified model on one side): 30
+  (fall-back: debian once, k8s twice, naive twice)
+
+== */10 * * * *  Europe/Berlin
+  6 decision point(s): 2023-03-26T02:00:00 (nonexistent), 2023-03-26T02:10:00 (nonexistent), 2023-03-26T02:20:00 (nonexistent), 2023-03-26T02:30:00 (nonexistent), 2023-03-26T02:40:00 (nonexistent), 2023-03-26T02:50:00 (nonexistent)
+    naive              ASSERTED  fires=0  DOES_NOT_FIRE x6
+    debian-cron        ASSERTED  fires=0  DOES_NOT_FIRE x6
+    cronie             ASSERTED  fires=0  UNDEFINED x6
+    k8s-cronjob        ASSERTED  fires=0  DOES_NOT_FIRE x6
+    quartz             ASSERTED  fires=0  UNDEFINED x6
+    croniter           ASSERTED  fires=0  UNDEFINED x6
+    cron-parser-luxon  ASSERTED  fires=0  UNDEFINED x6
+    node-cron          ASSERTED  fires=0  DOES_NOT_FIRE x6
+    systemd-timer      ASSERTED  fires=0  UNDEFINED x6
+  verdict: disagreement (safe to port: false)
+  definite disagreements: none
+  undetermined pairs (an unverified model on one side): 30
+  (spring-forward: debian and naive agree (wildcard path))
+
+== 0 4 * * *  Europe/Berlin
+  no decision points (every firing is unique)
+  verdict: total-agreement (safe to port: true)
+  definite disagreements: none
+  undetermined pairs (an unverified model on one side): 0
+  (the safe case: total agreement)
+
+== policy verification table
+  naive              ASSERTED  definitional straw model: pure wall-clock iteration, no DST awareness
+  debian-cron        ASSERTED  cron(8) Debian DST paragraph, fetched 2026-07-27 (manpages.debian.org/bookworm/cron/cron.8.en.html)
+  cronie             ASSERTED  gap and fold UNDEFINED: cronie is a separate codebase, not run in this session; do not assume it matches Debian
+  k8s-cronjob        ASSERTED  kubernetes.io CronJob docs and robfig/cron v3 docs, fetched 2026-07-27; skips gaps, no fold suppression
+  quartz             ASSERTED  Quartz misfire tutorial, fetched 2026-07-27; misfire parameterized, DST gap and fold UNDEFINED
+  croniter           ASSERTED  croniter README About DST, fetched 2026-07-27; convention undocumented, gap and fold UNDEFINED
+  cron-parser-luxon  ASSERTED  cron-parser README, fetched 2026-07-27; DST convention implicit in implementation, gap and fold UNDEFINED
+  node-cron          ASSERTED  node-cron README Timezones and DST, fetched 2026-07-27; fold fires once, gap pauses
+  systemd-timer      ASSERTED  systemd.timer(5) Persistent=, fetched 2026-07-27; Persistent parameterized, DST gap and fold UNDEFINED
+
+cases: 3
+mismatches: 0
+result: PASS
+````
+
+### stderr
+
+````
+(empty)
+````
+
+## 8. build
 
 Command: `pnpm run build`
 
@@ -1006,17 +1126,17 @@ ESM Build start
 CJS Build start
 ESM dist/cli.js     774.00 B
 ESM dist/cli.js.map 1.96 KB
-ESM ⚡️ Build success in 10ms
-CJS dist/index.cjs     72.82 KB
-CJS dist/index.cjs.map 168.50 KB
-CJS ⚡️ Build success in 26ms
-ESM dist/index.js     69.37 KB
-ESM dist/index.js.map 168.21 KB
-ESM ⚡️ Build success in 26ms
+ESM ⚡️ Build success in 13ms
+ESM dist/index.js     78.73 KB
+ESM dist/index.js.map 202.58 KB
+ESM ⚡️ Build success in 29ms
+CJS dist/index.cjs     82.69 KB
+CJS dist/index.cjs.map 202.97 KB
+CJS ⚡️ Build success in 30ms
 DTS Build start
-DTS ⚡️ Build success in 869ms
-DTS dist/index.d.ts  38.53 KB
-DTS dist/index.d.cts 38.53 KB
+DTS ⚡️ Build success in 939ms
+DTS dist/index.d.ts  49.24 KB
+DTS dist/index.d.cts 49.24 KB
 ````
 
 ### stderr
@@ -1032,7 +1152,7 @@ DTS dist/index.d.cts 38.53 KB
   You need to set the output format to "esm" for "import.meta" to work correctly.
 ````
 
-## 8. CLI smoke
+## 9. CLI smoke
 
 Command: `node dist/cli.js --version`
 
