@@ -17,6 +17,15 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: npm run evidence:check
+      - name: diagnostic regenerate on failure
+        if: failure()
+        run: npm run evidence >/dev/null 2>&1 || true
+      - name: upload regenerated evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regenerated-evidence
+          path: EVIDENCE.md
 
   dogfood:
     name: cronproof scans its own repo
