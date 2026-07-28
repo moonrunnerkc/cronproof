@@ -17,7 +17,12 @@ const EVIDENCE_PATH = path.join(REPO_ROOT, 'EVIDENCE.md');
 const COMMANDS: CommandSpec[] = [
   { title: 'lint', command: 'pnpm', args: ['run', 'lint'] },
   { title: 'typecheck', command: 'pnpm', args: ['run', 'typecheck'] },
-  { title: 'test (with coverage)', command: 'pnpm', args: ['run', 'test'] },
+  // Coverage is intentionally omitted here: the v8 coverage table wraps its
+  // columns to the terminal width and lists per-file rows in a way that is not
+  // stable across environments, which made evidence:check nondeterministic on
+  // CI. The pass/fail signal (exit code plus the summary) is what the evidence
+  // needs; coverage still runs locally via `pnpm run test`.
+  { title: 'test', command: 'pnpm', args: ['exec', 'vitest', 'run', '--reporter=verbose'] },
   {
     title: 'tz cross-check, all zones, 1970 to 2040, vendored root matching the Intl tzdb release',
     command: 'pnpm',
