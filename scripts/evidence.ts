@@ -38,6 +38,11 @@ const COMMANDS: CommandSpec[] = [
     command: 'pnpm',
     args: ['run', 'differential-table'],
   },
+  {
+    title: 'empirical verification status and raw debian-cron fall-back log',
+    command: 'pnpm',
+    args: ['run', 'verify:status'],
+  },
   { title: 'build', command: 'pnpm', args: ['run', 'build'] },
   {
     title: 'CLI smoke',

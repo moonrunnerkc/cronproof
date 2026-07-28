@@ -565,3 +565,57 @@ fire twice, node-cron fire once, and the rest UNDEFINED: definite
 disagreements between debian-cron, k8s, naive, and node-cron, so it
 is not safe to port. A 04:00 schedule has no decision points in the
 zones tested, so it is total agreement, the safe case.
+
+## 2026-07-27: Phase 6, empirical verification method and the fixture boundary
+
+Each scheduler was run for real and its fire instants recorded into a
+committed fixture under test/differential/fixtures. The policy model
+tests assert against those fixtures, so CI needs no Docker; a
+`pnpm verify:real` task (test/differential/regenerate.sh) regenerates
+them from the containers and host tools. The 2023 transition dates are
+historical and identical across every tzdb release the harnesses ran
+under (node ICU 2025c, python tzdata 2026.3, systemd/host 2026b, go
+embedded, debian 2026b, cronie 2024b), so the observations compare
+directly against the vendored 2025b engine.
+
+Observation methods, one per runtime class:
+- Computed-sequence libraries (cron-parser, croniter, cronsim, and
+  robfig/cron for k8s) were called directly and their next-time
+  sequences over the window recorded.
+- systemd via `systemd-analyze calendar --base-time --iterations` with
+  an explicit TZ, which gives elapse times without a running system.
+- The Vixie daemons (debian cron, cronie) were run as real daemons
+  under libfaketime. libfaketime 0.9.10's speed multiplier is broken
+  in these images, so acceleration is done differently: a no-sleep
+  LD_PRELOAD shim collapses the daemon's per-minute sleep to
+  near-instant, and a controller steps a real-relative UTC offset in
+  the libfaketime timestamp file so the daemon races through every
+  minute in seconds while still seeing the clock jumps its DST logic
+  keys off. The offset is UTC-relative on purpose: a local wall string
+  is ambiguous across the fold (02:30 aliases to both passes), a
+  real-relative UTC offset is not.
+- node-cron arms a single real-duration timer that a faked wall clock
+  cannot accelerate, so it was run under a virtual clock: its own
+  scheduler code with Date and the timer functions intercepted and a
+  discrete-event loop advancing virtual time to each timer it arms.
+  The firing decisions are node-cron's; only the clock substrate is
+  virtual, the standard fake-timers technique.
+
+## 2026-07-27: Phase 6, models refactored to profiles, and what stayed ASSERTED
+
+Observation showed the libraries' fold behavior depends on schedule
+shape (a cursor library fires a folded interval slot twice but a
+folded daily job once or twice depending on the library), so the
+library models became a small data-driven profile keyed on
+(resolution, fixed-vs-interval): src/policy/models/profile.ts. cronie
+was observed to behave identically to debian-cron, so the two Vixie
+daemons share one decider (vixie-family), each still resting on its
+own fixture. cronsim was added as a new VERIFIED model. Eight of ten
+models are VERIFIED against a fixture; two remain ASSERTED and say so:
+quartz was not run (it needs a JVM and a live Quartz scheduler, so its
+DST gap and fold stay UNDEFINED) and naive is a definitional straw
+model with no real scheduler to run. No grounded phase-5 model was
+contradicted; the divergences the runs surfaced (croniter double-fires
+a daily job at fall-back, cron-parser shifts a skipped time forward)
+are recorded in FINDINGS.md as portability hazards and upstream-report
+material.

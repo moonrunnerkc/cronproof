@@ -1,25 +1,27 @@
 /**
- * node-cron. Its README documents a "Timezones and DST" model,
- * fetched 2026-07-27 (https://github.com/node-cron/node-cron):
- * across a fall-back the repeated hour runs once, and across a
- * spring-forward the schedule pauses through the gap (the skipped
- * time does not fire). So a fold fires once at the first occurrence
- * and a gap does not fire.
+ * node-cron. Verified in phase 6 by running node-cron 3.0.3 under a
+ * virtual-clock discrete-event driver (its own scheduler code, with
+ * Date and the timers intercepted), across both transitions in
+ * Europe/Berlin and America/New_York (fixture
+ * test/differential/fixtures/node-cron.json). node-cron schedules
+ * with real-duration timers that a faked wall clock cannot
+ * accelerate, so the virtual-clock driver is how its real logic was
+ * observed. Observed, matching its README: a folded local time fires
+ * once at the earlier instant and the repeated hour is not revisited
+ * (for a fixed or an interval schedule); a skipped local time is
+ * dropped.
  */
 
-import type { PolicyModel, PolicyOutcome, ResolvedFiring } from '../types';
+import { profileDecider } from './profile';
+import type { PolicyModel } from '../types';
 
-function decide(firing: ResolvedFiring): PolicyOutcome {
-  const resolution = firing.resolution;
-  switch (resolution.kind) {
-    case 'unique':
-      return { kind: 'FIRES_ONCE_AT', instant: resolution.instant };
-    case 'nonexistent':
-      return { kind: 'DOES_NOT_FIRE' };
-    case 'ambiguous':
-      return { kind: 'FIRES_ONCE_AT', instant: resolution.earlierInstant };
-  }
-}
-
-/** The node-cron model. */
-export const nodeCronModel: PolicyModel = { id: 'node-cron', decide };
+/** The node-cron model, verified against its real scheduler. */
+export const nodeCronModel: PolicyModel = {
+  id: 'node-cron',
+  decide: profileDecider({
+    ambiguousFixed: 'once-earlier',
+    ambiguousInterval: 'once-earlier',
+    nonexistentFixed: 'does-not-fire',
+    nonexistentInterval: 'does-not-fire',
+  }),
+};

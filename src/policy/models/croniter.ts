@@ -1,14 +1,24 @@
 /**
- * croniter (Python). Its README has an "About DST" section but, as
- * fetched 2026-07-27 (https://github.com/kiorky/croniter), it only
- * shows how to pass timezone-aware datetimes and does not document
- * what happens at a spring-forward gap or a fall-back fold. With no
- * documented convention and no observed run, both hazard branches are
- * UNDEFINED until phase 6.
+ * croniter (Python). Verified in phase 6 by running croniter 6.2.4 in
+ * a container across both transitions in Europe/Berlin and
+ * America/New_York (fixture test/differential/fixtures/croniter.json).
+ * Observed: a folded local time fires TWICE, at both instants, even
+ * for a once-daily fixed schedule; a skipped local time fires once at
+ * the transition instant for a fixed schedule and is dropped for an
+ * interval schedule. The double-fire of a daily job at fall-back is a
+ * notable divergence from the other libraries; see FINDINGS.md.
  */
 
-import { decideUndefinedAtHazards } from './common';
+import { profileDecider } from './profile';
 import type { PolicyModel } from '../types';
 
-/** The croniter model, gap and fold unverified. */
-export const croniterModel: PolicyModel = { id: 'croniter', decide: decideUndefinedAtHazards };
+/** The croniter model, verified against a real run. */
+export const croniterModel: PolicyModel = {
+  id: 'croniter',
+  decide: profileDecider({
+    ambiguousFixed: 'twice',
+    ambiguousInterval: 'twice',
+    nonexistentFixed: 'once-at-transition',
+    nonexistentInterval: 'does-not-fire',
+  }),
+};

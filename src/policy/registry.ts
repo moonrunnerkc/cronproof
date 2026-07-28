@@ -1,16 +1,19 @@
 /**
- * The registry of scheduler policy models and their verification
- * status. Every entry is ASSERTED in this phase: it was modeled from
- * documentation or, for naive, by definition, and no real scheduler
- * has confirmed it yet. Phase 6 runs the schedulers and only then may
- * change specific entries to VERIFIED. Nothing here defaults to
- * VERIFIED, and the basis string records where each ASSERTED model
- * came from so the CLI can show it and never present it as fact.
+ * The registry of scheduler policy models, their verification status,
+ * and where each came from. Phase 6 ran the real schedulers and
+ * flipped the models it confirmed to VERIFIED, each backed by a
+ * committed fixture under test/differential/fixtures. Two entries
+ * remain ASSERTED: naive is a definitional straw model with no real
+ * scheduler to run, and quartz was not run (it needs a JVM and a live
+ * Quartz scheduler), so its DST branches stay UNDEFINED. Nothing is
+ * VERIFIED without a fixture, and the basis records the evidence so
+ * the CLI can show it.
  */
 
 import { cronParserLuxonModel } from './models/cron-parser-luxon';
 import { cronieModel } from './models/cronie';
 import { croniterModel } from './models/croniter';
+import { cronsimModel } from './models/cronsim';
 import { debianCronModel } from './models/debian-cron';
 import { k8sCronjobModel } from './models/k8s-cronjob';
 import { naiveModel } from './models/naive';
@@ -23,9 +26,9 @@ import type { PolicyId, PolicyModel, Verification } from './types';
 export interface PolicyEntry {
   /** The behavior model. */
   model: PolicyModel;
-  /** VERIFIED (phase 6 confirmed) or ASSERTED (from docs or definition). */
+  /** VERIFIED (phase 6 confirmed against a real run) or ASSERTED. */
   verification: Verification;
-  /** Where the model came from: documentation fetched, or definition. */
+  /** Where the model came from: a fixture, documentation, or definition. */
   basis: string;
 }
 
@@ -33,47 +36,52 @@ const REGISTRY: Record<PolicyId, PolicyEntry> = {
   naive: {
     model: naiveModel,
     verification: 'ASSERTED',
-    basis: 'definitional straw model: pure wall-clock iteration, no DST awareness',
+    basis: 'definitional straw model: pure wall-clock iteration; no real scheduler exists to verify against',
   },
   'debian-cron': {
     model: debianCronModel,
-    verification: 'ASSERTED',
-    basis: 'cron(8) Debian DST paragraph, fetched 2026-07-27 (manpages.debian.org/bookworm/cron/cron.8.en.html)',
+    verification: 'VERIFIED',
+    basis: 'fixture debian-cron.json: cron 3.0pl1 under libfaketime, both transitions, Berlin and New York',
   },
   cronie: {
     model: cronieModel,
-    verification: 'ASSERTED',
-    basis: 'gap and fold UNDEFINED: cronie is a separate codebase, not run in this session; do not assume it matches Debian',
+    verification: 'VERIFIED',
+    basis: 'fixture cronie.json: cronie 1.7.2 on Fedora under libfaketime; behavior identical to debian-cron',
   },
   'k8s-cronjob': {
     model: k8sCronjobModel,
-    verification: 'ASSERTED',
-    basis: 'kubernetes.io CronJob docs and robfig/cron v3 docs, fetched 2026-07-27; skips gaps, no fold suppression',
+    verification: 'VERIFIED',
+    basis: 'fixture k8s-cronjob.json: robfig/cron v3 (the controller parser) Next() sequence, both transitions',
   },
   quartz: {
     model: quartzModel,
     verification: 'ASSERTED',
-    basis: 'Quartz misfire tutorial, fetched 2026-07-27; misfire parameterized, DST gap and fold UNDEFINED',
+    basis: 'not run (needs a JVM and a live Quartz scheduler); misfire parameterized, DST gap and fold UNDEFINED',
   },
   croniter: {
     model: croniterModel,
-    verification: 'ASSERTED',
-    basis: 'croniter README About DST, fetched 2026-07-27; convention undocumented, gap and fold UNDEFINED',
+    verification: 'VERIFIED',
+    basis: 'fixture croniter.json: croniter 6.2.4 sequence; fold fires twice even for a daily job (see FINDINGS.md)',
+  },
+  cronsim: {
+    model: cronsimModel,
+    verification: 'VERIFIED',
+    basis: 'fixture cronsim.json: cronsim 2.7 sequence; fold once, gap at the transition, like debian-cron',
   },
   'cron-parser-luxon': {
     model: cronParserLuxonModel,
-    verification: 'ASSERTED',
-    basis: 'cron-parser README, fetched 2026-07-27; DST convention implicit in implementation, gap and fold UNDEFINED',
+    verification: 'VERIFIED',
+    basis: 'fixture cron-parser-luxon.json: cron-parser 4.9.0; a skipped time is shifted forward (see FINDINGS.md)',
   },
   'node-cron': {
     model: nodeCronModel,
-    verification: 'ASSERTED',
-    basis: 'node-cron README Timezones and DST, fetched 2026-07-27; fold fires once, gap pauses',
+    verification: 'VERIFIED',
+    basis: 'fixture node-cron.json: node-cron 3.0.3 scheduler under a virtual clock; fold once, gap dropped',
   },
   'systemd-timer': {
     model: systemdTimerModel,
-    verification: 'ASSERTED',
-    basis: 'systemd.timer(5) Persistent=, fetched 2026-07-27; Persistent parameterized, DST gap and fold UNDEFINED',
+    verification: 'VERIFIED',
+    basis: 'fixture systemd-timer.json: systemd-analyze calendar 249; monotonic, fold once, gap dropped',
   },
 };
 
@@ -85,6 +93,7 @@ export const ALL_POLICY_IDS: PolicyId[] = [
   'k8s-cronjob',
   'quartz',
   'croniter',
+  'cronsim',
   'cron-parser-luxon',
   'node-cron',
   'systemd-timer',

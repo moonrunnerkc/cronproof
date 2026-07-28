@@ -1,21 +1,31 @@
 import { describe, expect, test } from 'vitest';
 import { ALL_POLICY_IDS, policyBasis, policyVerification } from '../../src/policy/index';
+import type { PolicyId } from '../../src/policy/index';
 
-describe('verification discipline', () => {
-  test('no model defaults to VERIFIED in this phase; every model is ASSERTED', () => {
+// After phase 6, only the two models with no real scheduler to run are
+// ASSERTED: naive (a definition) and quartz (needs a JVM, not run).
+const STILL_ASSERTED = new Set<PolicyId>(['naive', 'quartz']);
+
+describe('verification status after phase 6', () => {
+  test('every model backed by a real run is VERIFIED, and only naive and quartz remain ASSERTED', () => {
     for (const id of ALL_POLICY_IDS) {
-      expect(policyVerification(id), `${id} must be ASSERTED before phase 6 runs it`).toBe('ASSERTED');
+      const expected = STILL_ASSERTED.has(id) ? 'ASSERTED' : 'VERIFIED';
+      expect(policyVerification(id), `${id} should be ${expected}`).toBe(expected);
     }
   });
 
-  test('every model records a non-empty basis so the CLI can show where it came from', () => {
+  test('no model is VERIFIED without a basis pointing at its evidence', () => {
     for (const id of ALL_POLICY_IDS) {
-      expect(policyBasis(id).length, `${id} needs a basis`).toBeGreaterThan(0);
+      const basis = policyBasis(id);
+      expect(basis.length, `${id} needs a basis`).toBeGreaterThan(0);
+      if (policyVerification(id) === 'VERIFIED') {
+        expect(basis, `${id} VERIFIED basis should cite a fixture`).toContain('fixture');
+      }
     }
   });
 
-  test('all nine schedulers are registered', () => {
-    expect(ALL_POLICY_IDS).toHaveLength(9);
-    expect(new Set(ALL_POLICY_IDS).size).toBe(9);
+  test('all ten schedulers are registered', () => {
+    expect(ALL_POLICY_IDS).toHaveLength(10);
+    expect(new Set(ALL_POLICY_IDS).size).toBe(10);
   });
 });

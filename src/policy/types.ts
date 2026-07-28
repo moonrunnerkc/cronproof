@@ -22,6 +22,7 @@ export type PolicyId =
   | 'k8s-cronjob'
   | 'quartz'
   | 'croniter'
+  | 'cronsim'
   | 'cron-parser-luxon'
   | 'node-cron'
   | 'systemd-timer';

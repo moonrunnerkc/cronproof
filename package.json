@@ -38,6 +38,8 @@
     "dialect-table": "tsx scripts/dialect-table.ts",
     "hazard-table": "tsx scripts/hazard-table.ts",
     "differential-table": "tsx scripts/differential-table.ts",
+    "verify:status": "tsx scripts/verify-status.ts",
+    "verify:real": "bash test/differential/regenerate.sh",
     "build": "tsup",
     "evidence": "tsx scripts/evidence.ts",
     "evidence:check": "tsx scripts/evidence.ts --check"

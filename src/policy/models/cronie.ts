@@ -1,15 +1,19 @@
 /**
- * cronie (the cron shipped on Red Hat and Fedora). Its DST handling
- * must not be assumed to match Debian's: the two are separate
- * codebases, and this project has not run cronie to confirm its gap
- * and fold behavior. Both hazard branches are therefore UNDEFINED
- * until phase 6 verifies them against the real scheduler. Marking a
- * branch UNDEFINED is the correct answer here, not a placeholder for
- * a guess.
+ * cronie (the cron on Red Hat and Fedora). Phase 5 refused to assume
+ * it matched Debian. Phase 6 ran cronie 1.7.2 on Fedora under
+ * libfaketime with a stepped clock across both transitions in
+ * Europe/Berlin and America/New_York (fixture
+ * test/differential/fixtures/cronie.json) and observed behavior
+ * identical to debian-cron on every scenario: fixed-time jobs fire
+ * once at the earlier instant on fall-back and once at the transition
+ * on spring-forward, wildcard jobs get no compensation. So cronie now
+ * shares the Vixie-family decider, and its VERIFIED status rests on
+ * its own fixture, not on the assumption phase 5 declined to make.
+ * That the two match is itself a finding; see FINDINGS.md.
  */
 
-import { decideUndefinedAtHazards } from './common';
+import { vixieFamilyDecide } from './vixie-family';
 import type { PolicyModel } from '../types';
 
-/** The cronie model, gap and fold unverified. */
-export const cronieModel: PolicyModel = { id: 'cronie', decide: decideUndefinedAtHazards };
+/** The cronie model, verified against a real daemon run. */
+export const cronieModel: PolicyModel = { id: 'cronie', decide: vixieFamilyDecide };

@@ -51,6 +51,7 @@ describe('every policy fires a unique time once at its instant', () => {
     'k8s-cronjob',
     'quartz',
     'croniter',
+    'cronsim',
     'cron-parser-luxon',
     'node-cron',
     'systemd-timer',
@@ -117,10 +118,39 @@ describe('node-cron fires the folded hour once', () => {
   });
 });
 
-describe('unverified schedulers are UNDEFINED at the hazard, never guessed', () => {
-  const undefinedIds: PolicyId[] = ['cronie', 'quartz', 'croniter', 'cron-parser-luxon', 'systemd-timer'];
-  test.each(undefinedIds)('%s is UNDEFINED on both fold and gap', (id) => {
-    expect(decide(id, foldOf(HOUR))).toEqual({ kind: 'UNDEFINED' });
-    expect(decide(id, gapOf(HOUR))).toEqual({ kind: 'UNDEFINED' });
+describe('cronie was verified to behave identically to debian-cron', () => {
+  test('fixed-time fall-back fires once and spring-forward is a catch-up', () => {
+    expect(decide('cronie', foldOf(HOUR), fixed)).toEqual({ kind: 'FIRES_ONCE_AT', instant: 1000 });
+    expect(decide('cronie', gapOf(HOUR), fixed)).toEqual({ kind: 'FIRES_AT_CATCHUP', instant: 5000 });
+  });
+});
+
+describe('the libraries verified in phase 6', () => {
+  test('croniter fires the folded daily time twice and a skipped one at the transition', () => {
+    expect(decide('croniter', foldOf(HOUR), fixed)).toEqual({ kind: 'FIRES_TWICE_AT', first: 1000, second: 1000 + HOUR });
+    expect(decide('croniter', gapOf(HOUR), fixed)).toEqual({ kind: 'FIRES_ONCE_AT', instant: 5000 });
+  });
+
+  test('cronsim fires the folded daily time once and a skipped one at the transition', () => {
+    expect(decide('cronsim', foldOf(HOUR), fixed)).toEqual({ kind: 'FIRES_ONCE_AT', instant: 1000 });
+    expect(decide('cronsim', gapOf(HOUR), fixed)).toEqual({ kind: 'FIRES_ONCE_AT', instant: 5000 });
+  });
+
+  test('systemd-timer fires the folded time once and drops a skipped one', () => {
+    expect(decide('systemd-timer', foldOf(HOUR), fixed)).toEqual({ kind: 'FIRES_ONCE_AT', instant: 1000 });
+    expect(decide('systemd-timer', gapOf(HOUR), fixed)).toEqual({ kind: 'DOES_NOT_FIRE' });
+  });
+
+  test('the cursor libraries fire a folded interval slot twice but a folded daily job varies', () => {
+    expect(decide('cron-parser-luxon', foldOf(HOUR), fixed)).toEqual({ kind: 'FIRES_ONCE_AT', instant: 1000 });
+    expect(decide('cron-parser-luxon', foldOf(HOUR), wildcard)).toEqual({ kind: 'FIRES_TWICE_AT', first: 1000, second: 1000 + HOUR });
+    expect(decide('croniter', foldOf(HOUR), wildcard)).toEqual({ kind: 'FIRES_TWICE_AT', first: 1000, second: 1000 + HOUR });
+  });
+});
+
+describe('quartz remains UNDEFINED at the hazard, never guessed', () => {
+  test('quartz is UNDEFINED on both fold and gap (not run in phase 6)', () => {
+    expect(decide('quartz', foldOf(HOUR))).toEqual({ kind: 'UNDEFINED' });
+    expect(decide('quartz', gapOf(HOUR))).toEqual({ kind: 'UNDEFINED' });
   });
 });

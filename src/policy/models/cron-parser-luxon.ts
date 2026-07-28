@@ -1,18 +1,27 @@
 /**
- * cron-parser (the npm library, which uses Luxon for timezone math).
- * Its README states it handles DST "correctly" but, as fetched
- * 2026-07-27 (https://github.com/harrisiirak/cron-parser), does not
- * document the convention: whether a repeated time fires once or
- * twice, or whether a skipped time is dropped or shifted. The policy
- * is implicit in the implementation, so both hazard branches are
- * UNDEFINED until phase 6 observes the real library.
+ * cron-parser (npm, Luxon-backed). Verified in phase 6 by running
+ * cron-parser 4.9.0 in a container across both transitions in
+ * Europe/Berlin and America/New_York (fixture
+ * test/differential/fixtures/cron-parser-luxon.json). Observed: a
+ * folded local time fires once at the earlier instant for a fixed
+ * daily schedule and twice for an interval schedule; a skipped local
+ * time is shifted forward by the gap and fires once (02:30 becomes
+ * 03:30) for a fixed schedule, and is dropped for an interval
+ * schedule. The forward shift of a skipped time is Luxon's default
+ * and is a divergence from every other scheduler modeled; see
+ * FINDINGS.md.
  */
 
-import { decideUndefinedAtHazards } from './common';
+import { profileDecider } from './profile';
 import type { PolicyModel } from '../types';
 
-/** The cron-parser-luxon model, gap and fold unverified. */
+/** The cron-parser-luxon model, verified against a real run. */
 export const cronParserLuxonModel: PolicyModel = {
   id: 'cron-parser-luxon',
-  decide: decideUndefinedAtHazards,
+  decide: profileDecider({
+    ambiguousFixed: 'once-earlier',
+    ambiguousInterval: 'twice',
+    nonexistentFixed: 'once-shifted-forward',
+    nonexistentInterval: 'does-not-fire',
+  }),
 };

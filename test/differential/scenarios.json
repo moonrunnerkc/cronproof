@@ -1,0 +1,65 @@
+{
+  "comment": "Shared observation scenarios for phase 6. Every harness runs exactly these, and the verification test compares each model's prediction against the observed fixture over the same UTC window. Windows bracket the single intended firing so the observed fire count (0, 1, or 2) is an unambiguous skip / once / twice.",
+  "scenarios": [
+    {
+      "id": "berlin-fall-fixed",
+      "expression": "30 2 * * *",
+      "zone": "Europe/Berlin",
+      "direction": "fall-back",
+      "transitionDate": "2023-10-29",
+      "windowStartUtc": "2023-10-28T23:00:00Z",
+      "windowEndUtc": "2023-10-29T05:00:00Z",
+      "note": "02:30 occurs twice (00:30Z CEST and 01:30Z CET)"
+    },
+    {
+      "id": "berlin-spring-fixed",
+      "expression": "30 2 * * *",
+      "zone": "Europe/Berlin",
+      "direction": "spring-forward",
+      "transitionDate": "2023-03-26",
+      "windowStartUtc": "2023-03-25T23:00:00Z",
+      "windowEndUtc": "2023-03-26T05:00:00Z",
+      "note": "02:30 does not exist (gap 02:00-03:00 local)"
+    },
+    {
+      "id": "ny-fall-fixed",
+      "expression": "30 1 * * *",
+      "zone": "America/New_York",
+      "direction": "fall-back",
+      "transitionDate": "2023-11-05",
+      "windowStartUtc": "2023-11-05T03:00:00Z",
+      "windowEndUtc": "2023-11-05T09:00:00Z",
+      "note": "01:30 occurs twice (05:30Z EDT and 06:30Z EST)"
+    },
+    {
+      "id": "ny-spring-fixed",
+      "expression": "30 2 * * *",
+      "zone": "America/New_York",
+      "direction": "spring-forward",
+      "transitionDate": "2023-03-12",
+      "windowStartUtc": "2023-03-12T04:00:00Z",
+      "windowEndUtc": "2023-03-12T10:00:00Z",
+      "note": "02:30 does not exist (gap 02:00-03:00 local)"
+    },
+    {
+      "id": "berlin-fall-wildcard",
+      "expression": "*/15 * * * *",
+      "zone": "Europe/Berlin",
+      "direction": "fall-back",
+      "transitionDate": "2023-10-29",
+      "windowStartUtc": "2023-10-29T00:00:00Z",
+      "windowEndUtc": "2023-10-29T02:00:00Z",
+      "note": "the repeated hour 02:00-02:59 spans 00:00Z-01:59Z; eight slots if the fold fires twice, four if once"
+    },
+    {
+      "id": "berlin-spring-wildcard",
+      "expression": "*/15 * * * *",
+      "zone": "Europe/Berlin",
+      "direction": "spring-forward",
+      "transitionDate": "2023-03-26",
+      "windowStartUtc": "2023-03-26T00:00:00Z",
+      "windowEndUtc": "2023-03-26T02:00:00Z",
+      "note": "the skipped hour 02:00-02:59 local; slots in the gap do not exist"
+    }
+  ]
+}
