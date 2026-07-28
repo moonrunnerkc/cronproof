@@ -8,6 +8,7 @@
 export { classifyHazards, classifyExpression, isIntervalLike } from './classify';
 export { hazardId, formatLocal } from './hazard-id';
 export type { HazardIdentity } from './hazard-id';
+export { sha256Hex } from './sha256';
 export { severityFor, severityRank } from './severity';
 export type {
   CausingTransition,

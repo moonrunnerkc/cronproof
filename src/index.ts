@@ -9,3 +9,4 @@ export * from './cron/index';
 export * from './hazard/index';
 export * from './policy/index';
 export * from './scan/index';
+export * from './analyze/index';

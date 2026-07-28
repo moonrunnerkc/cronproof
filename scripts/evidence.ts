@@ -60,6 +60,11 @@ const COMMANDS: CommandSpec[] = [
   },
   { title: 'build', command: 'pnpm', args: ['run', 'build'] },
   {
+    title: 'web playground static bundle and its size',
+    command: 'pnpm',
+    args: ['run', 'build:web'],
+  },
+  {
     title: 'CLI smoke',
     command: 'node',
     args: ['dist/cli.js', '--version'],

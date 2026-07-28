@@ -1038,3 +1038,84 @@ reflect the harness scope, not an untested unit. The full per-mutant
 list of all 486 surviving and no-coverage mutants is committed at
 reports/mutation/mutation-report.md, with the raw Stryker output at
 reports/mutation/mutation.json.
+
+## 2026-07-28: Phase 11 browser playground
+
+### Browser-safe core: a pure-TypeScript sha256
+
+The hazard id hashed the identity tuple with node:crypto, which does not
+exist in a browser. Rather than make hazardId async (Web Crypto is
+async and the change would ripple through every caller) or alias
+node:crypto to a shim, the hash is now a vendored pure-TypeScript
+SHA-256 (src/hazard/sha256.ts) used in both Node and the browser. A test
+(tests/hazard/sha256.test.ts) pins it against node:crypto over the
+published FIPS vectors, the padding boundaries, multibyte UTF-8, and a
+thousand varied inputs, and the existing pinned hazard id KNOWN_ID is
+unchanged, so ids stay stable across environments.
+
+### One verdict builder, two backends
+
+The CLI and the web must produce identical verdicts, so both now call
+one function. src/analyze/verdict.ts owns classifyForVerdict (runs the
+classifier and the scheduler differential once) and verdictData (shapes
+that into the exact `data` payload check emits). The CLI's check command
+was refactored onto it with byte-identical output (the format and schema
+tests still pass). The pure hazard-view helpers moved to
+src/analyze/hazard-view.ts; cli/analyze.ts re-exports them. This is the
+single source of truth the parity test pins.
+
+### Single-backend mode, stated in a banner
+
+The browser has only the Intl (ICU) backend. Two consequences are made
+explicit in a banner on the page: there is no second backend to
+cross-check against, and there is no compiled TZif table to read, so the
+browser cannot compute ZONE_UNSTABLE (a firing past the last recorded
+transition, governed by the POSIX footer). ZONE_UNSTABLE is inherently a
+TZif-table feature: Intl exposes offsets, not the table-versus-footer
+boundary. The 50-case parity matrix therefore stays inside the recorded
+table (windows <= 2025), where the CLI also emits no ZONE_UNSTABLE, and
+the test asserts zoneUnstable == 0 as a guard so a future late-window
+case fails loudly instead of silently diverging.
+
+### The bundle stubs node builtins the Intl path never calls
+
+The shared classifier statically imports the TZif reader:
+src/hazard/zone-unstable.ts references readZoneFile and parseTzif at
+module scope, so a browser bundle pulls node:fs, node:path, and node:url
+transitively even though the Intl path never reaches them (single-backend
+mode passes no zoneinfo root, so zoneUnstableHazards returns early before
+the reader). Tree-shaking cannot drop a statically referenced import, so
+scripts/build-web.ts (esbuild) redirects every node: import to an inert
+stub whose members throw a clear error if ever called. The built app.js
+contains no node: import, no require, and no external URL (verified by
+grep); the only http reference is the SVG xmlns.
+
+### Offline, permalink, and next-transition
+
+Offline after first load is a service worker (web/sw.js) that precaches
+the four shell files; the page makes zero network requests at runtime
+(Intl is built in), so cache-first is never stale. The permalink encodes
+the full input state (expression, dialect, zone, from, to, idempotent)
+into the URL hash, so a specific hazard in a specific zone is a shareable
+link, which crontab.guru cannot do for timezones. "Check my next
+transition" reads the visitor's zone from
+Intl.DateTimeFormat().resolvedOptions().timeZone, finds the next
+transition in the next three years, and brackets it with a two-day
+window.
+
+### Acceptance
+
+- Builds to a static bundle: `npm run build:web` emits web/dist
+  (app.js, index.html, styles.css, sw.js). Measured app.js is 53722 B
+  (18572 B gzipped); total shell 63371 B. The build is deterministic
+  across runs.
+- Works offline after first load: service worker precaches the shell and
+  the runtime makes no network calls (both verified structurally; a live
+  browser was not available in this environment to click-test, so this
+  is asserted by construction, not by a browser run).
+- Verdicts identical to the CLI across 50 cases:
+  tests/web/parity.test.ts drives the browser code path (Intl backend,
+  no zoneinfo root) and the real CLI runCheck (TZif backend, vendored
+  root) over 50 fixed cases and asserts the hazards, the severity tally,
+  and the full scheduler differential are deep-equal. 50/50 pass, 42
+  hazards total, 0 ZONE_UNSTABLE.

@@ -5,11 +5,12 @@
  * hazards (where real schedulers disagree).
  */
 
-import { classifyHazards, type Hazard } from '../../hazard/index';
+import type { Hazard } from '../../hazard/index';
 import { parse, type LocalFiring } from '../../cron/index';
-import { runDifferential, type DifferentialReport, type PolicyCell } from '../../policy/index';
+import type { DifferentialReport, PolicyCell } from '../../policy/index';
+import { classifyForVerdict, verdictData } from '../../analyze/index';
 import type { ParsedArgs } from '../args';
-import { hazardToView, internalVerification, isoUtc, makeBackend, resolveRoot } from '../analyze';
+import { internalVerification, isoUtc, makeBackend, resolveRoot } from '../analyze';
 import type { ResultModel, Section } from '../types';
 
 function cellText(cell: PolicyCell): string {
@@ -113,8 +114,9 @@ export function runCheck(args: ParsedArgs): { model: ResultModel } | { usageErro
   const from: LocalFiring = { ...args.from.fields };
   const to: LocalFiring = { ...args.to.fields };
   let hazards: Hazard[];
+  let differential: DifferentialReport;
   try {
-    hazards = classifyHazards(parsed.ast, backend, {
+    const raw = classifyForVerdict(parsed.ast, backend, {
       expression: args.positional,
       dialect: args.dialect,
       zone: args.zone,
@@ -123,50 +125,30 @@ export function runCheck(args: ParsedArgs): { model: ResultModel } | { usageErro
       idempotent: args.idempotent,
       zoneinfoRoot: root,
     });
+    hazards = raw.hazards;
+    differential = raw.report;
   } catch (error) {
     return { usageError: `cannot analyze: ${error instanceof Error ? error.message : String(error)}` };
   }
-  const differential = runDifferential({
-    ast: parsed.ast,
-    expression: args.positional,
-    dialect: args.dialect,
-    zone: args.zone,
-    from,
-    to,
-    backend,
-  });
 
-  const bySeverity: Record<string, number> = {};
-  for (const hazard of hazards) {
-    bySeverity[hazard.severity] = (bySeverity[hazard.severity] ?? 0) + 1;
-  }
+  const verdict = verdictData(hazards, differential);
 
   return {
     model: {
       command: 'check',
       title,
       inputs,
-      hazards: hazards.map(hazardToView),
+      hazards: verdict.hazards,
       sections: [hazardSection(hazards), ...differentialSections(differential)],
       data: {
         expression: args.positional,
         dialect: args.dialect,
         zone: args.zone,
         window: { from: args.from.text, to: args.to.text },
-        hazardCount: hazards.length,
-        bySeverity,
-        hazards: hazards.map(hazardToView),
-        differential: {
-          verdict: differential.verdict,
-          safeToPort: differential.safeToPort,
-          decisionPoints: differential.decisionPoints,
-          columns: differential.columns.map((column) => ({
-            policyId: column.policyId,
-            verification: column.verification,
-            outcomes: column.cells.map((cell) => ({ kind: cell.outcomeKind, instants: cell.instants.map(isoUtc) })),
-          })),
-          pairs: differential.pairs,
-        },
+        hazardCount: verdict.hazardCount,
+        bySeverity: verdict.bySeverity,
+        hazards: verdict.hazards,
+        differential: verdict.differential,
       },
       baseExit: 0,
     },

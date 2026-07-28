@@ -28,6 +28,9 @@ export default tseslint.config(
       'coverage/**',
       'test/differential/**',
       'tests/scan/fixture/**',
+      'web/dist/**',
+      '.stryker-tmp/**',
+      'reports/**',
     ],
   },
   js.configs.recommended,
@@ -43,6 +46,18 @@ export default tseslint.config(
     files: ['eslint.config.js', '*.config.ts', '*.config.js'],
     rules: {
       'cronproof/no-default-export': 'off',
+    },
+  },
+  {
+    // The service worker runs in the ServiceWorkerGlobalScope, not Node.
+    files: ['web/sw.js'],
+    languageOptions: {
+      globals: {
+        self: 'readonly',
+        caches: 'readonly',
+        fetch: 'readonly',
+        Promise: 'readonly',
+      },
     },
   },
 );

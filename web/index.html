@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>cronproof playground: timezone hazards for cron schedules</title>
+    <meta
+      name="description"
+      content="Prove whether a cron schedule is skipped or doubled across a daylight-saving transition, in any IANA zone. Static, offline, no backend."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="masthead">
+        <h1>cronproof</h1>
+        <p class="tagline">
+          Does your cron line survive the clocks changing? Paste an expression, pick a zone and a
+          window, and see every firing a daylight-saving transition would skip or double.
+        </p>
+      </header>
+
+      <div id="banner"></div>
+
+      <form id="form" class="controls" autocomplete="off" onsubmit="return false">
+        <div class="field field-expr">
+          <label for="expr">expression</label>
+          <input id="expr" name="expr" type="text" spellcheck="false" placeholder="30 2 * * *" />
+        </div>
+        <div class="field">
+          <label for="dialect">dialect</label>
+          <select id="dialect" name="dialect"></select>
+        </div>
+        <div class="field field-tz">
+          <label for="tz">IANA zone</label>
+          <input id="tz" name="tz" type="text" spellcheck="false" placeholder="America/New_York" />
+        </div>
+        <div class="field">
+          <label for="from">from</label>
+          <input id="from" name="from" type="text" spellcheck="false" placeholder="2024-01-01" />
+        </div>
+        <div class="field">
+          <label for="to">to</label>
+          <input id="to" name="to" type="text" spellcheck="false" placeholder="2025-01-01" />
+        </div>
+        <div class="field field-check">
+          <label><input id="idem" name="idem" type="checkbox" /> idempotent (doubles are harmless)</label>
+        </div>
+        <div class="field field-actions">
+          <button id="next-btn" type="button">check my next transition</button>
+        </div>
+      </form>
+      <p id="next-note" class="next-note" hidden></p>
+
+      <p id="error" class="error" hidden></p>
+
+      <section class="results">
+        <h2>hazards <span id="summary" class="summary"></span></h2>
+        <div id="hazards" class="hazards"></div>
+      </section>
+
+      <section class="results">
+        <h2>scheduler disagreement</h2>
+        <p class="section-note">
+          What each real scheduler does with a firing the zone made nonexistent or ambiguous. Two
+          that differ mean the job is not safe to move between them.
+        </p>
+        <div id="matrix" class="matrix"></div>
+      </section>
+
+      <section class="permalink-row">
+        <label for="permalink">permalink</label>
+        <input id="permalink" type="text" readonly />
+        <button id="copy-btn" type="button">copy link</button>
+      </section>
+
+      <footer class="colophon">
+        <p>
+          Static site, no analytics, no backend. Offsets from your browser's Intl engine. The full
+          dual-backend verdict, plus SARIF and CI gating, is in the cronproof CLI.
+        </p>
+      </footer>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
