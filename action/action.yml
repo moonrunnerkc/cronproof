@@ -59,12 +59,12 @@ runs:
     - name: Set up Node
       uses: actions/setup-node@v4
       with:
-        node-version-file: ${{ github.action_path }}/../.nvmrc
+        node-version: "22"
 
     - name: Set up pnpm
       uses: pnpm/action-setup@v4
       with:
-        package_json_file: ${{ github.action_path }}/../package.json
+        version: "10.13.1"
 
     - name: Build cronproof
       shell: bash
