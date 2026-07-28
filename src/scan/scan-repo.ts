@@ -110,17 +110,30 @@ function orderFindings(findings: ScheduleFinding[]): ScheduleFinding[] {
   );
 }
 
+/** Options for scanRepo. */
+export interface ScanOptions {
+  /**
+   * Directory that reported finding paths are made relative to. Defaults
+   * to the scan root, which keeps library output self-contained. The CLI
+   * passes the working directory so SARIF locations are repo-relative and
+   * map to files when scanning a subdirectory of a checkout.
+   */
+  pathBase?: string;
+}
+
 /**
  * Scans a repository tree or a single file for schedule declarations.
  * @param target Absolute or relative path to a directory or file.
+ * @param options Optional path base for reported finding paths.
  * @returns Findings, suppressed findings, diagnostics, and file count,
  *          all in stable order for reproducible output.
  * @throws Error when the target path does not exist.
  */
-export function scanRepo(target: string): ScanResult {
+export function scanRepo(target: string, options: ScanOptions = {}): ScanResult {
   const resolved = path.resolve(target);
   const stat = statSync(resolved);
   const root = stat.isDirectory() ? resolved : path.dirname(resolved);
+  const base = options.pathBase === undefined ? root : path.resolve(options.pathBase);
   const matcher = readIgnore(root);
   const files = stat.isDirectory() ? walk(resolved, matcher) : [resolved];
 
@@ -130,7 +143,7 @@ export function scanRepo(target: string): ScanResult {
   let filesScanned = 0;
 
   for (const abs of files) {
-    const relPath = toPosix(path.relative(root, abs));
+    const relPath = toPosix(path.relative(base, abs));
     let text: string;
     try {
       text = readFileSync(abs, 'utf8');

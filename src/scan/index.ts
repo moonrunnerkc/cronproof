@@ -8,6 +8,7 @@
  */
 
 export { scanRepo } from './scan-repo';
+export type { ScanOptions } from './scan-repo';
 export { scannersFor } from './detect';
 export { describeZoneSource } from './describe';
 export type { ZoneDisplay } from './describe';

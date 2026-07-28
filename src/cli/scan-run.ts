@@ -72,7 +72,9 @@ function order(a: HazardView, b: HazardView): number {
  * @throws Error when the path does not exist.
  */
 export function analyzeScan(path: string, args: ParsedArgs): ScanAnalysis {
-  const result = scanRepo(path);
+  // Report paths relative to the working directory so SARIF locations
+  // are repo-relative and map to files even when scanning a subdirectory.
+  const result = scanRepo(path, { pathBase: process.cwd() });
   const root = resolveRoot(args.zoneinfoRoot);
   const backend = makeBackend(root);
   const window = windowFrom(args);
