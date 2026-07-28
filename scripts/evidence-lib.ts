@@ -95,28 +95,34 @@ const COVERAGE_BANNER = /^.*Coverage enabled with v8.*$\n?/gm;
 const DURATION = /\b\d+(?:\.\d+)?\s?(?:ms|s)\b/g;
 const CLOCK_TIME = /\b\d{2}:\d{2}:\d{2}\b/g;
 
-function sortLinesInsideFences(markdown: string): string {
+/**
+ * Sorts the body of each top-level "## " section as one multiset. This
+ * merges a command's stdout and stderr before comparison, because which
+ * stream a tool writes a given line to is not stable across
+ * environments (vitest, for one, splits its reporter and coverage
+ * output across the two streams differently on CI than locally). The
+ * content and the exit code of each command must still match exactly;
+ * only line order and stream attribution within a command are relaxed.
+ */
+function sortLinesWithinSections(markdown: string): string {
   const lines = markdown.split('\n');
   const output: string[] = [];
-  let block: string[] | null = null;
+  let buffer: string[] = [];
+  const flush = (): void => {
+    if (buffer.length > 0) {
+      output.push(...buffer.toSorted());
+      buffer = [];
+    }
+  };
   for (const line of lines) {
-    if (line === FENCE) {
-      if (block === null) {
-        block = [];
-      } else {
-        output.push(...block.toSorted());
-        block = null;
-      }
-      output.push(line);
-    } else if (block === null) {
+    if (line.startsWith('## ')) {
+      flush();
       output.push(line);
     } else {
-      block.push(line);
+      buffer.push(line);
     }
   }
-  if (block !== null) {
-    output.push(...block);
-  }
+  flush();
   return output.join('\n');
 }
 
@@ -138,7 +144,7 @@ export function normalizeEvidence(markdown: string): string {
   if (rootMatch !== null && rootMatch[1] !== undefined) {
     normalized = normalized.split(rootMatch[1]).join('<repo>');
   }
-  return sortLinesInsideFences(
+  return sortLinesWithinSections(
     normalized.replace(DURATION, '<duration>').replace(CLOCK_TIME, '<time>'),
   );
 }
