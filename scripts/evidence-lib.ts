@@ -99,6 +99,10 @@ const CLOCK_TIME = /\b\d{2}:\d{2}:\d{2}\b/g;
 // differs by machine, so mask the count. The reproducibility signal that
 // matters, "bytes differing: 0" and "byte-identical: yes", is left exact.
 const DEMO_BYTES = /^run \d+: \d+ bytes$/gm;
+// Some tools emit ANSI color even under NO_COLOR; color must not affect the
+// comparison, so strip escape sequences everywhere.
+// eslint-disable-next-line no-control-regex
+const ANSI = /\x1b\[[0-9;]*m/g;
 
 /**
  * Sorts the body of each top-level "## " section as one multiset. This
@@ -151,6 +155,7 @@ export function normalizeEvidence(markdown: string): string {
   }
   return sortLinesWithinSections(
     normalized
+      .replace(ANSI, '')
       .replace(DURATION, '<duration>')
       .replace(CLOCK_TIME, '<time>')
       .replace(DEMO_BYTES, 'run: <bytes>'),
