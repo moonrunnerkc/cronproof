@@ -17,3 +17,16 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: npm run evidence:check
+
+  dogfood:
+    name: cronproof scans its own repo
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./action
+        with:
+          path: "."
+          fail-on: high

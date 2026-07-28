@@ -1,0 +1,7 @@
+# cronproof scanning itself: skip build output, vendored tzdb, and the
+# test fixtures, which carry intentional hazards as test data rather than
+# schedules this project actually runs.
+dist/
+vendor/
+tests/
+test/

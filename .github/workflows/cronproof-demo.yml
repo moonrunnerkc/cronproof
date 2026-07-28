@@ -1,0 +1,91 @@
+name: cronproof demo
+
+# Demonstrates the three acceptance cases on a pull request:
+#   1. the gate fails on known hazards and uploads SARIF annotations,
+#   2. a baseline suppresses known hazards while a new one still fails,
+#   3. the tzdb pin fires when it does not match the runner.
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  hazards:
+    name: gate fails on hazards and uploads SARIF
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run cronproof action on the hazard fixture
+        uses: ./action
+        with:
+          path: tests/ci/fixture
+          fail-on: high
+          sarif-category: cronproof-demo
+
+  baseline:
+    name: baseline suppresses known, a new hazard fails
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - name: Record the current hazards as a baseline
+        run: node dist/cli.js baseline tests/ci/fixture --out "$RUNNER_TEMP/base.json"
+      - name: Scan with the baseline passes (known hazards accepted)
+        run: |
+          set +e
+          node dist/cli.js scan tests/ci/fixture --baseline "$RUNNER_TEMP/base.json" --fail-on high
+          code=$?
+          set -e
+          echo "exit=$code"
+          if [ "$code" -ne 0 ]; then echo "FAIL: baseline did not suppress known hazards"; exit 1; fi
+          echo "PASS: baseline suppressed all known hazards (exit 0)"
+      - name: A newly introduced hazard still fails
+        run: |
+          printf 'CRON_TZ=America/New_York\n30 2 * * * /usr/bin/newjob\n' > tests/ci/fixture/new.crontab
+          set +e
+          node dist/cli.js scan tests/ci/fixture --baseline "$RUNNER_TEMP/base.json" --fail-on high
+          code=$?
+          set -e
+          echo "exit=$code"
+          if [ "$code" -ne 1 ]; then echo "FAIL: new hazard did not fail the gate (exit $code)"; exit 1; fi
+          echo "PASS: new hazard failed the gate (exit 1) while baselined ones stayed quiet"
+
+  tzdb:
+    name: tzdb pin passes when matched, fires when wrong
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - name: Correct pin passes
+        run: |
+          actual=$(node -e "process.stdout.write(process.versions.tz)")
+          echo "runner tzdb: $actual"
+          set +e
+          node dist/cli.js scan .github/workflows --tzdb-check "$actual" --fail-on high
+          code=$?
+          set -e
+          echo "exit=$code"
+          if [ "$code" -ne 0 ]; then echo "FAIL: correct pin did not pass"; exit 1; fi
+          echo "PASS: correct tzdb pin passed (exit 0)"
+      - name: A wrong pin fires
+        run: |
+          set +e
+          node dist/cli.js scan .github/workflows --tzdb-check 1999z --fail-on high
+          code=$?
+          set -e
+          echo "exit=$code"
+          if [ "$code" -ne 3 ]; then echo "FAIL: wrong pin did not fire (exit $code)"; exit 1; fi
+          echo "PASS: wrong tzdb pin fired (exit 3)"
