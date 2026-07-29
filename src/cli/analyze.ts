@@ -19,6 +19,7 @@ import {
   tzdbVersions,
   vendoredZoneinfoRoot,
   wallMillisFromFields,
+  type TzdbVersions,
   type TzifBackend,
 } from '../tz/index';
 import type { LocalFiring } from '../cron/index';
@@ -48,8 +49,13 @@ export function makeBackend(root: string): TzifBackend {
  * zone-independent and window-independent, which is why the dispatcher
  * runs it ahead of every command rather than leaving it to the commands
  * that happen to take a zone.
+ *
+ * The remedy sentence is conditional on which tree was read. Only the
+ * vendored tree is the release the pinned Node ships; claiming that of an
+ * arbitrary --zoneinfo-root sends the reader after a Node build that does
+ * not exist, so a custom root is told what the vendored tree holds instead.
  * @param root Zoneinfo root the TZif backend will read.
- * @returns A message naming both releases and both remedies, or null when they match.
+ * @returns A message naming both releases and the remedy, or null when they match.
  */
 export function tzdbAgreementFailure(root: string): string | null {
   const versions = tzdbVersions(root);
@@ -63,10 +69,37 @@ export function tzdbAgreementFailure(root: string): string | null {
   return (
     `tzdb mismatch: ICU has ${versions.intlTzdbVersion} but the zoneinfo root ` +
     `${versions.zoneinfoRoot} has ${versions.zoneinfoTzdbVersion}. A verdict computed ` +
-    `against a stale tzdb is worth nothing. Either run on a Node whose ICU tzdb is ` +
-    `${versions.zoneinfoTzdbVersion} (the version in .nvmrc ships it), or pass ` +
-    `--zoneinfo-root pointing at a tzdb tree whose +VERSION reads ` +
-    `${versions.intlTzdbVersion}.`
+    `against a stale tzdb is worth nothing. ${tzdbRemedy(versions, vendoredZoneinfoRoot())}`
+  );
+}
+
+/**
+ * Builds the remedy sentence for a tzdb mismatch, naming .nvmrc only when
+ * the mismatching tree is the vendored one the pin is actually about.
+ * @param versions The two releases and the root they were read from.
+ * @param vendoredRoot Path of the tree vendored with cronproof, or null if absent.
+ * @returns One sentence telling the reader what to change.
+ */
+export function tzdbRemedy(versions: TzdbVersions, vendoredRoot: string | null): string {
+  const pointAtIcu =
+    `pass --zoneinfo-root pointing at a tzdb tree whose +VERSION reads ` +
+    `${versions.intlTzdbVersion}`;
+  if (vendoredRoot !== null && versions.zoneinfoRoot === vendoredRoot) {
+    return (
+      `Either run on the Node pinned in .nvmrc, which ships ` +
+      `${versions.zoneinfoTzdbVersion}, or ${pointAtIcu}.`
+    );
+  }
+  const vendoredVersion =
+    vendoredRoot === null ? null : tzdbVersions(vendoredRoot).zoneinfoTzdbVersion;
+  const vendoredNote =
+    vendoredVersion === null
+      ? ''
+      : ` Dropping --zoneinfo-root reads the tree vendored with cronproof, which is ` +
+        `${vendoredVersion}.`;
+  return (
+    `Either run on a Node whose ICU tzdb is ${versions.zoneinfoTzdbVersion}, or ` +
+    `${pointAtIcu}.${vendoredNote}`
   );
 }
 

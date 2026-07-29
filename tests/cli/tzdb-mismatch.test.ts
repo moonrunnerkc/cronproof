@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, expect, test } from 'vitest';
 import { vendoredZoneinfoRoot } from '../../src/tz/index';
+import { tzdbRemedy } from '../../src/cli/analyze';
 import { invoke } from './helper';
 
 const vendorRoot = vendoredZoneinfoRoot();
@@ -52,5 +53,38 @@ describe('a stale tzdb stops every command, not just the ones that take a zone',
     const run = invoke(['scan', 'tests/ci/fixture', '--fail-on', 'high']);
     expect(run.exit).toBe(1);
     expect(run.stdout).not.toContain('tzdb mismatch');
+  });
+});
+
+describe('the mismatch remedy names .nvmrc only for the tree the pin is about', () => {
+  test('a custom --zoneinfo-root is not told that .nvmrc ships its release', () => {
+    const run = invoke(['scan', 'tests/ci/fixture', '--zoneinfo-root', root]);
+    expect(run.stdout).toContain('tzdb mismatch');
+    expect(run.stdout).not.toContain('.nvmrc');
+  });
+
+  test('a custom root is told what the vendored tree holds, so the fix is actionable', () => {
+    const run = invoke(['scan', 'tests/ci/fixture', '--zoneinfo-root', root]);
+    expect(run.stdout).toContain('Dropping --zoneinfo-root');
+  });
+});
+
+describe('the remedy sentence for each kind of zoneinfo root', () => {
+  test('the vendored tree is the one .nvmrc pins, so the remedy points at .nvmrc', () => {
+    const remedy = tzdbRemedy(
+      { intlTzdbVersion: '2023c', zoneinfoTzdbVersion: '2025b', zoneinfoRoot: '/vendor/zoneinfo' },
+      '/vendor/zoneinfo',
+    );
+    expect(remedy).toContain('the Node pinned in .nvmrc, which ships 2025b');
+    expect(remedy).toContain('+VERSION reads 2023c');
+  });
+
+  test('an unrelated tree is never described as the release .nvmrc ships', () => {
+    const remedy = tzdbRemedy(
+      { intlTzdbVersion: '2025b', zoneinfoTzdbVersion: '2026b', zoneinfoRoot: '/usr/share/zoneinfo' },
+      null,
+    );
+    expect(remedy).not.toContain('.nvmrc');
+    expect(remedy).toContain('a Node whose ICU tzdb is 2026b');
   });
 });
