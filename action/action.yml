@@ -56,10 +56,17 @@ outputs:
 runs:
   using: composite
   steps:
+    # Pinned to the exact release in the repository's .nvmrc, not the "22"
+    # range. cronproof cross-checks the runtime's ICU tzdb against the
+    # vendored zoneinfo tree and exits 3 when they name different releases,
+    # and the ICU tzdb moves within a Node major. node-version-file cannot
+    # be used here: setup-node resolves it against the caller's workspace,
+    # which is the repository being scanned, not this action. The
+    # tests/ci/action-node-pin.test.ts case fails if this drifts from .nvmrc.
     - name: Set up Node
       uses: actions/setup-node@v4
       with:
-        node-version: "22"
+        node-version: "22.16.0"
 
     - name: Set up pnpm
       uses: pnpm/action-setup@v4

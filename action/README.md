@@ -46,15 +46,29 @@ jobs:
 ## Baseline
 
 To adopt cronproof on an existing codebase without its current hazards blocking
-every pull request, record them once:
+every pull request, record them once. cronproof is not on a package registry, so
+`npx cronproof` does not resolve: build it from source (see the repository
+[README](../README.md#install)), then run the CLI out of `dist/` from the root
+of the repository you want to baseline.
 
 ```bash
-npx cronproof baseline . --out .cronproof-baseline.json
+node /path/to/cronproof/dist/cli.js baseline . --out .cronproof-baseline.json
 git add .cronproof-baseline.json
 ```
 
+If you ran `npm link` in the cronproof checkout, `cronproof baseline . --out
+.cronproof-baseline.json` is the same command.
+
 Then pass `baseline: .cronproof-baseline.json`. Only hazards introduced after the
 baseline was written will fail the check.
+
+## Node version
+
+The action pins the exact Node release in the repository's `.nvmrc`, not the
+`22` range. cronproof compares the runtime's ICU tzdb against the zoneinfo tree
+vendored in the package and exits 3 when they name different releases, and the
+ICU tzdb moves within a Node major, so a range pin would start failing the day
+the runner picked up a newer patch.
 
 ## tzdb drift
 
