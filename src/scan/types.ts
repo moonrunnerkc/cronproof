@@ -126,5 +126,26 @@ export interface ScanFile {
   text: string;
 }
 
-/** A scanner: pure function from one file to zero or more findings. */
-export type Scanner = (file: ScanFile) => ScheduleFinding[];
+/**
+ * Ambient facts a scanner may need that no single file can supply. The
+ * only one so far is the set of zone names the run's tzdb actually
+ * holds, which is what turns a zone string written in a workflow into
+ * either an explicit zone or a typo, and what keeps a path-shaped
+ * string like `issues/PRs` from being read as a zone reference.
+ */
+export interface ScanContext {
+  /**
+   * Zone names in the tzdb this run reads, or null when no tzdb could
+   * be read at all. Null means the question is unanswerable, which a
+   * scanner must treat as "cannot refute", never as "not a zone".
+   * Implementations memoize; calling this is cheap after the first use.
+   */
+  knownZones: () => ReadonlySet<string> | null;
+}
+
+/**
+ * A scanner: pure function from one file plus the ambient context to
+ * zero or more findings. A scanner that needs nothing from the context
+ * may declare only the file parameter.
+ */
+export type Scanner = (file: ScanFile, context: ScanContext) => ScheduleFinding[];

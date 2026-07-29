@@ -18,6 +18,7 @@ export { compileIgnore, ALWAYS_IGNORED_DIRS } from './glob-ignore';
 export type { IgnoreMatcher } from './glob-ignore';
 export { LineIndex } from './text-locate';
 export type {
+  ScanContext,
   ScanDiagnostic,
   ScanFile,
   ScanResult,

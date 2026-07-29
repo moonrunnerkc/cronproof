@@ -72,10 +72,13 @@ function order(a: HazardView, b: HazardView): number {
  * @throws Error when the path does not exist.
  */
 export function analyzeScan(path: string, args: ParsedArgs): ScanAnalysis {
+  const root = resolveRoot(args.zoneinfoRoot);
   // Report paths relative to the working directory so SARIF locations
   // are repo-relative and map to files even when scanning a subdirectory.
-  const result = scanRepo(path, { pathBase: process.cwd() });
-  const root = resolveRoot(args.zoneinfoRoot);
+  // The scanner reads the same root the classifier will, so a zone a
+  // workflow names is judged real by exactly the tree that later has to
+  // resolve it.
+  const result = scanRepo(path, { pathBase: process.cwd(), zoneinfoRoot: root });
   const backend = makeBackend(root);
   const window = windowFrom(args);
   const hazards = hazardsFromFindings(result.findings, backend, window, root, args.idempotent);

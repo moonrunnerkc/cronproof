@@ -10,10 +10,12 @@
 
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
+import { listZones, resolveZoneinfoRoot } from '../tz/index';
 import { scannersFor } from './detect';
 import { compileIgnore, type IgnoreMatcher } from './glob-ignore';
 import { parseSuppressions, suppressionFor } from './suppression';
 import type {
+  ScanContext,
   ScanDiagnostic,
   ScanFile,
   ScanResult,
@@ -60,12 +62,36 @@ interface FileOutcome {
   scanned: boolean;
 }
 
-function scanOneFile(file: ScanFile): FileOutcome {
+/**
+ * Builds the ambient context handed to every scanner. The zone list is
+ * read lazily and once: a tree with no schedule that names a zone never
+ * pays for it, and a tree with a hundred never pays twice. A tzdb that
+ * cannot be read yields null, which scanners read as "cannot check",
+ * so a missing tzdb degrades to no validation rather than to declaring
+ * every zone in the tree a typo.
+ */
+function makeContext(zoneinfoRoot: string | undefined): ScanContext {
+  let zones: ReadonlySet<string> | null | undefined;
+  return {
+    knownZones: (): ReadonlySet<string> | null => {
+      if (zones === undefined) {
+        try {
+          zones = new Set(listZones(resolveZoneinfoRoot(zoneinfoRoot)));
+        } catch {
+          zones = null;
+        }
+      }
+      return zones;
+    },
+  };
+}
+
+function scanOneFile(file: ScanFile, context: ScanContext): FileOutcome {
   const scanners = scannersFor(file);
   if (scanners.length === 0) {
     return { findings: [], suppressed: [], diagnostics: [], scanned: false };
   }
-  const raw = scanners.flatMap((scanner) => scanner(file));
+  const raw = scanners.flatMap((scanner) => scanner(file, context));
   const directives = parseSuppressions(file.text);
   const diagnostics: ScanDiagnostic[] = [];
   for (const directive of directives) {
@@ -119,12 +145,19 @@ export interface ScanOptions {
    * map to files when scanning a subdirectory of a checkout.
    */
   pathBase?: string;
+  /**
+   * Zoneinfo tree whose zone names decide whether a zone written in a
+   * scanned file is real. Defaults to the same tree every other command
+   * reads, so a scan and a check agree on what a zone name is.
+   */
+  zoneinfoRoot?: string;
 }
 
 /**
  * Scans a repository tree or a single file for schedule declarations.
  * @param target Absolute or relative path to a directory or file.
- * @param options Optional path base for reported finding paths.
+ * @param options Optional path base for reported finding paths and the
+ *                zoneinfo tree zone names are validated against.
  * @returns Findings, suppressed findings, diagnostics, and file count,
  *          all in stable order for reproducible output.
  * @throws Error when the target path does not exist.
@@ -136,6 +169,7 @@ export function scanRepo(target: string, options: ScanOptions = {}): ScanResult 
   const base = options.pathBase === undefined ? root : path.resolve(options.pathBase);
   const matcher = readIgnore(root);
   const files = stat.isDirectory() ? walk(resolved, matcher) : [resolved];
+  const context = makeContext(options.zoneinfoRoot);
 
   const findings: ScheduleFinding[] = [];
   const suppressed: SuppressedFinding[] = [];
@@ -156,7 +190,7 @@ export function scanRepo(target: string, options: ScanOptions = {}): ScanResult 
       });
       continue;
     }
-    const outcome = scanOneFile({ path: relPath, absPath: abs, text });
+    const outcome = scanOneFile({ path: relPath, absPath: abs, text }, context);
     if (outcome.scanned) {
       filesScanned += 1;
     }

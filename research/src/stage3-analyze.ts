@@ -12,9 +12,10 @@ import path from 'node:path';
 import { parse, type DialectId } from '../../src/cron/index';
 import { classifyHazards } from '../../src/hazard/index';
 import { runDifferential } from '../../src/policy/index';
-import { scannersFor, type ScheduleFinding } from '../../src/scan/index';
+import { scannersFor, type ScanContext, type ScheduleFinding } from '../../src/scan/index';
 import {
   createTzifBackend,
+  listZones,
   vendoredZoneinfoRoot,
   type TzifBackend,
 } from '../../src/tz/index';
@@ -128,6 +129,8 @@ function analyzeFinding(
 export function analyze(): AnalyzedSchedule[] {
   const root = resolveRoot();
   const tz = createTzifBackend({ zoneinfoRoot: root });
+  const zones: ReadonlySet<string> = new Set(listZones(root));
+  const context: ScanContext = { knownZones: () => zones };
   const rows = readCorpus();
   const results: AnalyzedSchedule[] = [];
   let readable = 0;
@@ -139,7 +142,7 @@ export function analyze(): AnalyzedSchedule[] {
     readable += 1;
     const file = { path: row.path, absPath: row.path, text };
     for (const scanner of scannersFor(file)) {
-      for (const finding of scanner(file)) {
+      for (const finding of scanner(file, context)) {
         results.push(analyzeFinding(finding, row, tz, root));
       }
     }
