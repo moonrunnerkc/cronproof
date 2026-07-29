@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterAll, describe, expect, test } from 'vitest';
@@ -17,7 +17,8 @@ writeFileSync(
 );
 
 interface ScanJson {
-  data: { counts: { hazards: number; baselined: number }; hazards: { severity: string }[] };
+  hazards: { severity: string }[];
+  data: { counts: { hazards: number; baselined: number } };
 }
 
 describe('scan as a CI gate over classified hazards', () => {
@@ -25,10 +26,17 @@ describe('scan as a CI gate over classified hazards', () => {
     const { stdout, exit } = invoke(['scan', dir, '--format', 'json', '--fail-on', 'high']);
     const parsed = JSON.parse(stdout) as ScanJson;
     expect(parsed.data.counts.hazards).toBeGreaterThan(0);
-    expect(parsed.data.hazards.some((h) => h.severity === 'high' || h.severity === 'critical')).toBe(
+    expect(parsed.hazards.some((h) => h.severity === 'high' || h.severity === 'critical')).toBe(
       true,
     );
     expect(exit).toBe(1);
+  });
+
+  test('the active hazards are reported once, in the top-level array and not again under data', () => {
+    const { stdout } = invoke(['scan', dir, '--format', 'json']);
+    const parsed = JSON.parse(stdout) as ScanJson & { data: Record<string, unknown> };
+    expect(parsed.hazards.length).toBe(parsed.data.counts.hazards);
+    expect(parsed.data).not.toHaveProperty('hazards');
   });
 
   test('SARIF results carry a physical location so annotations land on the source line', () => {
@@ -71,6 +79,35 @@ describe('baseline adoption', () => {
     expect(parsed.data.counts.hazards).toBeGreaterThan(0);
     expect(exit).toBe(1);
     rmSync(path.join(dir, 'new.crontab'));
+  });
+});
+
+// A workflow that sets on.schedule[].timezone. Before the scanner read
+// that key it stamped UTC on every Actions schedule, so a 02:30 job in
+// a DST zone came back clean: the gate was blind to exactly the
+// schedules that opt into local time.
+const actionsDir = mkdtempSync(path.join(tmpdir(), 'cronproof-actions-'));
+afterAll(() => rmSync(actionsDir, { recursive: true, force: true }));
+mkdirSync(path.join(actionsDir, '.github', 'workflows'), { recursive: true });
+writeFileSync(
+  path.join(actionsDir, '.github', 'workflows', 'nightly.yml'),
+  'name: nightly\non:\n  schedule:\n    - cron: "30 2 * * *"\n      timezone: Europe/Berlin\n',
+  'utf8',
+);
+
+describe('a GitHub Actions schedule that declares its own timezone', () => {
+  test('is classified in that zone and gates the build, not passed as UTC', () => {
+    const { stdout, exit } = invoke([
+      'scan',
+      actionsDir,
+      '--format',
+      'json',
+      '--fail-on',
+      'high',
+    ]);
+    const parsed = JSON.parse(stdout) as ScanJson;
+    expect(parsed.data.counts.hazards).toBeGreaterThan(0);
+    expect(exit).toBe(1);
   });
 });
 

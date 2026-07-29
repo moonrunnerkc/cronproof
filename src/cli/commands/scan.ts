@@ -10,6 +10,13 @@
  * reported but do not gate the build, so an existing codebase adopts
  * the tool without its known hazards blocking every PR; a newly
  * introduced hazard still fails.
+ *
+ * In --format json the active hazards live at the top level, in the
+ * `hazards` array every command emits, and nowhere else. This command
+ * used to repeat them under `data.hazards` as well, which left a
+ * consumer with two arrays and no way to tell which one the exit code
+ * was computed from. `data.baselined` is not a second copy: it holds
+ * the hazards a baseline removed from the top-level array.
  */
 
 import { describeZoneSource, type ScanResult, type ScheduleFinding } from '../../scan/index';
@@ -224,7 +231,6 @@ export function runScan(args: ParsedArgs): { model: ResultModel } | { usageError
           suppressed: result.suppressed.length,
           diagnostics: result.diagnostics.length,
         },
-        hazards: active.map(serializeHazard),
         baselined: baselined.map(serializeHazard),
         findings: result.findings.map(serializeFinding),
         suppressed: result.suppressed.map((item) => ({
