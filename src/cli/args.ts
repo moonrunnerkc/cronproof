@@ -121,7 +121,8 @@ export function parseArgs(argv: string[]): ParseResult {
 
   const commandText = positionals[0];
   if (commandText === undefined) {
-    return { ok: false, message: 'missing command; expected one of check, scan, explain, zones' };
+    // Derived from COMMANDS so a new command cannot drift out of the message.
+    return { ok: false, message: `missing command; expected one of ${COMMANDS.join(', ')}` };
   }
   const command = oneOf<Command>(commandText, COMMANDS, 'command');
   if (typeof command !== 'string') {

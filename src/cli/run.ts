@@ -48,11 +48,14 @@ Commands:
 Options:
   --format human|json|sarif|junit|markdown  (default human)
   --dialect vixie|debian|quartz|k8s|systemd|github-actions|aws-eventbridge
+                                            (default vixie; field count varies by dialect)
   --fail-on info|low|medium|high|critical   (default high)
   --idempotent                              treat double runs as harmless
   --baseline <file>                         accept the hazards listed in a baseline (scan)
-  --tzdb-check <release>                     fail if the runner tzdb differs from this pin
+  --tzdb-check <release>                    fail if the runner tzdb differs from this pin
   --zoneinfo-root <path>                    tzdb tree to read (default: vendored)
+  --help, -h                                print this help
+  --version, -v                             print the version
 
 Exit codes: 0 clean, 1 hazards at/above --fail-on, 2 usage/parse error, 3 internal/tzdb failure.
 `;
