@@ -113,6 +113,36 @@ describe('CRON_TZ inheritance', () => {
   });
 });
 
+describe('Wrangler config in either of its two formats', () => {
+  test('a TOML trigger array yields one schedule per element', () => {
+    const found = result.findings
+      .filter((f) => f.file === 'wrangler.toml')
+      .map((f) => f.expression);
+    expect(found).toEqual(['0 */6 * * *', '30 3 * * 1']);
+  });
+
+  test('a commented-out TOML trigger array is not reported as a schedule', () => {
+    const lines = result.findings.filter((f) => f.file === 'wrangler.toml').map((f) => f.line);
+    expect(lines).toEqual([6, 6]);
+  });
+
+  test('a JSON-format Wrangler config is scanned, not only the TOML one', () => {
+    const found = result.findings.filter((f) => f.file === 'wrangler.jsonc');
+    expect(found.map((f) => f.expression)).toEqual(['45 4 * * *']);
+    expect(found[0]?.sourceKind).toBe('wrangler');
+  });
+
+  test('a JSONC element is located at its opening quote, past the key and bracket', () => {
+    const finding = at('wrangler.jsonc', 6);
+    expect(finding.column).toBe(15);
+  });
+
+  test('a slash-commented trigger array in JSONC is not reported as a schedule', () => {
+    const lines = result.findings.filter((f) => f.file === 'wrangler.jsonc').map((f) => f.line);
+    expect(lines).toEqual([6]);
+  });
+});
+
 describe('unresolvable templates', () => {
   test('a Helm-templated schedule is reported UNRESOLVED, never parsed', () => {
     const finding = at('k8s/templates/cronjob.yaml', 6);

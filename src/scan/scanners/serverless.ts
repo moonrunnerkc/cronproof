@@ -1,5 +1,5 @@
 /**
- * Serverless and PaaS schedule scanners: Cloudflare wrangler.toml cron
+ * Serverless and PaaS schedule scanners: Cloudflare Wrangler cron
  * triggers, Vercel vercel.json crons, Render render.yaml cron jobs, and
  * Netlify netlify.toml scheduled functions. Each of these platforms
  * runs its cron in UTC with no per-job zone knob, so the zone source is
@@ -12,7 +12,9 @@ import {
   findColonValues,
   findEqualsValues,
   locateQuoted,
+  maskComments,
   unquote,
+  type CommentStyle,
 } from '../text-locate';
 import type { ScanFile, ScheduleFinding, SourceKind } from '../types';
 
@@ -37,16 +39,34 @@ function utcFinding(
   };
 }
 
-/** Scans a wrangler.toml for `crons = [...]` trigger arrays (UTC). */
+// Wrangler config is TOML or, since the JSON config format, .json/.jsonc,
+// so the trigger array arrives as either `crons = [...]` or `"crons": [...]`.
+const CRONS_ARRAY = /\bcrons["']?\s*[:=]\s*\[/g;
+
+function wranglerCommentStyle(path: string): CommentStyle {
+  return path.toLowerCase().endsWith('.toml') ? 'hash' : 'slash';
+}
+
+/**
+ * Scans a Wrangler config (wrangler.toml, wrangler.json, wrangler.jsonc)
+ * for `crons` trigger arrays, which Cloudflare runs in UTC.
+ * @param file The config file to scan.
+ * @returns One finding per cron trigger, positioned at its opening quote.
+ */
 export function scanWrangler(file: ScanFile): ScheduleFinding[] {
-  const index = new LineIndex(file.text);
+  const text = maskComments(file.text, wranglerCommentStyle(file.path));
+  const index = new LineIndex(text);
   const findings: ScheduleFinding[] = [];
-  const pattern = /\bcrons\s*=\s*\[/g;
-  let match = pattern.exec(file.text);
+  const pattern = new RegExp(CRONS_ARRAY.source, 'g');
+  let match = pattern.exec(text);
   while (match !== null) {
-    const close = file.text.indexOf(']', match.index);
-    const end = close === -1 ? file.text.length : close;
-    for (const located of locateQuoted(index, file.text, match.index, end)) {
+    // Scan from just past the opening bracket. Starting at the match would
+    // pair the JSON key's closing quote with the first element's opening
+    // quote and yield the punctuation between them as a schedule.
+    const open = match.index + match[0].length;
+    const close = text.indexOf(']', open);
+    const end = close === -1 ? text.length : close;
+    for (const located of locateQuoted(index, text, open, end)) {
       findings.push(
         utcFinding(
           file,
@@ -58,7 +78,7 @@ export function scanWrangler(file: ScanFile): ScheduleFinding[] {
         ),
       );
     }
-    match = pattern.exec(file.text);
+    match = pattern.exec(text);
   }
   return findings;
 }

@@ -1,0 +1,9 @@
+{
+  "name": "edge-worker-jsonc",
+  "main": "src/index.ts",
+  "triggers": {
+    // "crons": ["0 0 * * *"],
+    "crons": ["45 4 * * *"]
+  },
+  "vars": { "ENDPOINT": "https://example.test//health#ready" }
+}

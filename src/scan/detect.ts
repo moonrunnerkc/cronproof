@@ -63,7 +63,7 @@ export function scannersFor(file: ScanFile): Scanner[] {
   if (ext === '.timer') {
     scanners.push(scanSystemdTimer);
   }
-  if (name === 'wrangler.toml') {
+  if (name === 'wrangler.toml' || name === 'wrangler.json' || name === 'wrangler.jsonc') {
     scanners.push(scanWrangler);
   }
   if (name === 'vercel.json') {

@@ -64,6 +64,87 @@ export class LineIndex {
   }
 }
 
+/** Comment syntax a config format uses: TOML/YAML `#`, or JSONC `//` and block. */
+export type CommentStyle = 'hash' | 'slash';
+
+/**
+ * Blanks every comment in the text, leaving a string of identical length
+ * with newlines intact, so an offset in the result still maps to the same
+ * line and column in the source. Scanners run their key patterns over the
+ * masked copy: a commented-out schedule is not a schedule, and reporting
+ * one is a false positive a gate must never emit.
+ *
+ * Quoting is honored, so a `#` inside a TOML string or a `//` inside a URL
+ * is left alone. Backslash escapes are consumed only inside double-quoted
+ * strings, because TOML literal strings take no escapes.
+ * @param text Full file contents.
+ * @param style Comment syntax of the file's format.
+ * @returns The text with comment spans replaced by spaces.
+ */
+export function maskComments(text: string, style: CommentStyle): string {
+  const out = text.split('');
+  let quote: string | null = null;
+  let i = 0;
+  while (i < text.length) {
+    const ch = text[i];
+    if (quote !== null) {
+      if (ch === '\\' && quote === '"') {
+        i += 2;
+        continue;
+      }
+      if (ch === quote) {
+        quote = null;
+      }
+      i += 1;
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      quote = ch;
+      i += 1;
+      continue;
+    }
+    if (style === 'hash' && ch === '#') {
+      i = blankLine(out, text, i);
+      continue;
+    }
+    if (style === 'slash' && ch === '/' && text[i + 1] === '/') {
+      i = blankLine(out, text, i);
+      continue;
+    }
+    if (style === 'slash' && ch === '/' && text[i + 1] === '*') {
+      i = blankBlock(out, text, i);
+      continue;
+    }
+    i += 1;
+  }
+  return out.join('');
+}
+
+function blankLine(out: string[], text: string, start: number): number {
+  let i = start;
+  while (i < text.length && text[i] !== '\n') {
+    out[i] = ' ';
+    i += 1;
+  }
+  return i;
+}
+
+function blankBlock(out: string[], text: string, start: number): number {
+  let i = start;
+  while (i < text.length) {
+    if (text[i] === '*' && text[i + 1] === '/') {
+      out[i] = ' ';
+      out[i + 1] = ' ';
+      return i + 2;
+    }
+    if (text[i] !== '\n') {
+      out[i] = ' ';
+    }
+    i += 1;
+  }
+  return i;
+}
+
 /** Strips one matching pair of surrounding single or double quotes. */
 export function unquote(raw: string): string {
   const trimmed = raw.trim();

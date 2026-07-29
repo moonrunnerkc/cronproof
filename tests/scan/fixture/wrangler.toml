@@ -4,3 +4,4 @@ compatibility_date = "2024-01-01"
 
 [triggers]
 crons = ["0 */6 * * *", "30 3 * * 1"]
+# crons = ["0 0 * * *"]

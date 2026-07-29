@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { LineIndex } from '../../src/scan/index';
 import { maskCommentsAndStrings, matchParen } from '../../src/scan/js-lex';
+import { maskComments } from '../../src/scan/text-locate';
 
 describe('LineIndex offset mapping', () => {
   const text = 'first\nsecond line\n\nfourth';
@@ -47,5 +48,53 @@ describe('masking comments and strings in C-family source', () => {
     const open = source.indexOf('(');
     expect(masked[matchParen(masked, open)]).toBe(')');
     expect(matchParen(masked, open)).toBe(source.length - 1);
+  });
+});
+
+describe('masking comments in config files while keeping string values', () => {
+  test('a hash comment is blanked so its schedule cannot be matched', () => {
+    const masked = maskComments('# crons = ["0 0 * * *"]\ncrons = ["30 2 * * *"]', 'hash');
+    expect(masked.includes('0 0 * * *')).toBe(false);
+    expect(masked.includes('30 2 * * *')).toBe(true);
+  });
+
+  test('a hash inside a quoted value is a value, not a comment', () => {
+    const masked = maskComments('url = "https://example.test#frag"\ncrons = ["30 2 * * *"]', 'hash');
+    expect(masked.includes('30 2 * * *')).toBe(true);
+    expect(masked.includes('#frag')).toBe(true);
+  });
+
+  test('a slash line comment is blanked in JSONC', () => {
+    const masked = maskComments('// "crons": ["0 0 * * *"]\n"crons": ["30 2 * * *"]', 'slash');
+    expect(masked.includes('0 0 * * *')).toBe(false);
+    expect(masked.includes('30 2 * * *')).toBe(true);
+  });
+
+  test('a block comment spanning lines is blanked without losing those lines', () => {
+    const source = '{\n/* "crons": ["0 0 * * *"]\n   more */\n"crons": ["30 2 * * *"]\n}';
+    const masked = maskComments(source, 'slash');
+    expect(masked.includes('0 0 * * *')).toBe(false);
+    expect(masked.includes('30 2 * * *')).toBe(true);
+    expect(masked.split('\n').length).toBe(source.split('\n').length);
+  });
+
+  test('a double slash inside a URL string is not treated as a comment', () => {
+    const masked = maskComments('{"a": "https://x//y", "crons": ["30 2 * * *"]}', 'slash');
+    expect(masked.includes('30 2 * * *')).toBe(true);
+  });
+
+  test('masking preserves length so a masked offset still maps to its source line', () => {
+    const source = 'a = 1 # note\nb = "keep"\n';
+    const masked = maskComments(source, 'hash');
+    expect(masked.length).toBe(source.length);
+    expect(new LineIndex(masked).locate(masked.indexOf('keep'))).toEqual(
+      new LineIndex(source).locate(source.indexOf('keep')),
+    );
+  });
+
+  test('an escaped quote inside a double-quoted value does not end the string', () => {
+    const masked = maskComments('a = "x\\"# still string" # real comment\n', 'hash');
+    expect(masked.includes('still string')).toBe(true);
+    expect(masked.includes('real comment')).toBe(false);
   });
 });
