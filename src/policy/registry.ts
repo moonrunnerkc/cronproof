@@ -2,12 +2,14 @@
  * The registry of scheduler policy models, their verification status,
  * and where each came from. Phase 6 ran the real schedulers and
  * flipped the models it confirmed to VERIFIED, each backed by a
- * committed fixture under test/differential/fixtures. Two entries
+ * committed fixture under test/differential/fixtures. Three entries
  * remain ASSERTED: naive is a definitional straw model with no real
- * scheduler to run, and quartz was not run (it needs a JVM and a live
- * Quartz scheduler), so its DST branches stay UNDEFINED. Nothing is
- * VERIFIED without a fixture, and the basis records the evidence so
- * the CLI can show it.
+ * scheduler to run; quartz was not run (it needs a JVM and a live
+ * Quartz scheduler), so its DST branches stay UNDEFINED; and
+ * github-actions is read from GitHub's published rule, since running
+ * it means waiting on a hosted scheduler through a real transition.
+ * Nothing is VERIFIED without a fixture, and the basis records the
+ * evidence so the CLI can show it.
  */
 
 import { cronParserLuxonModel } from './models/cron-parser-luxon';
@@ -15,6 +17,7 @@ import { cronieModel } from './models/cronie';
 import { croniterModel } from './models/croniter';
 import { cronsimModel } from './models/cronsim';
 import { debianCronModel } from './models/debian-cron';
+import { githubActionsModel } from './models/github-actions';
 import { k8sCronjobModel } from './models/k8s-cronjob';
 import { naiveModel } from './models/naive';
 import { nodeCronModel } from './models/node-cron';
@@ -83,6 +86,11 @@ const REGISTRY: Record<PolicyId, PolicyEntry> = {
     verification: 'VERIFIED',
     basis: 'fixture systemd-timer.json: systemd-analyze calendar 249; monotonic, fold once, gap dropped',
   },
+  'github-actions': {
+    model: githubActionsModel,
+    verification: 'ASSERTED',
+    basis: 'docs.github.com events-that-trigger-workflows (fetched 2026-07-29): a skipped fixed time advances to the next valid time, 2:30 AM to 3:00 AM; the fold and the multi-slot interval gap are undocumented and stay UNDEFINED',
+  },
 };
 
 /** Every registered policy id, in a stable order. */
@@ -97,6 +105,7 @@ export const ALL_POLICY_IDS: PolicyId[] = [
   'cron-parser-luxon',
   'node-cron',
   'systemd-timer',
+  'github-actions',
 ];
 
 /** Returns the registry entry for a policy id. */

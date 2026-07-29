@@ -25,7 +25,8 @@ export type PolicyId =
   | 'cronsim'
   | 'cron-parser-luxon'
   | 'node-cron'
-  | 'systemd-timer';
+  | 'systemd-timer'
+  | 'github-actions';
 
 /** Whether a model was confirmed against the real scheduler or asserted from docs. */
 export type Verification = 'VERIFIED' | 'ASSERTED';

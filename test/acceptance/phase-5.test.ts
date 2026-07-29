@@ -5,12 +5,27 @@ import { backend, midnight } from './support';
 
 // Phase 5 built the scheduler policy models. Criteria reconstructed from
 // the phase-5 DECISIONS entries: ten models each tagged VERIFIED or
-// ASSERTED, and a differential that reports disagreement.
+// ASSERTED, and a differential that reports disagreement. The criterion
+// is that those ten are registered and tagged, not that ten is the final
+// count: later phases add schedulers, and an acceptance test that froze
+// the total would fail on every addition without a criterion regressing.
+const PHASE_5_POLICIES = [
+  'naive',
+  'debian-cron',
+  'cronie',
+  'k8s-cronjob',
+  'quartz',
+  'croniter',
+  'cronsim',
+  'cron-parser-luxon',
+  'node-cron',
+  'systemd-timer',
+] as const;
 
 describe('phase 5: ten tagged policy models and a differential that flags disagreement', () => {
-  test('there are ten policies, each tagged VERIFIED or ASSERTED', () => {
-    expect(ALL_POLICY_IDS).toHaveLength(10);
-    for (const id of ALL_POLICY_IDS) {
+  test('all ten phase 5 policies are registered, each tagged VERIFIED or ASSERTED', () => {
+    for (const id of PHASE_5_POLICIES) {
+      expect(ALL_POLICY_IDS).toContain(id);
       expect(['VERIFIED', 'ASSERTED']).toContain(policyVerification(id));
     }
   });

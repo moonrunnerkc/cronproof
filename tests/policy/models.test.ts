@@ -55,6 +55,7 @@ describe('every policy fires a unique time once at its instant', () => {
     'cron-parser-luxon',
     'node-cron',
     'systemd-timer',
+    'github-actions',
   ];
   test.each(ids)('%s fires a unique time once', (id) => {
     expect(decide(id, UNIQUE)).toEqual({ kind: 'FIRES_ONCE_AT', instant: 111 });
@@ -152,5 +153,23 @@ describe('quartz remains UNDEFINED at the hazard, never guessed', () => {
   test('quartz is UNDEFINED on both fold and gap (not run in phase 6)', () => {
     expect(decide('quartz', foldOf(HOUR))).toEqual({ kind: 'UNDEFINED' });
     expect(decide('quartz', gapOf(HOUR))).toEqual({ kind: 'UNDEFINED' });
+  });
+});
+
+describe('github-actions advances a skipped time and says nothing about a folded one', () => {
+  test('a skipped time fires as a catch-up at the transition, not at the intended offset past it', () => {
+    expect(decide('github-actions', gapOf(HOUR), fixed)).toEqual({
+      kind: 'FIRES_AT_CATCHUP',
+      instant: 5000,
+    });
+  });
+
+  test('an interval schedule with several slots in one gap is UNDEFINED, not six identical firings', () => {
+    expect(decide('github-actions', gapOf(HOUR), wildcard)).toEqual({ kind: 'UNDEFINED' });
+  });
+
+  test('a folded time is UNDEFINED because GitHub documents no fall-back rule', () => {
+    expect(decide('github-actions', foldOf(HOUR), fixed)).toEqual({ kind: 'UNDEFINED' });
+    expect(decide('github-actions', foldOf(HOUR), wildcard)).toEqual({ kind: 'UNDEFINED' });
   });
 });
