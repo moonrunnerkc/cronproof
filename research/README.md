@@ -13,9 +13,16 @@ network; `filter`, `analyze`, and `report` recompute from the cache.
 
 ```
 pnpm run research                       # all four stages
-pnpm run research filter analyze report # recompute from cache, no network
+pnpm run research report                # re-render from the committed out/, no cache needed
+pnpm run research filter analyze report # recompute from a warm cache, no network
 pnpm run research collect --refresh     # refetch search pages
 ```
+
+`cache/` is not committed (see below), so on a fresh clone the only stage
+that runs without `collect` is `report`, which reads the committed
+`out/analysis.jsonl`. `filter` and `analyze` stop with an error naming the
+missing cache rather than writing an empty corpus over the published one;
+`collect` needs a GitHub token to rebuild the cache.
 
 1. **collect** (`stage1-collect.ts`). Runs four GitHub code-search
    queries (Kubernetes CronJobs with a `timeZone`, `wrangler.toml` and

@@ -121,23 +121,35 @@ function analyzeFinding(
 /**
  * Analyzes every corpus row and writes out/analysis.jsonl. Files that
  * yield no schedule (a query false positive) contribute nothing.
+ * @returns One record per schedule found in the corpus.
+ * @throws Error when the corpus is non-empty but no file content is
+ * cached, which means the cache is gone rather than the corpus empty.
  */
 export function analyze(): AnalyzedSchedule[] {
   const root = resolveRoot();
   const tz = createTzifBackend({ zoneinfoRoot: root });
   const rows = readCorpus();
   const results: AnalyzedSchedule[] = [];
+  let readable = 0;
   for (const row of rows) {
     const text = readBlob(row.sha);
     if (text === null) {
       continue;
     }
+    readable += 1;
     const file = { path: row.path, absPath: row.path, text };
     for (const scanner of scannersFor(file)) {
       for (const finding of scanner(file)) {
         results.push(analyzeFinding(finding, row, tz, root));
       }
     }
+  }
+  if (rows.length > 0 && readable === 0) {
+    throw new Error(
+      `the corpus lists ${rows.length} files but no content is cached, so analyze would ` +
+        `overwrite ${ANALYSIS_FILE} with an empty analysis. The cache is not committed; ` +
+        `run "pnpm run research collect" to rebuild it from the manifest, or rerun only "report".`,
+    );
   }
   writeJsonl(ANALYSIS_FILE, results);
   process.stderr.write(`[analyze] ${results.length} schedules from ${rows.length} corpus files\n`);

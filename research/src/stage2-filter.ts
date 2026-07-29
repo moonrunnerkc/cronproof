@@ -11,7 +11,7 @@
 import path from 'node:path';
 import { OUT_DIR } from './config';
 import { readJsonl, writeJson, writeJsonl } from './cache';
-import { readCollected } from './stage1-collect';
+import { hasCollected, readCollected, HITS_FILE } from './stage1-collect';
 import type { CollectedHit, CorpusRow } from './types';
 
 /** Path of the published corpus manifest. */
@@ -116,8 +116,19 @@ export function applyFilter(input: CollectedHit[]): FilterResult {
 /**
  * Reads the collected hits, applies the filter, and writes the corpus
  * manifest and the exclusion counts. Deterministic given the cache.
+ * @returns The corpus rows and the per-rule exclusion tally.
+ * @throws Error when the cache is absent, rather than overwriting the
+ * published manifest in out/ with an empty one.
  */
 export function filter(): FilterResult {
+  if (!hasCollected()) {
+    throw new Error(
+      `no collected hits at ${HITS_FILE}: the cache is not committed, so filter has nothing to ` +
+        `recompute from and would overwrite ${CORPUS_FILE} with an empty corpus. ` +
+        `Run "pnpm run research collect" first (it needs a GitHub token), or leave the ` +
+        `published out/ files alone and rerun only "report".`,
+    );
+  }
   const result = applyFilter(readCollected());
   writeJsonl(CORPUS_FILE, result.rows);
   writeJson(EXCLUSIONS_FILE, {

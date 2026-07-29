@@ -11,6 +11,7 @@
  * times and reproduces the same index.
  */
 
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { sha256Hex } from '../../src/hazard/index';
 import { CACHE_DIR, MAX_PAGES, PER_PAGE, QUERIES } from './config';
@@ -154,6 +155,16 @@ function cachedSearchTotal(): number {
 /** Reads the collected hits from cache without touching the network. */
 export function readCollected(): CollectedHit[] {
   return readJsonl<CollectedHit>(HITS_FILE);
+}
+
+/**
+ * Whether stage 1 has left a collected-hits index on disk. The cache is
+ * not committed, so on a fresh clone this is false and the later stages
+ * have nothing to recompute from.
+ * @returns True when the hits index exists.
+ */
+export function hasCollected(): boolean {
+  return existsSync(HITS_FILE);
 }
 
 /** Total raw search results cached across all queries, before dedup. */
