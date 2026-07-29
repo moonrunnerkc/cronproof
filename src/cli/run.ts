@@ -7,7 +7,7 @@
  */
 
 import { parseArgs, type ParsedArgs } from './args';
-import { resolveRoot, severityOrder } from './analyze';
+import { resolveRoot, severityOrder, tzdbAgreementFailure } from './analyze';
 import { runBaseline } from './commands/baseline';
 import { runCheck } from './commands/check';
 import { runExplain } from './commands/explain';
@@ -20,7 +20,7 @@ import { formatJunit } from './format-junit';
 import { formatMarkdown } from './format-markdown';
 import { formatSarif } from './format-sarif';
 import { buildReceipt } from './receipt';
-import { EXIT, type Format, type Receipt, type ResultModel } from './types';
+import { EXIT, type Command, type Format, type Receipt, type ResultModel } from './types';
 
 /** Everything the dispatcher needs from the host. */
 export interface RunOptions {
@@ -70,6 +70,23 @@ function dispatch(args: ParsedArgs): { model: ResultModel } | { usageError: stri
     case 'baseline':
       return runBaseline(args);
   }
+}
+
+/**
+ * The result a command would have produced had the tzdb sources agreed.
+ * Every command renders the failure the same way, with the receipt that
+ * names both releases, so the disagreement is legible in every format.
+ */
+function verificationFailureModel(command: Command, failure: string): ResultModel {
+  return {
+    command,
+    title: `${command} [internal verification failed]`,
+    inputs: [['command', command]],
+    hazards: [],
+    sections: [{ heading: 'internal verification failed', kind: 'text', lines: [failure] }],
+    data: { verificationFailure: failure },
+    baseExit: EXIT.internal,
+  };
 }
 
 function render(format: Format, model: ResultModel, receipt: Receipt, tty: boolean): string {
@@ -125,6 +142,18 @@ export function dispatchCli(options: RunOptions): number {
     }
     options.writeError(`cronproof: tzdb pin ok (${check.actual})\n`);
   }
+  // The two tzdb sources have to agree before any command answers, not
+  // only the ones that take a zone. A scan that gates CI is exactly the
+  // place a stale rule set must not pass quietly.
+  const root = resolveRoot(parsed.args.zoneinfoRoot);
+  const tzdbFailure = tzdbAgreementFailure(root);
+  if (tzdbFailure !== null) {
+    const model = verificationFailureModel(parsed.args.command, tzdbFailure);
+    options.writeOut(
+      render(parsed.args.format, model, buildReceipt(model, options.version, root), options.isTty),
+    );
+    return EXIT.internal;
+  }
   let outcome: { model: ResultModel } | { usageError: string };
   let receipt: Receipt;
   try {
@@ -133,7 +162,6 @@ export function dispatchCli(options: RunOptions): number {
       options.writeError(`cronproof: ${outcome.usageError}\n`);
       return EXIT.usage;
     }
-    const root = resolveRoot(parsed.args.zoneinfoRoot);
     receipt = buildReceipt(outcome.model, options.version, root);
   } catch (error) {
     options.writeError(`cronproof: ${error instanceof Error ? error.message : String(error)}\n`);
