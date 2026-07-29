@@ -158,7 +158,7 @@ cron-parser-luxon 1, node-cron 1, systemd-timer 1.
 - **Source:** the `systemd.time` manual page, which documents that a
   calendar event's timezone may be "the timezone in the IANA timezone
   database format" but does not specify DST edge-case behavior
-  ([systemd.time.7](https://man7.org/linux/man-pages/man7/systemd.time.7.html)),
+  ([systemd.time.7](https://manpages.debian.org/testing/systemd/systemd.time.7.en.html)),
   so the behavior was established by observation.
 - **Fixture:** `systemd-timer.json`, `systemd-analyze calendar` from
   systemd 249.

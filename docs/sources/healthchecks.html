@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Healthchecks.io Documentation - Healthchecks.io</title>
+    
+
+    <meta name="description" content="Heartbeat monitoring for cron jobs, scheduled tasks, periodic processes. Guides, API reference, usage examples, self-hosting instructions.">
+
+
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
+    
+    
+    <link rel="stylesheet" href="/static/CACHE/css/output.535dc4a4830e.css" type="text/css">
+</head>
+<body class="page-docs">
+    
+    
+
+    <nav class="navbar navbar-default">
+        <div class="container">
+        <div class="navbar-header">
+            <button
+                type="button"
+                class="navbar-toggle collapsed"
+                data-toggle="collapse"
+                data-target="#navbar"
+                aria-expanded="false"
+                aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            
+            <a id="base-url" class="navbar-brand" href="/">
+                <img
+                    id="logo"
+                    height="50"
+                    
+                    src="/static/img/logo-rounded-ua2.svg"
+                    
+                    alt="Healthchecks.io">
+            </a>
+            
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            
+
+            <ul id="global-links" class="nav navbar-nav navbar-right">
+                
+                <li >
+                    
+                    <a href="/pricing/">Pricing</a>
+                    
+                </li>
+                
+
+                <li  class="active" >
+                    <a href="/docs/">Docs</a>
+                </li>
+
+                <li>
+                    <a href="https://blog.healthchecks.io/">Blog</a>
+                </li>
+
+                <li >
+                    <a href="/about/">About</a>
+                </li>
+
+                
+                <li>
+                    <a href="/accounts/login/">Log In</a>
+                </li>
+                
+
+                
+            </ul>
+        </div>
+
+        </div>
+    </nav>
+
+    
+    <div class="container">
+        
+<div class="row">
+    <div class="col-sm-3">
+
+    <div id="docs-search-form">
+        <input
+            id="docs-search"
+            type="text"
+            name="q"
+            class="form-control input-sm"
+            placeholder="Search docs&hellip;"
+            autocomplete="off">
+    </div>
+    <div id="search-results"></div>
+    <ul id="docs-nav" class="docs-nav">
+        <li class="nav-header">Healthchecks.io</li>
+        <li  class="active">
+            <a href="/docs/">Introduction</a>
+        </li>
+        <li>
+    <a href="/docs/configuring_checks/">Configuring checks</a>
+</li>
+        <li>
+    <a href="/docs/configuring_notifications/">Configuring notifications</a>
+</li>
+        <li>
+    <a href="/docs/projects_teams/">Projects and teams</a>
+</li>
+        <li>
+    <a href="/docs/badges/">Badges</a>
+</li>
+        <li >
+            <a href="/faq/">FAQ</a>
+        </li>
+
+        <li class="nav-header">API</li>
+        <li>
+    <a href="/docs/http_api/">Pinging API</a>
+</li>
+        <li>
+    <a href="/docs/api/">Management API</a>
+</li>
+        <li>
+    <a href="/docs/slug_urls/">Slug URLs</a>
+</li>
+
+        <li class="nav-header">Guides</li>
+        <li>
+    <a href="/docs/monitoring_cron_jobs/">Monitoring cron jobs</a>
+</li>
+        <li>
+    <a href="/docs/monitoring_systemd_tasks/">Monitoring Systemd tasks</a>
+</li>
+        <li>
+    <a href="/docs/signaling_failures/">Signaling failures</a>
+</li>
+        <li>
+    <a href="/docs/measuring_script_run_time/">Measuring script run time</a>
+</li>
+        <li>
+    <a href="/docs/attaching_logs/">Attaching logs</a>
+</li>
+        <li>
+    <a href="/docs/cloning_checks/">Cloning checks</a>
+</li>
+        <li>
+    <a href="/docs/autoprovisioning/">Auto provisioning</a>
+</li>
+        <li>
+    <a href="/docs/configuring_prometheus/">Configuring Prometheus</a>
+</li>
+
+        <li class="nav-header">Pinging Examples</li>
+        <li>
+    <a href="/docs/reliability_tips/">Reliability tips</a>
+</li>
+        <li>
+    <a href="/docs/bash/">Shell scripts</a>
+</li>
+        <li>
+    <a href="/docs/arduino/">Arduino</a>
+</li>
+        <li>
+    <a href="/docs/network_routers/">Network Routers</a>
+</li>
+        <li>
+    <a href="/docs/csharp/">C#</a>
+</li>
+        <li>
+    <a href="/docs/email/">Email</a>
+</li>
+        <li>
+    <a href="/docs/github_actions/">GitHub Actions</a>
+</li>
+        <li>
+    <a href="/docs/go/">Go</a>
+</li>
+        <li>
+    <a href="/docs/javascript/">Javascript</a>
+</li>
+        <li>
+    <a href="/docs/php/">PHP</a>
+</li>
+        <li>
+    <a href="/docs/powershell/">PowerShell</a>
+</li>
+        <li>
+    <a href="/docs/python/">Python</a>
+</li>
+        <li>
+    <a href="/docs/ruby/">Ruby</a>
+</li>
+
+        <li class="nav-header">Developer Tools</li>
+        <li>
+    <a href="/docs/resources/">Third-party resources</a>
+</li>
+
+        <li class="nav-header">Self-hosted</li>
+        <li>
+    <a href="/docs/self_hosted/">Overview</a>
+</li>
+        <li>
+    <a href="/docs/self_hosted_configuration/">Configuration</a>
+</li>
+        <li>
+    <a href="/docs/self_hosted_docker/">Running with Docker</a>
+</li>
+
+        <li class="nav-header">Reference</li>
+        <li><a href="/docs/cron/">Cron syntax cheatsheet</a></li>
+        <li>
+    <a href="/docs/healthchecks_sentry_comparison/">Compared to Sentry</a>
+</li>
+        <li>
+    <a href="/docs/healthchecks_cronitor_comparison/">Compared to Cronitor</a>
+</li>
+    </ul>
+
+    </div>
+    <div class="col-sm-9">
+        <div class="docs-content docs-introduction"><h1>Healthchecks.io Documentation</h1>
+<p>Healthchecks.io is a service for monitoring cron jobs (<a href="monitoring_cron_jobs/">see guide</a>)
+and similar periodic processes:</p>
+<ul>
+<li>Healthchecks.io <strong>listens for HTTP requests ("pings")</strong> from your cron jobs and scheduled
+  tasks.</li>
+<li>It <strong>keeps silent</strong> as long as pings arrive on time.</li>
+<li>It <strong>raises an alert</strong> as soon as a ping does not arrive on time.</li>
+</ul>
+<p>Healthchecks.io works as a <a href="https://en.wikipedia.org/wiki/Dead_man%27s_switch">dead man's switch</a> for processes that need to
+run continuously or on a regular, known schedule. Some examples of jobs that would
+benefit from Healthchecks.io monitoring:</p>
+<ul>
+<li>filesystem backups, database backups</li>
+<li>task queues</li>
+<li>database replication monitoring scripts</li>
+<li>report generation scripts</li>
+<li>periodic data import and sync jobs</li>
+<li>periodic antivirus scans</li>
+<li>DDNS updater scripts</li>
+<li>SSL renewal scripts</li>
+</ul>
+<p>Healthchecks.io is <em>not</em> the right tool for:</p>
+<ul>
+<li>monitoring website uptime by probing it with HTTP requests</li>
+<li>collecting application performance metrics</li>
+<li>log aggregation</li>
+</ul>
+<h2>Concepts</h2>
+<p>A <strong>Check</strong> represents a single service you want to monitor. For example, when
+<a href="monitoring_cron_jobs/">monitoring cron jobs</a>, you would create a separate check for
+each cron job to be monitored. Each check has a unique ping URL, schedule,
+and associated integrations. For the available configuration options, see
+<a href="configuring_checks/">Configuring checks</a>.</p>
+<p>Each check is always in one of the following states, depicted by a status icon:</p>
+<dl>
+<dt><span class="status ic-new"></span></dt>
+<dd><strong>New</strong>. A newly created check that has not received any pings yet. Each new
+check you create will start in this state.</dd>
+<dt><span class="status ic-up"></span></dt>
+<dd><strong>Up</strong>. All is well. The last "success" signal has arrived on time.</dd>
+<dt><span class="status ic-grace"></span></dt>
+<dd><strong>Late</strong>. The "success" signal is due but has not arrived yet.
+It is not yet late by more than the check's configured <strong>Grace Time</strong>.</dd>
+<dt><span class="status ic-down"></span></dt>
+<dd><strong>Down</strong>. The "success" signal has not arrived yet, and the Grace Time has elapsed.
+When a check transitions into the "Down" state, Healthchecks.io sends alert
+messages via the configured integrations.</dd>
+<dt><span class="status ic-paused"></span></dt>
+<dd><strong>Paused</strong>. You can manually pause the monitoring of specific checks. For example,
+if a frequently running cron job has a known problem, and a fix is in the works
+but not yet ready, you can pause monitoring the corresponding check temporarily to
+avoid unwanted alerts about a known issue.</dd>
+<dt><span class="status ic-up"></span><div class="spinner started"></div></dt>
+<dd>Additionally, if the most recent received signal is a "start" signal,
+this will be indicated by three animated dots under the check's status icon.</dd>
+</dl>
+<hr />
+<p><strong>Ping URL</strong>. Each check has a unique <strong>Ping URL</strong>. Clients (cron jobs, background
+workers, batch scripts, scheduled tasks, web services) make HTTP requests to the
+ping URL to signal a start of the execution, a success, or a failure.</p>
+<p>Healthchecks.io supports two ping URL formats:</p>
+<ul>
+<li><code>https://hc-ping.com/&lt;uuid&gt;</code><br>
+The check is identified by its UUID. Check UUIDs are assigned
+automatically by Healthchecks.io, and are guaranteed to be unique.</li>
+<li><code>https://hc-ping.com/&lt;project-ping-key&gt;/&lt;name-slug&gt;</code><br>
+The check is identified by project's <strong>Ping key</strong> and check's
+<strong>slug</strong> (user-chosen, URL-friendly identifier). Optionally supports auto-provisioning:
+if you ping a slug value that does not have a corresponding check, Healthchecks.io can
+create the check automatically.</li>
+</ul>
+<p>You can append <code>/start</code>, <code>/fail</code> or <code>/&lt;exitcode&gt;</code> to the base ping URL to send
+"start" and "failure" signals. The "start" and "failure" signals are optional.
+You don't have to use them, but you can gain additional monitoring insights
+if you do use them. See <a href="measuring_script_run_time/">Measuring script run time</a> and
+<a href="signaling_failures/">Signaling failures</a> for details.</p>
+<p>You should treat check UUIDs and project Ping keys as secrets. If you make them public,
+anybody can send telemetry signals to your checks and mess with your monitoring.</p>
+<p>Read more about Ping URLs in <a href="http_api/">Pinging API</a>.</p>
+<hr />
+<p><strong>Grace Time</strong> is one of the configuration parameters you can set for each check.
+It is the additional time to wait before sending an alert when a check
+is late. Use this parameter to account for minor, expected deviations in job
+execution times.</p>
+<p>When a check is considered <em>late</em> depends on whether the check uses a simple
+or cron schedule, and whether or not you are
+<a href="measuring_script_run_time/">tracking job durations</a> using the "start" events.</p>
+<p>For <strong>simple schedules</strong>, the check is late when the checks's configured period has passed.
+For example, consider a periodic task that should run every hour, and the gaps between
+runs should not deviate by more than 5 minutes (Period = 1 hour,
+Grace Time = 5 minutes). And let's say the last successful ping arrived at 12:00.</p>
+<ul>
+<li>At 13:00 the check will be declared late (because 1 hour will have passed
+  since the last ping).</li>
+<li>At 13:05 the check will be declared down and the alerts will go out (because
+  1 hour + 5 minutes will have passed since the last ping).</li>
+</ul>
+<p>For <strong>cron and OnCalendar schedules</strong>, the check enters the late state at the exact
+moment when the current wall clock time matches the schedule. Let's consider a cron
+job with the schedule <code>10 * * * *</code> (10 minutes past every hour) and grace time of 5 minutes.
+And let's say the last successful ping arrived at 12:30.</p>
+<ul>
+<li>At 13:10 the check will be declared late (because 13:10 is the next scheduled time
+  the cron job is expected to send a ping according to the cron schedule).</li>
+<li>At 13:15 the check will be declared down and the alerts will go out (because 5
+  minutes will have passed since the time the cron job was expected to check in).</li>
+</ul>
+<p>If you use "start" signals to <a href="measuring_script_run_time/">measure job execution time</a>,
+Grace Time also sets the maximum allowed time gap between "start" and "success" signals.
+If a job sends a "start" signal but does not send a "success" signal within grace time,
+Healthchecks.io will assume failure and send out alerts.</p>
+<hr />
+<p>An <strong>Integration</strong> is a specific method for delivering monitoring alerts when a check's
+change states. Healthchecks.io supports many types of integrations: email,
+webhooks, SMS, Slack, PagerDuty, etc. You can set up multiple integrations.
+For each check, you can specify which integrations it should use.</p>
+<p>For more information on integrations, see
+<a href="configuring_notifications/">Configuring notifications</a>.</p>
+<hr />
+<p><strong>Project</strong>. To keep things organized, you can group checks and integrations in <strong>Projects</strong>.
+Your account starts with a single default project, but you can create
+additional projects as needed. You can transfer existing checks between projects
+while preserving their configuration and ping URLs.</p>
+<p>Each project has a configurable name, a separate set of API keys, and a separate
+project team. The project's team is the set of people you have granted read-only or
+read-write access to the project.</p>
+<p>For more information on projects, see <a href="projects_teams/">Projects and teams</a>.</p></div>
+    </div>
+</div>
+
+    </div>
+    
+
+    <footer class="footer">
+        <div class="container">
+            <ul>
+                <li class="hidden-xs">&copy; 2015-2026 SIA Monkey See Monkey Do</li>
+                <li><a href="/terms/">Terms</a></li>
+                <li><a href="/privacy/">Privacy</a></li>
+                
+                <li><a href="/pricing/">Pricing</a></li>
+                
+                <li><a href="/faq/">FAQ</a></li>
+                <li><a href="/docs/api/">API</a></li>
+                <li><a href="https://blog.healthchecks.io">Blog</a></li>
+                <li class="hidden-xs"><a href="/about/">Contact</a></li>
+                <li><a href="https://status.healthchecks.io/">Status</a></li>
+            </ul>
+        </div>
+    </footer>
+    
+    
+
+    
+
+    
+    <script src="/static/CACHE/js/output.5485f1af1898.js"></script>
+    
+
+    
+<script src="/static/CACHE/js/output.9132cc09a9a1.js"></script>
+
+</body>
+</html>

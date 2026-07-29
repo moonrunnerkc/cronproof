@@ -1452,3 +1452,56 @@ rerun offline. This is stated in the report's new Reproducibility section.
 The 6.3 MiB of third-party file contents are deliberately not committed, for
 the licensing reason the cache was gitignored in phase 12; the manifest with
 hashes provides verifiable provenance instead.
+
+## 2026-07-28: Remediation 5, machine-checked claim and number provenance
+
+scripts/check-claims.ts (pnpm check-claims, wired into CI as the "docs claims
+and numbers" job) verifies that every external claim in README.md, docs/, and
+FINDINGS.md has a source in docs/provenance.json: a URL that resolves, a
+stored snapshot under docs/sources/ with a pinned sha256, and an anchor
+substring present in the snapshot that supports the claim. Live drift from a
+snapshot is a warning (a page changing under a claim is itself a finding),
+verified against the same content that was snapshotted (the raw fetchUrl when
+set, not a JS-rendered viewer page). Every measured number in prose must trace
+to an origin the checker resolves: an EVIDENCE.md line, a research report
+field, a test name, or a claim snapshot.
+
+First run failure list (before any fix), as the spec asked to report:
+- claims: 0 uncited (all 18 external URLs already had entries once the 5
+  self and badge URLs were skiplisted).
+- numbers, 11 untraceable in prose: 30:second, 30:minute, 1800:second,
+  24:hour, 3:transition, 118:transition, 2024:transition, 70:transition,
+  3:hour, 100:missed, 2023:transition.
+
+Resolution of each:
+- False positives from structural numbers, fixed in the extractor: 4-digit
+  years (2024:transition, 2023:transition) and numbers after a reference
+  label such as "section 3 ... transition" (3:transition) are no longer
+  treated as measured values.
+- False positives from figures of speech, fixed by rewording the prose: the
+  README "30-second example" heading became "Quick example" (30:second), and
+  dst-semantics "a 24-hour gap" restated the already-cited 1440min so it
+  became "a full-day gap" (24:hour).
+- Real measured numbers, registered with origins: 30:minute and 1800:second
+  and 118:transition and 70:transition trace to EVIDENCE.md; 3:hour (Debian's
+  "less than 3 hours" rule) traces to the debian cron.8 claim snapshot;
+  100:missed traces to the k8s missed-schedule boundary test.
+
+Number scope (recorded per standing rule 1): the checker requires provenance
+for measured statistics only, which it detects as fractions, percentages,
+a number with an adjacent unit (min, minute, second, hour, KiB, bytes,
+missed), and "N ... transitions". Structural numbers (years, versions, clock
+times, UTC offsets, and section or phase or finding references) are not
+measured claims and are excluded. Untraceable measured numbers are deleted or
+reworded, never hedged.
+
+Fetcher fix: the systemd.time source was cited from man7.org, which is not
+reachable from the checker's fetch. It was repointed to the identical
+manpages.debian.org systemd.time mirror (same content, contains the IANA
+timezone wording), in both the doc and the registry. No claim's verification
+status changed as a result; the k8s missed-schedule claim's status change is
+covered in the remediation 4 entry.
+
+Coverage summary at green: 18 claims total, 18 sources verified, 0 uncited;
+6 numbers registered, 6 traced, 0 untraceable. Snapshots total 4.2 MiB under
+docs/sources/, committed as the provenance archive.

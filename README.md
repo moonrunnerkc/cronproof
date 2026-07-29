@@ -24,7 +24,7 @@ npm link           # optional: puts `cronproof` on PATH; or run `node dist/cli.j
 
 For CI, use the published composite GitHub Action instead (see [CI setup](#ci-setup)); it needs no local install.
 
-## 30-second example
+## Quick example
 
 A daily 02:30 job in Berlin, across the October fall-back. The 02:30 wall time occurs twice, so a naive scheduler and the Kubernetes controller fire it twice while Debian cron fires it once. That disagreement is the finding:
 

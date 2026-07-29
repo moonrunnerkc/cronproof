@@ -1,0 +1,149 @@
+{
+  "claimSkiplist": [
+    "https://github.com/moonrunnerkc/cronproof",
+    "https://github.com/moonrunnerkc/cronproof/actions/workflows/ci.yml",
+    "https://github.com/moonrunnerkc/cronproof/actions/workflows/ci.yml/badge.svg",
+    "https://img.shields.io/badge/license-MIT-blue.svg",
+    "https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg"
+  ],
+  "numberAllowlist": [],
+  "claims": [
+    {
+      "url": "https://github.com/cuu508/cronsim",
+      "snapshot": "cronsim.html",
+      "sha256": "9ff69fb74c347b9fcc96901bc801ed48b9d96ca6d0595e948326bbc9c03b3283",
+      "anchor": "that's a bug",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://github.com/harrisiirak/cron-parser",
+      "snapshot": "cron-parser.html",
+      "sha256": "3b881e9f9dfebd28662bd68f0611ec012e285a1d0cf6da2be571b1cc729b7bd1",
+      "anchor": "timezone",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://github.com/HangfireIO/Cronos",
+      "snapshot": "cronos.html",
+      "sha256": "45360fc4773f4a739f2362bfcf5d42a3bbff75b2206982442cac1e928e50a856",
+      "anchor": "Daylight saving",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://crontab.guru/",
+      "snapshot": "crontab-guru.html",
+      "sha256": "952c649051c02304d2f4049fd935a09a19373e0bfb34aa5cd664e4689f47d3b7",
+      "anchor": "cron schedule expressions",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://cronitor.io/cron-job-monitoring",
+      "snapshot": "cronitor.html",
+      "sha256": "e468d123c02176c3545a91bcd41db046156386614b09e1ded066fbc6b8fcc7a2",
+      "anchor": "never start",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://healthchecks.io/docs/",
+      "snapshot": "healthchecks.html",
+      "sha256": "f2c99ea3d4b722a1d595a468e8767c2676b57eae12cd85fa6d4511cf3a5433a9",
+      "anchor": "dead man",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://manpages.debian.org/bookworm/cron/cron.8.en.html",
+      "snapshot": "debian-cron.html",
+      "sha256": "9b707933cf4ab6d3b18594f5ab5a96b122d62146a87d2773800b005693200664",
+      "anchor": "daylight",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/",
+      "snapshot": "k8s-cronjobs.html",
+      "sha256": "a1ca41897de8221e7e0d300f8d226514c258b3e2b22ef6bdfcccad76c28c53ff",
+      "anchor": "kube-controller-manager",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://pkg.go.dev/github.com/robfig/cron/v3",
+      "snapshot": "robfig-cron.html",
+      "sha256": "e933d66b960f8cc3e0cb3d61c7738cea85d74f4f4704050190a7cf8ef4934ea7",
+      "anchor": "leap-ahead",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html",
+      "snapshot": "quartz-crontrigger.html",
+      "sha256": "6af51bf588cae0380c2267c9410ea7188fe36c5140c7170e01a8c9e88518fff9",
+      "anchor": "daylight",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://github.com/kiorky/croniter",
+      "snapshot": "croniter.html",
+      "sha256": "3c535f984da6d33b0e03575426973451593f7a12381446279a121f8eeef6afcf",
+      "anchor": "timezone",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://github.com/node-cron/node-cron",
+      "snapshot": "node-cron.html",
+      "sha256": "3eb4ad6595ade6b7f9c938f5476ed792ba2bd281ba3cc046005c8e39e76d1673",
+      "anchor": "timezone",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://manpages.debian.org/testing/systemd/systemd.time.7.en.html",
+      "snapshot": "systemd-time.html",
+      "sha256": "bee1501605aca4f633c3946ef4b078cc1df64d610947934d012dd93c0cbeff8a",
+      "anchor": "IANA",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://data.iana.org/time-zones/theory.html",
+      "snapshot": "tz-theory.html",
+      "sha256": "88fb142cca79196eb804c3eb3b7511f6f366fef36d3e53bd2640f3c24d1d127e",
+      "anchor": "tm_isdst",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://data.iana.org/time-zones/tzdb/NEWS",
+      "snapshot": "tz-news.txt",
+      "sha256": "09bdfd57206fe221a3d71b15160b0ac0805209c757c258902a96b228961428c6",
+      "anchor": "Alberta",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc8536",
+      "snapshot": "rfc8536.txt",
+      "fetchUrl": "https://www.rfc-editor.org/rfc/rfc8536.txt",
+      "sha256": "6a17219bfe38b930f1f12a2e956dc11038be4bd4dff57272c08fa5382adbad98",
+      "anchor": "last transition",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://github.com/kubernetes/kubernetes/blob/v1.31.0/pkg/controller/cronjob/utils.go#L172",
+      "snapshot": "k8s-utils-v1.31.0.go",
+      "fetchUrl": "https://raw.githubusercontent.com/kubernetes/kubernetes/v1.31.0/pkg/controller/cronjob/utils.go",
+      "sha256": "7a5dfa0226caeadeca702d3c6ea0366a6f483b2dceaa608bd7883af5df25ad63",
+      "anchor": "numberOfMissedSchedules > 100",
+      "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://github.com/kubernetes/kubernetes/blob/v1.20.0/pkg/controller/cronjob/utils.go#L147",
+      "snapshot": "k8s-utils-v1.20.0.go",
+      "fetchUrl": "https://raw.githubusercontent.com/kubernetes/kubernetes/v1.20.0/pkg/controller/cronjob/utils.go",
+      "sha256": "fe36e9e74cccbd996620ae169b88c97012a20f26df28aa07982af58134db2c58",
+      "anchor": "too many missed start time",
+      "fetchedAt": "2026-07-28"
+    }
+  ],
+  "numbers": [
+    { "value": "30:minute", "origin": "evidence", "find": "the shift is 30 minutes" },
+    { "value": "1800:second", "origin": "evidence", "find": "1800 seconds" },
+    { "value": "118:transition", "origin": "evidence", "find": "Lord_Howe transitions compared=118" },
+    { "value": "70:transition", "origin": "evidence", "find": "Antarctica/Troll transitions compared=70" },
+    { "value": "3:hour", "origin": "claim", "find": "3 hours" },
+    { "value": "100:missed", "origin": "test", "find": "the limit constant is 100" }
+  ]
+}

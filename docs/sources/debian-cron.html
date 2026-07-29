@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cron(8) — cron — Debian bookworm — Debian Manpages</title>
+<style type="text/css">
+@font-face {
+  font-family: 'Inconsolata';
+  src: local('Inconsolata'), url(/Inconsolata.woff2) format('woff2'), url(/Inconsolata.woff) format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto Regular'), local('Roboto-Regular'), url(/Roboto-Regular.woff2) format('woff2'), url(/Roboto-Regular.woff) format('woff');
+  font-display: swap;
+}
+
+body {
+	color: #000;
+	background-color: white;
+	background-image: linear-gradient(to bottom, #d7d9e2, #fff 70px);
+	background-position: 0 0;
+	background-repeat: repeat-x;
+	font-family: sans-serif;
+	font-size: 100%;
+	line-height: 1.2;
+	letter-spacing: 0.15px;
+	margin: 0;
+	padding: 0;
+}
+
+#header {
+	padding: 0 10px 0 52px;
+}
+
+#logo {
+	position: absolute;
+	top: 0;
+	left: 0;
+	border-left: 1px solid transparent;
+	border-right: 1px solid transparent;
+	border-bottom: 1px solid transparent;
+	width: 50px;
+	height: 5.07em;
+	min-height: 65px;
+}
+
+#logo a {
+	display: block;
+	height: 100%;
+}
+
+#logo img {
+	margin-top: 5px;
+	position: absolute;
+	bottom: 0.3em;
+	overflow: auto;
+	border: 0;
+}
+
+p.section {
+	margin: 0;
+	padding: 0 5px 0 5px;
+	font-size: 13px;
+	line-height: 16px;
+	color: white;
+	letter-spacing: 0.08em;
+	position: absolute;
+	top: 0px;
+	left: 52px;
+	background-color: #c70036;
+}
+
+p.section a {
+	color: white;
+	text-decoration: none;
+}
+
+.hidecss {
+	display: none;
+}
+
+#searchbox {
+	text-align:left;
+	line-height: 1;
+	margin: 0 10px 0 0.5em;
+	padding: 1px 0 1px 0;
+	position: absolute;
+	top: 0;
+	right: 0;
+	font-size: .75em;
+}
+
+#navbar {
+	border-bottom: 1px solid #c70036;
+}
+
+#navbar ul {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+#navbar li {
+	list-style: none;
+	float: left;
+}
+
+#navbar a {
+	display: block;
+	padding: 1.75em .5em .25em .5em;
+	color: #0035c7;
+	text-decoration: none;
+	border-left: 1px solid transparent;
+	border-right: 1px solid transparent;
+}
+
+#navbar a:hover
+, #navbar a:visited:hover {
+	background-color: #f5f6f7;
+	border-left: 1px solid  #d2d3d7;
+	border-right: 1px solid #d2d3d7;
+	text-decoration: underline;
+}
+
+a:link {
+	color: #0035c7;
+}
+
+a:visited {
+	color: #54638c;
+}
+
+#breadcrumbs {
+	line-height: 2;
+	min-height: 20px;
+	margin: 0;
+	padding: 0;
+	font-size: 0.75em;
+	background-color: #f5f6f7;
+	border-bottom: 1px solid #d2d3d7;
+}
+
+#breadcrumbs:before {
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+}
+
+#content {
+    margin: 0 10px 0 52px;
+    display: flex;
+    flex-direction: row;
+    word-wrap: break-word;
+}
+
+.paneljump {
+    background-color: #d70751;
+    padding: 0.5em;
+    border-radius: 3px;
+    margin-right: .5em;
+    display: none;
+}
+
+.paneljump a,
+.paneljump a:visited,
+.paneljump a:hover,
+.paneljump a:focus {
+    color: white;
+}
+
+@media all and (max-width: 800px) {
+    #content {
+	flex-direction: column;
+	margin: 0.5em;
+    }
+    .paneljump {
+	display: block;
+    }
+}
+
+.panels {
+    display: block;
+    order: 2;
+}
+
+.maincontent {
+    width: 100%;
+    max-width: 80ch;
+    order: 1;
+}
+
+.mandoc {
+    font-family: monospace;
+    font-size: 1.04rem;
+}
+
+.mandoc pre {
+    white-space: pre-wrap;
+}
+
+#footer {
+	border: 1px solid #dfdfe0;
+	border-left: 0;
+	border-right: 0;
+	background-color: #f5f6f7;
+	padding: 1em;
+	margin: 1em 10px 0 52px;
+	font-size: 0.75em;
+	line-height: 1.5em;
+}
+
+hr {
+	border-top: 1px solid #d2d3d7;
+	border-bottom: 1px solid white;
+	border-left: 0;
+	border-right: 0;
+	margin: 1.4375em 0 1.5em 0;
+	height: 0;
+	background-color: #bbb;
+}
+
+#content p {
+    padding-left: 1em;
+}
+
+ 
+
+a, a:hover, a:focus, a:visited {
+    color: #0530D7;
+    text-decoration: none;
+}
+
+ 
+.panel {
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.panel-heading, .panel details {
+  margin: -15px -15px 0px;
+  background-color: #d70751;
+  border-bottom: 1px solid #dddddd;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+}
+
+.panel-heading, .panel summary {
+  padding: 5px 5px;
+  font-size: 17.5px;
+  font-weight: 500;
+  color: #ffffff;
+  outline-style: none;
+}
+
+.panel summary {
+    padding-left: 7px;
+}
+
+summary, details {
+    display: block;
+}
+
+.panel details ul {
+  margin: 0;
+}
+
+.panel-footer {
+  padding: 5px 5px;
+  margin: 15px -15px -15px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #dddddd;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+.panel-info {
+  border-color: #bce8f1;
+}
+
+.panel-info .panel-heading {
+  color: #3a87ad;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+}
+
+
+.list-group {
+  padding-left: 0;
+  margin-bottom: 20px;
+  background-color: #ffffff;
+}
+
+.list-group-item {
+  position: relative;
+  display: block;
+  padding: 5px 5px 5px 5px;
+  margin-bottom: -1px;
+  border: 1px solid #dddddd;
+}
+
+.list-group-item > .list-item-key {
+  min-width: 27%;
+  display: inline-block;
+}
+.list-group-item > .list-item-key.versions-repository {
+  min-width: 40%;
+}
+.list-group-item > .list-item-key.versioned-links-version {
+  min-width: 40%
+}
+
+
+.versioned-links-icon {
+  margin-right: 2px;
+}
+.versioned-links-icon a {
+  color: black;
+}
+.versioned-links-icon a:hover {
+  color: blue;
+}
+.versioned-links-icon-inactive {
+  opacity: 0.5;
+}
+
+.list-group-item:first-child {
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+}
+
+.list-group-item:last-child {
+  margin-bottom: 0;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.list-group-item-heading {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.list-group-item-text {
+  margin-bottom: 0;
+  line-height: 1.3;
+}
+
+.list-group-item:hover {
+  background-color: #f5f5f5;
+}
+
+.list-group-item.active a {
+  z-index: 2;
+}
+
+.list-group-item.active {
+  background-color: #efefef;
+}
+
+.list-group-flush {
+  margin: 15px -15px -15px;
+}
+.panel .list-group-flush {
+  margin-top: -1px;
+}
+
+.list-group-flush .list-group-item {
+  border-width: 1px 0;
+}
+
+.list-group-flush .list-group-item:first-child {
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+}
+
+.list-group-flush .list-group-item:last-child {
+  border-bottom: 0;
+}
+
+ 
+
+.panel {
+float: right;
+clear: right;
+min-width: 200px;
+}
+
+.toc {
+     
+    width: 200px;
+}
+
+.toc li {
+    font-size: 98%;
+    letter-spacing: 0.02em;
+    display: flex;
+}
+
+.otherversions {
+     
+    width: 200px;
+}
+
+.otherversions li,
+.otherlangs li {
+    display: flex;
+}
+
+.otherversions a,
+.otherlangs a {
+    flex-shrink: 0;
+}
+
+.pkgversion,
+.pkgname,
+.toc a {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.pkgversion,
+.pkgname {
+    margin-left: auto;
+    padding-left: 1em;
+}
+
+ 
+
+.mandoc {
+     
+    overflow: hidden;
+    margin-top: .5em;
+    margin-right: 45px;
+}
+table.head, table.foot {
+    width: 100%;
+}
+.head-vol {
+    text-align: center;
+}
+.head-rtitle {
+    text-align: right;
+}
+
+ 
+.spacer, .Pp {
+    min-height: 1em;
+}
+
+pre {
+    margin-left: 2em;
+}
+
+.anchor {
+    margin-left: .25em;
+    visibility: hidden;
+}
+
+h1:hover .anchor,
+h2:hover .anchor,
+h3:hover .anchor,
+h4:hover .anchor,
+h5:hover .anchor,
+h6:hover .anchor {
+    visibility: visible;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    letter-spacing: .07em;
+    margin-top: 1.5em;
+    margin-bottom: .35em;
+}
+
+h1 {
+    font-size: 150%;
+}
+
+h2 {
+    font-size: 125%;
+}
+
+@media print {
+    #header, #footer, .panel, .anchor, .paneljump {
+	display: none;
+    }
+    #content {
+	margin: 0;
+    }
+    .mandoc {
+	margin: 0;
+    }
+}
+
+ 
+ 
+
+.Bd { }
+.Bd-indent {	margin-left: 3.8em; }
+
+.Bl-bullet {	list-style-type: disc;
+		padding-left: 1em; }
+.Bl-bullet > li { }
+.Bl-dash {	list-style-type: none;
+		padding-left: 0em; }
+.Bl-dash > li:before {
+		content: "\2014  "; }
+.Bl-item {	list-style-type: none;
+		padding-left: 0em; }
+.Bl-item > li { }
+.Bl-compact > li {
+		margin-top: 0em; }
+
+.Bl-enum {	padding-left: 2em; }
+.Bl-enum > li { }
+.Bl-compact > li {
+		margin-top: 0em; }
+
+.Bl-diag { }
+.Bl-diag > dt {
+		font-style: normal;
+		font-weight: bold; }
+.Bl-diag > dd {
+		margin-left: 0em; }
+.Bl-hang { }
+.Bl-hang > dt { }
+.Bl-hang > dd {
+		margin-left: 5.5em; }
+.Bl-inset { }
+.Bl-inset > dt { }
+.Bl-inset > dd {
+		margin-left: 0em; }
+.Bl-ohang { }
+.Bl-ohang > dt { }
+.Bl-ohang > dd {
+		margin-left: 0em; }
+.Bl-tag {	margin-left: 5.5em; }
+.Bl-tag > dt {
+		float: left;
+		margin-top: 0em;
+		margin-left: -5.5em;
+		padding-right: 1.2em;
+		vertical-align: top; }
+.Bl-tag > dd {
+		clear: both;
+		width: 100%;
+		margin-top: 0em;
+		margin-left: 0em;
+		vertical-align: top;
+		overflow: auto; }
+.Bl-compact > dt {
+		margin-top: 0em; }
+
+.Bl-column { }
+.Bl-column > tbody > tr { }
+.Bl-column > tbody > tr > td {
+		margin-top: 1em; }
+.Bl-compact > tbody > tr > td {
+		margin-top: 0em; }
+
+.Rs {		font-style: normal;
+		font-weight: normal; }
+.RsA { }
+.RsB {		font-style: italic;
+		font-weight: normal; }
+.RsC { }
+.RsD { }
+.RsI {		font-style: italic;
+		font-weight: normal; }
+.RsJ {		font-style: italic;
+		font-weight: normal; }
+.RsN { }
+.RsO { }
+.RsP { }
+.RsQ { }
+.RsR { }
+.RsT {		text-decoration: underline; }
+.RsU { }
+.RsV { }
+
+.eqn { }
+.tbl { }
+
+.HP {		margin-left: 3.8em;
+		text-indent: -3.8em; }
+
+ 
+
+table.Nm { }
+code.Nm {	font-style: normal;
+		font-weight: bold;
+		font-family: inherit; }
+.Fl {		font-style: normal;
+		font-weight: bold;
+		font-family: inherit; }
+.Cm {		font-style: normal;
+		font-weight: bold;
+		font-family: inherit; }
+.Ar {		font-style: italic;
+		font-weight: normal; }
+.Op {		display: inline; }
+.Ic {		font-style: normal;
+		font-weight: bold;
+		font-family: inherit; }
+.Ev {		font-style: normal;
+		font-weight: normal;
+		font-family: monospace; }
+.Pa {		font-style: italic;
+		font-weight: normal; }
+
+ 
+
+.Lb { }
+code.In {	font-style: normal;
+		font-weight: bold;
+		font-family: inherit; }
+a.In { }
+.Fd {		font-style: normal;
+		font-weight: bold;
+		font-family: inherit; }
+.Ft {		font-style: italic;
+		font-weight: normal; }
+.Fn {		font-style: normal;
+		font-weight: bold;
+		font-family: inherit; }
+.Fa {		font-style: italic;
+		font-weight: normal; }
+.Vt {		font-style: italic;
+		font-weight: normal; }
+.Va {		font-style: italic;
+		font-weight: normal; }
+.Dv {		font-style: normal;
+		font-weight: normal;
+		font-family: monospace; }
+.Er {		font-style: normal;
+		font-weight: normal;
+		font-family: monospace; }
+
+ 
+
+.An { }
+.Lk { }
+.Mt { }
+.Cd {		font-style: normal;
+		font-weight: bold;
+		font-family: inherit; }
+.Ad {		font-style: italic;
+		font-weight: normal; }
+.Ms {		font-style: normal;
+		font-weight: bold; }
+.St { }
+.Ux { }
+
+ 
+
+.Bf {		display: inline; }
+.No {		font-style: normal;
+		font-weight: normal; }
+.Em {		font-style: italic;
+		font-weight: normal; }
+.Sy {		font-style: normal;
+		font-weight: bold; }
+.Li {		font-style: normal;
+		font-weight: normal;
+		font-family: monospace; }
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.mandoc, .mandoc pre, .mandoc code, p.section {
+  font-family: 'Inconsolata', monospace;
+}
+
+</style>
+<link rel="search" title="Debian manpages" type="application/opensearchdescription+xml" href="/opensearch.xml">
+<link rel="alternate" href="/bookworm/manpages-de/cron.8.de.html" hreflang="de">
+<link rel="alternate" href="/bookworm/cron/cron.8.en.html" hreflang="en">
+<link rel="alternate" href="/bookworm/manpages-fr/cron.8.fr.html" hreflang="fr">
+<link rel="alternate" href="/bookworm/manpages-ja/cron.8.ja.html" hreflang="ja">
+<link rel="alternate" href="/bookworm/manpages-pl/cron.8.pl.html" hreflang="pl">
+<link rel="alternate" href="/bookworm/manpages-tr/cron.8.tr.html" hreflang="tr">
+<link rel="alternate" href="/bookworm/manpages-zh/cron.8.zh_CN.html" hreflang="zh-CN">
+<link rel="alternate" href="/bookworm/manpages-zh/cron.8.zh_TW.html" hreflang="zh-TW">
+</head>
+<body>
+<div id="header">
+   <div id="upperheader">
+   <div id="logo">
+  <a href="https://www.debian.org/" title="Debian Home"><img src="/openlogo-50.svg" alt="Debian" width="50" height="61"></a>
+  </div>
+  <p class="section"><a href="/">MANPAGES</a></p>
+  <div id="searchbox">
+    <form action="https://dyn.manpages.debian.org/jump" method="get">
+      <input type="hidden" name="suite" value="bookworm">
+      <input type="hidden" name="binarypkg" value="cron">
+      <input type="hidden" name="section" value="8">
+      <input type="hidden" name="language" value="en">
+      <input type="text" name="q" placeholder="manpage name" required>
+      <input type="submit" value="Jump">
+    </form>
+  </div>
+ </div>
+<div id="navbar">
+<p class="hidecss"><a href="#content">Skip Quicknav</a></p>
+<ul>
+   <li><a href="/">Index</a></li>
+   <li><a href="/about.html">About Manpages</a></li>
+   <li><a href="/faq.html">FAQ</a></li>
+   <li><a href="https://wiki.debian.org/manpages.debian.org">Service Information</a></li>
+</ul>
+</div>
+   <p id="breadcrumbs">&nbsp;
+     
+     &#x2F; <a href="/contents-bookworm.html">bookworm</a>
+     
+     
+     
+     &#x2F; <a href="/bookworm/cron/index.html">cron</a>
+     
+     
+     
+     &#x2F; cron(8)
+     
+     </p>
+</div>
+<div id="content">
+
+
+<div class="panels" id="panels">
+<div class="panel" role="complementary">
+<div class="panel-heading" role="heading">
+links
+</div>
+<div class="panel-body">
+<ul class="list-group list-group-flush">
+<li class="list-group-item">
+<a href="/bookworm/cron/cron.8">language-indep link</a>
+</li>
+<li class="list-group-item">
+<a href="https://tracker.debian.org/pkg/cron">package tracker</a>
+</li>
+<li class="list-group-item">
+<a href="/bookworm/cron/cron.8.en.gz">raw man page</a>
+</li>
+</ul>
+</div>
+</div>
+
+<div class="panel toc" role="complementary" style="padding-bottom: 0">
+<details>
+<summary>
+table of contents
+</summary>
+<div class="panel-body">
+<ul class="list-group list-group-flush">
+
+<li class="list-group-item">
+  <a class="toclink" href="#NAME" title="NAME">NAME</a>
+</li>
+
+<li class="list-group-item">
+  <a class="toclink" href="#SYNOPSIS" title="SYNOPSIS">SYNOPSIS</a>
+</li>
+
+<li class="list-group-item">
+  <a class="toclink" href="#DESCRIPTION" title="DESCRIPTION">DESCRIPTION</a>
+</li>
+
+<li class="list-group-item">
+  <a class="toclink" href="#OPTIONS" title="OPTIONS">OPTIONS</a>
+</li>
+
+<li class="list-group-item">
+  <a class="toclink" href="#NOTES" title="NOTES">NOTES</a>
+</li>
+
+<li class="list-group-item">
+  <a class="toclink" href="#ENVIRONMENT" title="ENVIRONMENT">ENVIRONMENT</a>
+</li>
+
+<li class="list-group-item">
+  <a class="toclink" href="#DEBIAN_SPECIFIC" title="DEBIAN SPECIFIC">DEBIAN SPECIFIC</a>
+</li>
+
+<li class="list-group-item">
+  <a class="toclink" href="#SEE_ALSO" title="SEE ALSO">SEE ALSO</a>
+</li>
+
+<li class="list-group-item">
+  <a class="toclink" href="#AUTHOR" title="AUTHOR">AUTHOR</a>
+</li>
+
+</ul>
+</div>
+</details>
+</div>
+
+<div class="panel otherversions" role="complementary">
+<div class="panel-heading" role="heading">
+other versions
+</div>
+<div class="panel-body">
+<ul class="list-group list-group-flush">
+
+<li class="list-group-item active">
+<a href="/bookworm/cron/cron.8.en.html">bookworm</a> <span class="pkgversion" title="3.0pl1-162">3.0pl1-162</span>
+</li>
+
+<li class="list-group-item">
+<a href="/testing/cron/cron.8.en.html">testing</a> <span class="pkgversion" title="3.0pl1-197">3.0pl1-197</span>
+</li>
+
+<li class="list-group-item">
+<a href="/unstable/cron/cron.8.en.html">unstable</a> <span class="pkgversion" title="3.0pl1-197">3.0pl1-197</span>
+</li>
+
+</ul>
+</div>
+</div>
+
+
+<div class="panel otherlangs" role="complementary">
+<div class="panel-heading" role="heading">
+other languages
+</div>
+<div class="panel-body">
+<ul class="list-group list-group-flush">
+
+<li class="list-group-item">
+<a href="/bookworm/manpages-de/cron.8.de.html" title="German (de)">Deutsch</a>
+
+</li>
+
+<li class="list-group-item active">
+<a href="/bookworm/cron/cron.8.en.html" title="English (en)">English</a>
+
+</li>
+
+<li class="list-group-item">
+<a href="/bookworm/manpages-fr/cron.8.fr.html" title="French (fr)">français</a>
+
+</li>
+
+<li class="list-group-item">
+<a href="/bookworm/manpages-ja/cron.8.ja.html" title="Japanese (ja)">日本語</a>
+
+</li>
+
+<li class="list-group-item">
+<a href="/bookworm/manpages-pl/cron.8.pl.html" title="Polish (pl)">polski</a>
+
+</li>
+
+<li class="list-group-item">
+<a href="/bookworm/manpages-tr/cron.8.tr.html" title="Turkish (tr)">Türkçe</a>
+
+</li>
+
+<li class="list-group-item">
+<a href="/bookworm/manpages-zh/cron.8.zh_CN.html" title="Chinese (zh_CN)">中文 (zh-CN)</a>
+
+</li>
+
+<li class="list-group-item">
+<a href="/bookworm/manpages-zh/cron.8.zh_TW.html" title="Chinese (zh_TW)">繁體中文 (zh-TW)</a>
+
+</li>
+
+</ul>
+</div>
+</div>
+
+
+
+<div class="panel" role="complementary">
+<div class="panel-heading" role="heading">
+other sections
+</div>
+<div class="panel-body">
+<ul class="list-group list-group-flush">
+
+<li class="list-group-item">
+<a href="/bookworm/tcllib/cron.3tcl.en.html">3tcl (<span title="Library calls (functions within program libraries)">libfuncs</span>)</a>
+</li>
+
+<li class="list-group-item active">
+<a href="/bookworm/cron/cron.8.en.html">8 (<span title="System administration commands (usually only for root)">sysadmin</span>)</a>
+</li>
+
+</ul>
+</div>
+</div>
+
+
+
+</div>
+
+<div class="maincontent">
+<p class="paneljump"><a href="#panels">Scroll to navigation</a></p>
+<div class="mandoc">
+<table class="head">
+  <tbody><tr>
+    <td class="head-ltitle">CRON(8)</td>
+    <td class="head-vol">System Manager&#39;s Manual</td>
+    <td class="head-rtitle">CRON(8)</td>
+  </tr>
+</tbody></table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME">NAME<a class="anchor" href="#NAME">¶</a></h1>
+<p class="Pp">cron - daemon to execute scheduled commands (Vixie Cron)</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS">SYNOPSIS<a class="anchor" href="#SYNOPSIS">¶</a></h1>
+<p class="Pp">cron [<b>-f</b>] [<b>-l</b>] [<b>-L</b> <i>loglevel</i>]</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION">DESCRIPTION<a class="anchor" href="#DESCRIPTION">¶</a></h1>
+<p class="Pp"><i>cron</i> is started automatically from /etc/init.d on entering
+    multi-user runlevels.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="OPTIONS">OPTIONS<a class="anchor" href="#OPTIONS">¶</a></h1>
+<dl class="Bl-tag">
+  <dt id="f"><a class="permalink" href="#f"><b>-f</b></a></dt>
+  <dd>Stay in foreground mode, don&#39;t daemonize.</dd>
+  <dt id="l"><a class="permalink" href="#l"><b>-l</b></a></dt>
+  <dd>Enable LSB compliant names for /etc/cron.d files. This setting, however,
+      does not affect the parsing of files under /etc/cron.hourly,
+      /etc/cron.daily, /etc/cron.weekly or /etc/cron.monthly.</dd>
+  <dt id="n"><a class="permalink" href="#n"><b>-n</b></a></dt>
+  <dd>Include the FQDN in the subject when sending mails. By default, cron will
+      abbreviate the hostname.</dd>
+  <dt id="L"><a class="permalink" href="#L"><b>-L loglevel</b></a></dt>
+  <dd>Tell cron what to log about <b>jobs</b> (errors are logged regardless of
+      this value) as the sum of the following values:
+    <br/>
+  </dd>
+</dl>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><b>1</b></dt>
+  <dd>will log the start of all cron jobs</dd>
+  <dt><b>2</b></dt>
+  <dd>will log the end of all cron jobs</dd>
+  <dt><b>4</b></dt>
+  <dd>will log all failed jobs (exit status != 0)</dd>
+  <dt><b>8</b></dt>
+  <dd>will log the process number of all cron jobs</dd>
+</dl>
+</div>
+<dl class="Bl-tag">
+  <dt></dt>
+  <dd>The default is to log the start of all jobs (1). Logging will be disabled
+      if <i>levels</i> is set to zero (0). A value of fifteen (15) will select
+      all options.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="NOTES">NOTES<a class="anchor" href="#NOTES">¶</a></h1>
+<p class="Pp"><i>cron</i> searches its spool area (/var/spool/cron/crontabs) for
+    crontab files (which are named after accounts in /etc/passwd); crontabs
+    found are loaded into memory. Note that crontabs in this directory should
+    not be accessed directly - the <i>crontab</i> command should be used to
+    access and update them.</p>
+<p class="Pp"><i>cron</i> also reads /etc/crontab, which is in a slightly
+    different format (see <a href="/bookworm/cron/crontab.5.en.html">crontab(5)</a>). In Debian, the content of
+    /etc/crontab is predefined to run programs under /etc/cron.hourly,
+    /etc/cron.daily, /etc/cron.weekly and /etc/cron.monthly. This configuration
+    is specific to Debian, see the note under <b>DEBIAN SPECIFIC</b> below.</p>
+<p class="Pp">Additionally, in Debian, <i>cron</i> reads the files in the
+    /etc/cron.d directory. <i>cron</i> treats the files in /etc/cron.d as in the
+    same way as the /etc/crontab file (they follow the special format of that
+    file, i.e. they include the <i>user</i> field). However, they are
+    independent of /etc/crontab: they do not, for example, inherit environment
+    variable settings from it. This change is specific to Debian see the note
+    under <b>DEBIAN SPECIFIC</b> below.</p>
+<p class="Pp">Like /etc/crontab, the files in the /etc/cron.d directory are
+    monitored for changes. In general, the system administrator should not use
+    /etc/cron.d/, but use the standard system crontab /etc/crontab.</p>
+<p class="Pp">/etc/crontab and the files in /etc/cron.d must be owned by root,
+    and must not be group- or other-writable. In contrast to the spool area, the
+    files under /etc/cron.d or the files under /etc/cron.hourly,
+    /etc/cron.daily, /etc/cron.weekly and /etc/cron.monthly may also be
+    symlinks, provided that both the symlink and the file it points to are owned
+    by root. The files under /etc/cron.d do not need to be executable, while the
+    files under /etc/cron.hourly, /etc/cron.daily, /etc/cron.weekly and
+    /etc/cron.monthly do, as they are run by <i>run-parts</i> (see
+    <a href="/bookworm/debianutils/run-parts.8.en.html">run-parts(8)</a> for more information).</p>
+<p class="Pp"><i>cron</i> then wakes up every minute, examining all stored
+    crontabs, checking each command to see if it should be run in the current
+    minute. When executing commands, any output is mailed to the owner of the
+    crontab (or to the user named in the MAILTO environment variable in the
+    crontab, if such exists) from the owner of the crontab (or from the email
+    address given in the MAILFROM environment variable in the crontab, if such
+    exists). The children copies of cron running these processes have their name
+    coerced to uppercase, as will be seen in the syslog and ps output.</p>
+<p class="Pp">Additionally, <i>cron</i> checks each minute to see if its spool
+    directory&#39;s modtime (or the modtime on the <i>/etc/crontab</i> file) has
+    changed, and if it has, <i>cron</i> will then examine the modtime on all
+    crontabs and reload those which have changed. Thus <i>cron</i> need not be
+    restarted whenever a crontab file is modified. Note that the
+    <a href="/bookworm/cron/crontab.1.en.html">crontab(1)</a> command updates the modtime of the spool directory
+    whenever it changes a crontab.</p>
+<p class="Pp">Special considerations exist when the clock is changed by less
+    than 3 hours, for example at the beginning and end of daylight savings time.
+    If the time has moved forwards, those jobs which would have run in the time
+    that was skipped will be run soon after the change. Conversely, if the time
+    has moved backwards by less than 3 hours, those jobs that fall into the
+    repeated time will not be re-run.</p>
+<p class="Pp">Only jobs that run at a particular time (not specified as @hourly,
+    nor with &#39;*&#39; in the hour or minute specifier) are affected. Jobs which are
+    specified with wildcards are run based on the new time immediately.</p>
+<p class="Pp">Clock changes of more than 3 hours are considered to be
+    corrections to the clock, and the new time is used immediately.</p>
+<p class="Pp"><i>cron</i> logs its action to the syslog facility &#39;cron&#39;, and
+    logging may be controlled using the standard <a href="/bookworm/inetutils-syslogd/syslogd.8.en.html">syslogd(8)</a> facility.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ENVIRONMENT">ENVIRONMENT<a class="anchor" href="#ENVIRONMENT">¶</a></h1>
+<p class="Pp">If configured in <i>/etc/default/cron</i> in Debian systems, the
+    <i>cron</i> daemon localisation settings environment can be managed through
+    the use of <i>/etc/environment</i> or through the use of
+    <i>/etc/default/locale</i> with values from the latter overriding values
+    from the former. These files are read and they will be used to setup the
+    LANG, LC_ALL, and LC_CTYPE environment variables. These variables are then
+    used to set the charset of mails, which defaults to &#39;C&#39;.</p>
+<p class="Pp">This does <b>NOT</b> affect the environment of tasks running under
+    cron. For more information on how to modify the environment of tasks,
+    consult <a href="/bookworm/cron/crontab.5.en.html">crontab(5)</a>.</p>
+<p class="Pp">The daemon will use, if present, the definition from
+    <i>/etc/timezone</i> for the timezone.</p>
+<p class="Pp">The environment can be redefined in user&#39;s crontab definitions but
+    <i>cron</i> will only handle tasks in a single timezone.</p>
+<p class="Pp"></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DEBIAN_SPECIFIC">DEBIAN SPECIFIC<a class="anchor" href="#DEBIAN_SPECIFIC">¶</a></h1>
+<p class="Pp">Debian introduces some changes to <i>cron</i> that were not
+    originally available upstream. The most significant changes introduced
+  are:</p>
+<p class="Pp"></p>
+<dl class="Bl-tag">
+  <dt>—</dt>
+  <dd>Support for /etc/cron.{hourly,daily,weekly,monthly} via /etc/crontab,</dd>
+  <dt>—</dt>
+  <dd>Support for /etc/cron.d (drop-in dir for package crontabs),</dd>
+  <dt>—</dt>
+  <dd>PAM support,</dd>
+  <dt>—</dt>
+  <dd>SELinux support,</dd>
+  <dt>—</dt>
+  <dd>auditlog support,</dd>
+  <dt>—</dt>
+  <dd>DST and other time-related changes/fixes,</dd>
+  <dt>—</dt>
+  <dd>SGID <a href="/bookworm/cron/crontab.1.en.html">crontab(1)</a> instead of SUID root,</dd>
+  <dt>—</dt>
+  <dd>Debian-specific file locations and commands,</dd>
+  <dt>—</dt>
+  <dd>Debian-specific configuration (/etc/default/cron),</dd>
+  <dt>—</dt>
+  <dd>numerous other smaller features and fixes.
+    <p class="Pp"></p>
+  </dd>
+</dl>
+<p class="Pp">Support for /etc/cron.hourly, /etc/cron.daily, /etc/cron.weekly
+    and /etc/cron.monthly is provided in Debian through the default setting of
+    the /etc/crontab file (see the system-wide example in <a href="/bookworm/cron/crontab.5.en.html">crontab(5)</a>).
+    The default system-wide crontab contains four tasks: run every hour, every
+    day, every week and every month. Each of these tasks will execute
+    <b>run-parts</b> providing each one of the directories as an argument. These
+    tasks are disabled if <b>anacron</b> is installed (except for the hourly
+    task) to prevent conflicts between both daemons.</p>
+<p class="Pp">As described above, the files under these directories have to pass
+    some sanity checks including the following: be executable, be owned by root,
+    not be writable by group or other and, if symlinks, point to files owned by
+    root. Additionally, the file names must conform to the filename requirements
+    of <b>run-parts</b>: they must be entirely made up of letters, digits and
+    can only contain the special signs underscores (&#39;_&#39;) and hyphens (&#39;-&#39;). Any
+    file that does not conform to these requirements will not be executed by
+    <b>run-parts</b>. For example, any file containing dots will be ignored.
+    This is done to prevent cron from running any of the files that are left by
+    the Debian package management system when handling files in /etc/cron.d/ as
+    configuration files (i.e. files ending in .dpkg-dist, .dpkg-orig, .dpkg-old,
+    and .dpkg-new).</p>
+<p class="Pp">This feature can be used by system administrators and packages to
+    include tasks that will be run at defined intervals. Files created by
+    packages in these directories should be named after the package that
+    supplies them.</p>
+<p class="Pp"></p>
+<p class="Pp">Support for /etc/cron.d is included in the <i>cron</i> daemon
+    itself, which handles this location as the system-wide crontab spool. This
+    directory can contain any file defining tasks following the format used in
+    /etc/crontab, i.e. unlike the user cron spool, these files must provide the
+    username to run the task as in the task definition.</p>
+<p class="Pp">Files in this directory have to be owned by root, do not need to
+    be executable (they are configuration files, just like /etc/crontab) and
+    must conform to the same naming convention as used by <a href="/bookworm/debianutils/run-parts.8.en.html">run-parts(8)</a> :
+    they must consist solely of upper- and lower-case letters, digits,
+    underscores, and hyphens. This means that they <b>cannot</b> contain any
+    dots. If the <b>-l</b> option is specified to <i>cron</i> (this option can
+    be setup through /etc/default/cron, see below), then they must conform to
+    the LSB namespace specification, exactly as in the <b>--lsbsysinit</b>
+    option in <i>run-parts</i>.</p>
+<p class="Pp">The intended purpose of this feature is to allow packages that
+    require finer control of their scheduling than the
+    /etc/cron.{hourly,daily,weekly,monthly} directories to add a crontab file to
+    /etc/cron.d. Such files should be named after the package that supplies
+    them.</p>
+<p class="Pp"></p>
+<p class="Pp">Also, the default configuration of <i>cron</i> is controlled by
+    <i>/etc/default/cron</i> which is read by the init.d script that launches
+    the <i>cron</i> daemon. This file determines whether <i>cron</i> will read
+    the system&#39;s environment variables and makes it possible to add additional
+    options to the <i>cron</i> program before it is executed, either to
+    configure its logging or to define how it will treat the files under
+    /etc/cron.d.</p>
+<p class="Pp"></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO">SEE ALSO<a class="anchor" href="#SEE_ALSO">¶</a></h1>
+<p class="Pp"><a href="/bookworm/cron/crontab.1.en.html">crontab(1)</a>, <a href="/bookworm/cron/crontab.5.en.html">crontab(5)</a>, <a href="/bookworm/debianutils/run-parts.8.en.html">run-parts(8)</a></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHOR">AUTHOR<a class="anchor" href="#AUTHOR">¶</a></h1>
+<p class="Pp">Paul Vixie &lt;paul@vix.com&gt; is the author of <i>cron</i> and
+    original creator of this manual page. This page has also been modified for
+    Debian by Steve Greenland, Javier Fernandez-Sanguino and Christian
+  Kastner.</p>
+<p class="Pp"></p>
+</section>
+</div>
+<table class="foot">
+  <tbody><tr>
+    <td class="foot-date">19 April 2010</td>
+    <td class="foot-os">4th Berkeley Distribution</td>
+  </tr>
+</tbody></table>
+</div>
+</div>
+</div>
+<div id="footer">
+
+<p><table>
+<tr>
+<td>
+Source file:
+</td>
+<td>
+cron.8.en.gz (from <a href="http://snapshot.debian.org/package/cron/3.0pl1-162/">cron 3.0pl1-162</a>)
+</td>
+</tr>
+
+<tr>
+<td>
+Source last updated:
+</td>
+<td>
+2023-03-02T07:33:55Z
+</td>
+</tr>
+
+<tr>
+<td>
+Converted to HTML:
+</td>
+<td>
+2025-06-28T02:50:18Z
+</td>
+</tr>
+</table></p>
+
+<hr>
+<div id="fineprint">
+<p>debiman HEAD, see <a
+href="https://github.com/Debian/debiman/">github.com/Debian/debiman</a>.
+Found a problem? See the <a href="/faq.html">FAQ</a>.</p>
+</div>
+</div>
+
+<script type="application/ld+json">
+"{\"@context\":\"http://schema.org\",\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"item\":{\"@type\":\"Thing\",\"@id\":\"/contents-bookworm.html\",\"name\":\"bookworm\"}},{\"@type\":\"ListItem\",\"position\":2,\"item\":{\"@type\":\"Thing\",\"@id\":\"/bookworm/cron/index.html\",\"name\":\"cron\"}},{\"@type\":\"ListItem\",\"position\":3,\"item\":{\"@type\":\"Thing\",\"@id\":\"\",\"name\":\"cron(8)\"}}]}"
+</script>

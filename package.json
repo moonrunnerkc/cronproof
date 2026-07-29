@@ -36,6 +36,7 @@
     "build:web": "tsx scripts/build-web.ts",
     "research": "tsx research/src/pipeline.ts",
     "check-links": "tsx scripts/check-links.ts",
+    "check-claims": "tsx scripts/check-claims.ts",
     "phase:close": "tsx scripts/phase-close.ts",
     "import-surface": "node --import tsx scripts/import-surface-scan.ts",
     "hermetic": "tsx scripts/credential-skip-check.ts",

@@ -1,0 +1,3117 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-layout="responsive" data-local="">
+  <head>
+    
+    <script>
+      window.addEventListener('error', window.__err=function f(e){f.p=f.p||[];f.p.push(e)});
+    </script>
+    <script>
+      (function() {
+        const theme = document.cookie.match(/prefers-color-scheme=(light|dark|auto)/)?.[1]
+        if (theme) {
+          document.querySelector('html').setAttribute('data-theme', theme);
+        }
+      }())
+    </script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Description" content="Package cron implements a cron spec parser and job runner.">
+    
+    <meta class="js-gtmID" data-gtmid="GTM-W8MVQXG">
+    <link rel="shortcut icon" href="/static/shared/icon/favicon.ico">
+    
+  
+    <link rel="canonical" href="https://pkg.go.dev/github.com/robfig/cron/v3">
+  
+
+    <link href="/static/frontend/frontend.min.css?version=prod-frontend-00227-zlw" rel="stylesheet">
+    
+    <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Go Packages">
+    
+    
+  <title>cron package - github.com/robfig/cron/v3 - Go Packages</title>
+
+    
+  <link href="/static/frontend/unit/unit.min.css?version=prod-frontend-00227-zlw" rel="stylesheet">
+  
+  <link href="/static/frontend/unit/main/main.min.css?version=prod-frontend-00227-zlw" rel="stylesheet">
+
+
+  </head>
+  <body>
+    
+    <script>
+      function loadScript(src, mod = true) {
+        let s = document.createElement('script');
+        s.src = src;
+        if (mod) {
+          s.type = 'module';
+          s.async = true;
+          s.defer = true
+        }
+        document.head.appendChild(s);
+      }
+      loadScript("/third_party/dialog-polyfill/dialog-polyfill.js", false)
+      loadScript("/static/frontend/frontend.js");
+    </script>
+    
+  <header class="go-Header go-Header--full js-siteHeader">
+    <div class="go-Header-inner go-Header-inner--dark">
+      <nav class="go-Header-nav">
+        <a href="https://go.dev/" class="js-headerLogo" data-gtmc="nav link"
+            data-test-id="go-header-logo-link" role="heading" aria-level="1">
+          <img class="go-Header-logo" src="/static/shared/logo/go-white.svg" alt="Go">
+        </a>
+         <div class="skip-navigation-wrapper">
+            <a class="skip-to-content-link" aria-label="Skip to main content" href="#main-content"> Skip to Main Content </a>
+          </div>
+        <div class="go-Header-rightContent">
+          
+<div class="go-SearchForm js-searchForm">
+  <form
+    class="go-InputGroup go-ShortcutKey go-SearchForm-form"
+    action="/search"
+    data-shortcut="/"
+    data-shortcut-alt="search"
+    data-gtmc="search form"
+    aria-label="Search for a package"
+    role="search"
+  >
+    <input name="q" class="go-Input js-searchFocus" aria-label="Search for a package" type="search"
+        autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"
+        placeholder="Search packages or symbols"
+        value="" />
+    <input name="m" value="" hidden>
+    <button class="go-Button go-Button--inverted" aria-label="Submit search">
+      <img
+        class="go-Icon"
+        height="24"
+        width="24"
+        src="/static/shared/icon/search_gm_grey_24dp.svg"
+        alt=""
+      />
+    </button>
+  </form>
+  <button class="go-SearchForm-expandSearch js-expandSearch" data-gtmc="nav button"
+      aria-label="Open search" data-test-id="expand-search">
+    <img class="go-Icon go-Icon--inverted" height="24" width="24"
+        src="/static/shared/icon/search_gm_grey_24dp.svg" alt="">
+
+  </button>
+</div>
+
+          <ul class="go-Header-menu">
+            <li class="go-Header-menuItem">
+              <a class="js-desktop-menu-hover" href="#" data-gtmc="nav link">
+                Why Go
+                <img class="go-Icon" height="24" width="24" src="/static/shared/icon/arrow_drop_down_gm_grey_24dp.svg" alt="submenu dropdown icon">
+              </a>
+              <ul class="go-Header-submenu go-Header-submenu--why js-desktop-submenu-hover" aria-label="submenu">
+                  <li class="go-Header-submenuItem">
+                    <div>
+                      <a href="https://go.dev/solutions#case-studies">
+                        <span>Case Studies</span>
+                      </a>
+                    </div>
+                    <p>Common problems companies solve with Go</p>
+                  </li>
+                  <li class="go-Header-submenuItem">
+                    <div>
+                      <a href="https://go.dev/solutions#use-cases">
+                        <span>Use Cases</span>
+                      </a>
+                    </div>
+                    <p>Stories about how and why companies use Go</p>
+                  </li>
+                  <li class="go-Header-submenuItem">
+                    <div>
+                      <a href="https://go.dev/security/">
+                        <span>Security</span>
+                      </a>
+                    </div>
+                    <p>How Go can help keep you secure by default</p>
+                  </li>
+              </ul>
+            </li>
+            <li class="go-Header-menuItem">
+              <a href="https://go.dev/learn/" data-gtmc="nav link">Learn</a>
+            </li>
+            <li class="go-Header-menuItem">
+              <a class="js-desktop-menu-hover" href="#" data-gtmc="nav link">
+                Docs
+                <img class="go-Icon" height="24" width="24" src="/static/shared/icon/arrow_drop_down_gm_grey_24dp.svg" alt="submenu dropdown icon">
+              </a>
+              <ul class="go-Header-submenu go-Header-submenu--docs js-desktop-submenu-hover" aria-label="submenu">
+                <li class="go-Header-submenuItem">
+                  <div>
+                    <a href="https://go.dev/doc/effective_go">
+                      <span>Effective Go</span>
+                    </a>
+                  </div>
+                  <p>Tips for writing clear, performant, and idiomatic Go code</p>
+                </li>
+                <li class="go-Header-submenuItem">
+                  <div>
+                    <a href="https://go.dev/doc/">
+                      <span>Go User Manual</span>
+                    </a>
+                  </div>
+                  <p>A complete introduction to building software with Go</p>
+                </li>
+                <li class="go-Header-submenuItem">
+                  <div>
+                    <a href="https://pkg.go.dev/std">
+                      <span>Standard library</span>
+                    </a>
+                  </div>
+                  <p>Reference documentation for Go's standard library</p>
+                </li>
+                <li class="go-Header-submenuItem">
+                  <div>
+                    <a href="https://go.dev/doc/devel/release">
+                      <span>Release Notes</span>
+                    </a>
+                  </div>
+                  <p>Learn what's new in each Go release</p>
+                </li>
+                <li class="go-Header-submenuItem">
+                  <div>
+                    <a href="/api">
+                      <span>API</span>
+                    </a>
+                  </div>
+                  <p>Reference documentation for the pkg.go.dev API</p>
+                </li>
+              </ul>
+            </li>
+            <li class="go-Header-menuItem go-Header-menuItem--active">
+              <a href="/" data-gtmc="nav link">Packages</a>
+            </li>
+            <li class="go-Header-menuItem">
+              <a class="js-desktop-menu-hover" href="#" data-gtmc="nav link">
+                Community
+                <img class="go-Icon" height="24" width="24" src="/static/shared/icon/arrow_drop_down_gm_grey_24dp.svg" alt="submenu dropdown icon">
+              </a>
+              <ul class="go-Header-submenu go-Header-submenu--community js-desktop-submenu-hover" aria-label="submenu">
+                <li class="go-Header-submenuItem">
+                  <div>
+                    <a href="https://go.dev/talks/">
+                      <span>Recorded Talks</span>
+                    </a>
+                  </div>
+                  <p>Videos from prior events</p>
+                </li>
+                <li class="go-Header-submenuItem">
+                  <div>
+                    <a href="https://www.meetup.com/pro/go">
+                      <span>Meetups</span>
+                      <i class="material-icons">
+                        <img class="go-Icon" height="24" width="24"
+                            src="/static/shared/icon/launch_gm_grey_24dp.svg" alt="">
+                      </i>
+                    </a>
+                  </div>
+                  <p>Meet other local Go developers</p>
+                </li>
+                <li class="go-Header-submenuItem">
+                  <div>
+                    <a href="https://github.com/golang/go/wiki/Conferences">
+                      <span>Conferences</span>
+                      <i class="material-icons">
+                        <img class="go-Icon" height="24" width="24"
+                            src="/static/shared/icon/launch_gm_grey_24dp.svg" alt="">
+                      </i>
+                    </a>
+                  </div>
+                  <p>Learn and network with Go developers from around the world</p>
+                </li>
+                <li class="go-Header-submenuItem">
+                  <div>
+                    <a href="https://go.dev/blog">
+                      <span>Go blog</span>
+                    </a>
+                  </div>
+                  <p>The Go project's official blog.</p>
+                </li>
+                <li class="go-Header-submenuItem">
+                  <div>
+                    <a href="https://go.dev/help">
+                      <span>Go project</span>
+                    </a>
+                  </div>
+                  <p>Get help and stay informed from Go</p>
+                </li>
+                <li class="go-Header-submenuItem">
+                  <div>
+                    Get connected
+                  </div>
+                  <p></p>
+                  <div class="go-Header-socialIcons">
+                      <a
+                        class="go-Header-socialIcon"
+                        aria-label="Get connected with google-groups (Opens in new window)"
+                        title="Get connected with google-groups (Opens in new window)"
+                        href="https://groups.google.com/g/golang-nuts">
+                        <img src="/static/shared/logo/social/google-groups.svg" />
+                      </a>
+                      <a
+                        class="go-Header-socialIcon"
+                        aria-label="Get connected with github (Opens in new window)"
+                        title="Get connected with github (Opens in new window)"
+                        href="https://github.com/golang">
+                        <img src="/static/shared/logo/social/github.svg" />
+                      </a>
+                      <a
+                        class="go-Header-socialIcon"
+                        aria-label="Get connected with twitter (Opens in new window)"
+                        title="Get connected with twitter (Opens in new window)"
+                        href="https://twitter.com/golang">
+                        <img src="/static/shared/logo/social/twitter.svg" />
+                      </a>
+                      <a
+                        class="go-Header-socialIcon"
+                        aria-label="Get connected with reddit (Opens in new window)"
+                        title="Get connected with reddit (Opens in new window)"
+                        href="https://www.reddit.com/r/golang/">
+                        <img src="/static/shared/logo/social/reddit.svg" />
+                      </a>
+                      <a
+                        class="go-Header-socialIcon"
+                        aria-label="Get connected with slack (Opens in new window)"
+                        title="Get connected with slack (Opens in new window)"
+                        href="https://invite.slack.golangbridge.org/">
+                        <img src="/static/shared/logo/social/slack.svg" />
+                      </a>
+                      <a
+                        class="go-Header-socialIcon"
+                        aria-label="Get connected with stack-overflow (Opens in new window)"
+                        title=""
+                        href="https://stackoverflow.com/collectives/go">
+                        <img src="/static/shared/logo/social/stack-overflow.svg" />
+                      </a>
+                  </div>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <button class="go-Header-navOpen js-headerMenuButton go-Header-navOpen--white" data-gtmc="nav button" aria-label="Open navigation">
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+  <aside class="go-NavigationDrawer js-header">
+    <nav class="go-NavigationDrawer-nav">
+      <div class="go-NavigationDrawer-header">
+        <a href="https://go.dev/">
+          <img class="go-NavigationDrawer-logo" src="/static/shared/logo/go-blue.svg" alt="Go.">
+        </a>
+      </div>
+      <ul class="go-NavigationDrawer-list">
+          <li class="go-NavigationDrawer-listItem js-mobile-subnav-trigger go-NavigationDrawer-hasSubnav">
+            <a href="#">
+              <span>Why Go</span>
+              <i class="material-icons">
+                <img class="go-Icon" height="24" width="24"
+                  src="/static/shared/icon/navigate_next_gm_grey_24dp.svg" alt="">
+              </i>
+            </a>
+
+            <div class="go-NavigationDrawer go-NavigationDrawer-submenuItem">
+              <div class="go-NavigationDrawer-nav">
+                <div class="go-NavigationDrawer-header">
+                  <a href="#">
+                    <i class="material-icons">
+                      <img class="go-Icon" height="24" width="24"
+                        src="/static/shared/icon/navigate_before_gm_grey_24dp.svg" alt="">
+                      </i>
+                      Why Go
+                  </a>
+                </div>
+                <ul class="go-NavigationDrawer-list">
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="https://go.dev/solutions#case-studies">
+                      Case Studies
+                    </a>
+                  </li>
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="https://go.dev/solutions#use-cases">
+                      Use Cases
+                    </a>
+                  </li>
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="https://go.dev/security/">
+                      Security
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </li>
+          <li class="go-NavigationDrawer-listItem">
+            <a href="https://go.dev/learn/">Learn</a>
+          </li>
+          <li class="go-NavigationDrawer-listItem js-mobile-subnav-trigger go-NavigationDrawer-hasSubnav">
+            <a href="#">
+              <span>Docs</span>
+              <i class="material-icons">
+                <img class="go-Icon" height="24" width="24"
+                  src="/static/shared/icon/navigate_next_gm_grey_24dp.svg" alt="">
+              </i>
+            </a>
+
+            <div class="go-NavigationDrawer go-NavigationDrawer-submenuItem">
+              <div class="go-NavigationDrawer-nav">
+                <div class="go-NavigationDrawer-header">
+                  <a href="#"><i class="material-icons">
+                    <img class="go-Icon" height="24" width="24"
+                      src="/static/shared/icon/navigate_before_gm_grey_24dp.svg" alt="">
+                    </i>
+                    Docs
+                  </a>
+                </div>
+                <ul class="go-NavigationDrawer-list">
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="https://go.dev/doc/effective_go">
+                      Effective Go
+                    </a>
+                  </li>
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="https://go.dev/doc/">
+                      Go User Manual
+                    </a>
+                  </li>
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="https://pkg.go.dev/std">
+                      Standard library
+                    </a>
+                  </li>
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="https://go.dev/doc/devel/release">
+                      Release Notes
+                    </a>
+                  </li>
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="/api">
+                      API
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </li>
+          <li class="go-NavigationDrawer-listItem go-NavigationDrawer-listItem--active">
+            <a href="/">Packages</a>
+          </li>
+          <li class="go-NavigationDrawer-listItem js-mobile-subnav-trigger go-NavigationDrawer-hasSubnav">
+            <a href="#">
+              <span>Community</span>
+              <i class="material-icons">
+                <img class="go-Icon" height="24" width="24"
+                  src="/static/shared/icon/navigate_next_gm_grey_24dp.svg" alt="">
+              </i>
+            </a>
+            <div class="go-NavigationDrawer go-NavigationDrawer-submenuItem">
+              <div class="go-NavigationDrawer-nav">
+                <div class="go-NavigationDrawer-header">
+                  <a href="#">
+                    <i class="material-icons">
+                      <img class="go-Icon" height="24" width="24"
+                        src="/static/shared/icon/navigate_before_gm_grey_24dp.svg" alt="">
+                    </i>
+                    Community
+                  </a>
+                </div>
+                <ul class="go-NavigationDrawer-list">
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="https://go.dev/talks/">
+                      Recorded Talks
+                    </a>
+                  </li>
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="https://www.meetup.com/pro/go">
+                      Meetups
+                      <i class="material-icons">
+                      <img class="go-Icon" height="24" width="24"
+                          src="/static/shared/icon/launch_gm_grey_24dp.svg" alt="">
+                      </i>
+                    </a>
+                  </li>
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="https://github.com/golang/go/wiki/Conferences">
+                      Conferences
+                      <i class="material-icons">
+                        <img class="go-Icon" height="24" width="24" src="/static/shared/icon/launch_gm_grey_24dp.svg" alt="">
+                      </i>
+                    </a>
+                  </li>
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="https://go.dev/blog">
+                      Go blog
+                    </a>
+                  </li>
+                  <li class="go-NavigationDrawer-listItem">
+                    <a href="https://go.dev/help">
+                      Go project
+                    </a>
+                  </li>
+                  <li class="go-NavigationDrawer-listItem">
+                    <div>Get connected</div>
+                    <div class="go-Header-socialIcons">
+                        <a class="go-Header-socialIcon" href="https://groups.google.com/g/golang-nuts"><img src="/static/shared/logo/social/google-groups.svg" /></a>
+                        <a class="go-Header-socialIcon" href="https://github.com/golang"><img src="/static/shared/logo/social/github.svg" /></a>
+                        <a class="go-Header-socialIcon" href="https://twitter.com/golang"><img src="/static/shared/logo/social/twitter.svg" /></a>
+                        <a class="go-Header-socialIcon" href="https://www.reddit.com/r/golang/"><img src="/static/shared/logo/social/reddit.svg" /></a>
+                        <a class="go-Header-socialIcon" href="https://invite.slack.golangbridge.org/"><img src="/static/shared/logo/social/slack.svg" /></a>
+                        <a class="go-Header-socialIcon" href="https://stackoverflow.com/collectives/go"><img src="/static/shared/logo/social/stack-overflow.svg" /></a>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </li>
+      </ul>
+    </nav>
+  </aside>
+  <div class="go-NavigationDrawer-scrim js-scrim" role="presentation"></div>
+
+    
+  <main class="go-Main" id="main-content">
+    <div class="go-Main-banner" role="alert"></div>
+    <header class="go-Main-header js-mainHeader">
+  
+  
+  <nav class="go-Main-headerBreadcrumb go-Breadcrumb" aria-label="Breadcrumb" data-test-id="UnitHeader-breadcrumb">
+    <ol>
+      
+        
+          <li data-test-id="UnitHeader-breadcrumbItem">
+            <a href="/" data-gtmc="breadcrumb link">Discover Packages</a>
+          </li>
+        
+        <li>
+          <a href="/github.com/robfig/cron/v3@v3.0.1" data-gtmc="breadcrumb link" aria-current="location"
+              data-test-id="UnitHeader-breadcrumbCurrent">
+            github.com/robfig/cron/v3
+          </a>
+          
+            <button
+              class="go-Button go-Button--inline go-Clipboard js-clipboard"
+              title="Copy path to clipboard.&#10;&#10;github.com/robfig/cron/v3"
+              aria-label="Copy Path to Clipboard"
+              data-to-copy="github.com/robfig/cron/v3"
+              data-gtmc="breadcrumbs button"
+            >
+              <img
+                class="go-Icon go-Icon--accented"
+                height="24"
+                width="24"
+                src="/static/shared/icon/content_copy_gm_grey_24dp.svg"
+                alt=""
+              >
+            </button>
+          
+        
+      </li>
+    </ol>
+  </nav>
+
+  <div class="go-Main-headerContent">
+    
+  <div class="go-Main-headerTitle js-stickyHeader">
+    <a class="go-Main-headerLogo" href="https://go.dev/" aria-hidden="true" tabindex="-1" data-gtmc="header link" aria-label="Link to Go Homepage">
+      <img height="78" width="207" src="/static/shared/logo/go-blue.svg" alt="Go">
+    </a>
+    <h1 class="UnitHeader-titleHeading" data-test-id="UnitHeader-title">cron</h1>
+    
+      <span class="go-Chip go-Chip--inverted">package</span>
+    
+      <span class="go-Chip go-Chip--inverted">module</span>
+    
+    
+      
+        <button
+          class="go-Button go-Button--inline go-Clipboard js-clipboard"
+          title="Copy path to clipboard.&#10;&#10;github.com/robfig/cron/v3"
+          aria-label="Copy Path to Clipboard"
+          data-to-copy="github.com/robfig/cron/v3"
+          data-gtmc="title button"
+          tabindex="-1"
+        >
+          <img
+            class="go-Icon go-Icon--accented"
+            height="24"
+            width="24"
+            src="/static/shared/icon/content_copy_gm_grey_24dp.svg"
+            alt=""
+          />
+        </button>
+      
+    
+  </div>
+
+    
+      
+  <div class="go-Main-headerDetails">
+    
+      
+  <span class="go-Main-headerDetailItem" data-test-id="UnitHeader-version">
+    <a href="?tab=versions" aria-label="Version: v3.0.1" 
+    data-gtmc="header link" aria-describedby="version-description">
+      <span class="go-textSubtle" aria-hidden="true">Version: </span>
+        v3.0.1
+    </a>
+    <div class="screen-reader-only" id="version-description" hidden>
+      Opens a new window with list of versions in this module.
+    </div>
+    
+    <span class="DetailsHeader-badge--latest" data-test-id="UnitHeader-minorVersionBanner">
+      <span class="go-Chip DetailsHeader-span--latest">Latest</span>
+      <span class="go-Chip DetailsHeader-span--notAtLatest">
+        Latest
+        
+  <details class="go-Tooltip js-tooltip" data-gtmc="tooltip">
+    <summary>
+      <img class="go-Icon go-Icon--inverted" height="24" width="24" src="/static/shared/icon/alert_gm_grey_24dp.svg" alt="Warning">
+    </summary>
+    <p>This package is not in the latest version of its module.</p>
+  </details>
+
+      </span>
+      <a href="/github.com/robfig/cron/v3" aria-label="Go to Latest Version" data-gtmc="header link">
+        <span class="go-Chip go-Chip--alert DetailsHeader-span--goToLatest">Go to latest</span>
+      </a>
+    </span>
+  </span>
+
+      
+  <span class="go-Main-headerDetailItem" data-test-id="UnitHeader-commitTime">
+    Published: Jan  4, 2020
+  </span>
+
+      
+  <span class="go-Main-headerDetailItem" data-test-id="UnitHeader-licenses">
+    License: <a href="/github.com/robfig/cron/v3?tab=licenses" data-test-id="UnitHeader-license" 
+        data-gtmc="header link" aria-describedby="license-description">MIT</a>
+      
+    
+  </span>
+  <div class="screen-reader-only" id="license-description" hidden>
+    Opens a new window with license information.
+  </div>
+
+      
+        
+  <span class="go-Main-headerDetailItem" data-test-id="UnitHeader-imports">
+    <a href="/github.com/robfig/cron/v3?tab=imports" aria-label="Imports: 12"
+        data-gtmc="header link" aria-describedby="imports-description">
+      <span class="go-textSubtle">Imports: </span>12
+    </a>
+  </span>
+  <div class="screen-reader-only" id="imports-description" hidden>
+    Opens a new window with list of imports.
+  </div>
+
+        
+  <span class="go-Main-headerDetailItem" data-test-id="UnitHeader-importedby">
+    <a href="/github.com/robfig/cron/v3?tab=importedby" aria-label="Imported By: 5,585"
+        data-gtmc="header link" aria-describedby="importedby-description">
+       <span class="go-textSubtle">Imported by: </span>5,585
+    </a>
+  </span>
+  <div class="screen-reader-only" id="importedby-description" hidden>
+    Opens a new window with list of known importers.
+  </div>
+
+      
+    
+  </div>
+  
+  <div class="UnitHeader-overflowContainer">
+    <svg class="UnitHeader-overflowImage" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+      <path d="M0 0h24v24H0z" fill="none"/>
+      <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+    </svg>
+    <select class="UnitHeader-overflowSelect js-selectNav" tabindex="-1">
+      <option value="/">Main</option>
+      <option value="/github.com/robfig/cron/v3?tab=versions">
+        Versions
+      </option>
+      <option value="/github.com/robfig/cron/v3?tab=licenses">
+        Licenses
+      </option>
+      
+        <option value="/github.com/robfig/cron/v3?tab=imports">
+          Imports
+        </option>
+        <option value="/github.com/robfig/cron/v3?tab=importedby">
+          Imported By
+        </option>
+      
+    </select>
+  </div>
+
+
+    
+  </div>
+
+</header>
+    
+      <aside class="go-Main-aside  js-mainAside">
+  
+  <div class="UnitMeta">
+    <h2 class="go-textLabel">Details</h2>
+    
+  <ul class="UnitMeta-details">
+    <li>
+      <details class="go-Tooltip js-tooltip" data-gtmc="tooltip">
+        <summary class="go-textSubtle">
+          
+  <img class="go-Icon go-Icon--accented"
+    tabindex="0"
+    role="button"src="/static/shared/icon/check_circle_gm_grey_24dp.svg" alt="checked" aria-label="Valid file, toggle tooltip"height="24" width="24">
+
+          Valid <a href="https://github.com/robfig/cron/tree/v3.0.1/go.mod" target="_blank" rel="noopener">go.mod</a> file
+          <img class="go-Icon" role="button" tabindex="0" src="/static/shared/icon/help_gm_grey_24dp.svg" alt="" aria-label="Toggle go.mod validity tooltip" height="24" width="24">
+        </summary>
+        <p aria-live="polite" role="tooltip">
+          The Go module system was introduced in Go 1.11 and is the official dependency management
+          solution for Go.
+        </p>
+      </details>
+    </li>
+    <li>
+      <details class="go-Tooltip js-tooltip" data-gtmc="tooltip">
+        <summary class="go-textSubtle">
+          
+  <img class="go-Icon go-Icon--accented"
+    tabindex="0"
+    role="button"src="/static/shared/icon/check_circle_gm_grey_24dp.svg" alt="checked" aria-label="Valid file, toggle tooltip"height="24" width="24">
+
+          Redistributable license
+          <img class="go-Icon" role="button" tabindex="0" src="/static/shared/icon/help_gm_grey_24dp.svg" alt="" aria-label="Toggle redistributable help tooltip" height="24" width="24">
+        </summary>
+        <p aria-live="polite" role="tooltip">
+          Redistributable licenses place minimal restrictions on how software can be used,
+          modified, and redistributed.
+        </p>
+      </details>
+    </li>
+    <li>
+      <details class="go-Tooltip js-tooltip" data-gtmc="tooltip">
+        <summary class="go-textSubtle">
+          
+  <img class="go-Icon go-Icon--accented"
+    tabindex="0"
+    role="button"src="/static/shared/icon/check_circle_gm_grey_24dp.svg" alt="checked" aria-label="Valid file, toggle tooltip"height="24" width="24">
+
+          Tagged version
+          <img class="go-Icon" role="button" tabindex="0" src="/static/shared/icon/help_gm_grey_24dp.svg" alt="" aria-label="Toggle tagged version tooltip" height="24" width="24">
+        </summary>
+        <p aria-live="polite" role="tooltip">Modules with tagged versions give importers more predictable builds.</p>
+      </details>
+    </li>
+    <li>
+      <details class="go-Tooltip js-tooltip" data-gtmc="tooltip">
+        <summary class="go-textSubtle">
+          
+  <img class="go-Icon go-Icon--accented"
+    tabindex="0"
+    role="button"src="/static/shared/icon/check_circle_gm_grey_24dp.svg" alt="checked" aria-label="Valid file, toggle tooltip"height="24" width="24">
+
+          Stable version
+          <img class="go-Icon" role="button" tabindex="0" aria-label="Toggle stable version tooltip" src="/static/shared/icon/help_gm_grey_24dp.svg" alt="" height="24" width="24">
+        </summary>
+        <p aria-live="polite" role="tooltip">When a project reaches major version v1 it is considered stable.</p>
+      </details>
+    </li>
+    <li class="UnitMeta-detailsLearn">
+      <a href="/about#best-practices" data-gtmc="meta link">Learn more about best practices</a>
+    </li>
+  </ul>
+
+    <h2 class="go-textLabel">Repository</h2>
+    <div class="UnitMeta-repo">
+      
+        <a href="https://github.com/robfig/cron" title="https://github.com/robfig/cron" target="_blank" rel="noopener">
+          github.com/robfig/cron
+        </a>
+      
+    </div>
+    
+      <h2 class="go-textLabel" data-test-id="links-heading">Links</h2>
+      <ul class="UnitMeta-links">
+        
+        
+          <li>
+            <a href="https://deps.dev/go/github.com%2Frobfig%2Fcron%2Fv3/v3.0.1" title="View this module on Open Source Insights"
+              target="_blank" rel="noopener" data-test-id="meta-link-depsdev">
+              <img class="link-Icon" src="/static/shared/icon/depsdev-logo.svg"
+                alt="Open Source Insights Logo" />
+              Open Source Insights
+            </a>
+          </li>
+        
+        
+        
+  
+
+        
+  
+
+        
+  
+
+      </ul>
+    
+  </div>
+
+</aside>
+    
+    <nav class="go-Main-nav go-Main-nav--sticky js-mainNav" aria-label="Outline">
+  <div class="go-Main-navDesktop">
+    
+  <div class="UnitOutline-jumpTo">
+    <button class="UnitOutline-jumpToInput go-ShortcutKey js-jumpToInput"
+        aria-controls="jump-to-modal"
+        aria-label="Open Jump to Identifier"
+        data-shortcut="f"
+        data-shortcut-alt="find"
+        data-test-id="jump-to-button" data-gtmc="outline button">
+      Jump to ...
+    </button>
+  </div>
+  <ul class="go-Tree js-tree" role="tree" aria-label="Outline">
+    
+      <li class="js-readmeOutline">
+        <a href="#section-readme" data-gtmc="outline link">
+          README
+        </a>
+        
+  <ul id="readme-outline">
+    
+      <li>
+        <a href="#readme-upgrading-to-v3-june-2019" data-gtmc="readme outline link">
+          Upgrading to v3 (June 2019)
+        </a>
+        
+          <ul>
+            
+              <li>
+                <a href="#readme-background-cron-spec-format" data-gtmc="readme outline link">
+                  Background - Cron spec format
+                </a>
+                 
+              </li>
+             
+          </ul>
+         
+      </li>
+     
+  </ul>
+
+      </li>
+    
+    
+      <li>
+        <a href="#section-documentation" data-gtmc="outline link">
+          Documentation
+        </a>
+        
+<ul>
+  
+    <li>
+      <a href="#pkg-overview" data-gtmc="doc outline link">Overview</a>
+    </li>
+  <li class="DocNav-overview">
+      <a href="#pkg-index" data-gtmc="doc outline link">
+        Index
+      </a>
+    </li>
+    <li class="DocNav-constants">
+      <a href="#pkg-constants" data-gtmc="doc outline link">
+        Constants
+      </a>
+    </li>
+    <li class="DocNav-variables">
+      <a href="#pkg-variables" data-gtmc="doc outline link">
+        Variables
+      </a>
+    </li>
+    <li class="DocNav-functions">
+      <a href="#pkg-functions" data-gtmc="doc outline link">
+        Functions
+      </a>
+      
+    </li>
+    <li class="DocNav-types">
+      <a href="#pkg-types" data-gtmc="doc outline link">
+        Types
+      </a>
+      <ul>
+        
+          
+          <li>
+            <a href="#Chain" title="type Chain" data-gtmc="doc outline link">
+              type Chain
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="#NewChain" title="NewChain(c)"
+                        data-gtmc="doc outline link">
+                      NewChain(c)
+                    </a>
+                  </li>
+                
+                
+                  <li>
+                    <a href="#Chain.Then" title="(c) Then(j)"
+                        data-gtmc="doc outline link">
+                      (c) Then(j)
+                    </a>
+                  </li>
+                
+              </ul>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#ConstantDelaySchedule" title="type ConstantDelaySchedule" data-gtmc="doc outline link">
+              type ConstantDelaySchedule
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="#Every" title="Every(duration)"
+                        data-gtmc="doc outline link">
+                      Every(duration)
+                    </a>
+                  </li>
+                
+                
+                  <li>
+                    <a href="#ConstantDelaySchedule.Next" title="(schedule) Next(t)"
+                        data-gtmc="doc outline link">
+                      (schedule) Next(t)
+                    </a>
+                  </li>
+                
+              </ul>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#Cron" title="type Cron" data-gtmc="doc outline link">
+              type Cron
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="#New" title="New(opts)"
+                        data-gtmc="doc outline link">
+                      New(opts)
+                    </a>
+                  </li>
+                
+                
+                  <li>
+                    <a href="#Cron.AddFunc" title="(c) AddFunc(spec, cmd)"
+                        data-gtmc="doc outline link">
+                      (c) AddFunc(spec, cmd)
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#Cron.AddJob" title="(c) AddJob(spec, cmd)"
+                        data-gtmc="doc outline link">
+                      (c) AddJob(spec, cmd)
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#Cron.Entries" title="(c) Entries()"
+                        data-gtmc="doc outline link">
+                      (c) Entries()
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#Cron.Entry" title="(c) Entry(id)"
+                        data-gtmc="doc outline link">
+                      (c) Entry(id)
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#Cron.Location" title="(c) Location()"
+                        data-gtmc="doc outline link">
+                      (c) Location()
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#Cron.Remove" title="(c) Remove(id)"
+                        data-gtmc="doc outline link">
+                      (c) Remove(id)
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#Cron.Run" title="(c) Run()"
+                        data-gtmc="doc outline link">
+                      (c) Run()
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#Cron.Schedule" title="(c) Schedule(schedule, cmd)"
+                        data-gtmc="doc outline link">
+                      (c) Schedule(schedule, cmd)
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#Cron.Start" title="(c) Start()"
+                        data-gtmc="doc outline link">
+                      (c) Start()
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#Cron.Stop" title="(c) Stop()"
+                        data-gtmc="doc outline link">
+                      (c) Stop()
+                    </a>
+                  </li>
+                
+              </ul>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#Entry" title="type Entry" data-gtmc="doc outline link">
+              type Entry
+            </a>
+            
+              <ul>
+                
+                
+                  <li>
+                    <a href="#Entry.Valid" title="(e) Valid()"
+                        data-gtmc="doc outline link">
+                      (e) Valid()
+                    </a>
+                  </li>
+                
+              </ul>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#EntryID" title="type EntryID" data-gtmc="doc outline link">
+              type EntryID
+            </a>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#FuncJob" title="type FuncJob" data-gtmc="doc outline link">
+              type FuncJob
+            </a>
+            
+              <ul>
+                
+                
+                  <li>
+                    <a href="#FuncJob.Run" title="(f) Run()"
+                        data-gtmc="doc outline link">
+                      (f) Run()
+                    </a>
+                  </li>
+                
+              </ul>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#Job" title="type Job" data-gtmc="doc outline link">
+              type Job
+            </a>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#JobWrapper" title="type JobWrapper" data-gtmc="doc outline link">
+              type JobWrapper
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="#DelayIfStillRunning" title="DelayIfStillRunning(logger)"
+                        data-gtmc="doc outline link">
+                      DelayIfStillRunning(logger)
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#Recover" title="Recover(logger)"
+                        data-gtmc="doc outline link">
+                      Recover(logger)
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#SkipIfStillRunning" title="SkipIfStillRunning(logger)"
+                        data-gtmc="doc outline link">
+                      SkipIfStillRunning(logger)
+                    </a>
+                  </li>
+                
+                
+              </ul>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#Logger" title="type Logger" data-gtmc="doc outline link">
+              type Logger
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="#PrintfLogger" title="PrintfLogger(l)"
+                        data-gtmc="doc outline link">
+                      PrintfLogger(l)
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#VerbosePrintfLogger" title="VerbosePrintfLogger(l)"
+                        data-gtmc="doc outline link">
+                      VerbosePrintfLogger(l)
+                    </a>
+                  </li>
+                
+                
+              </ul>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#Option" title="type Option" data-gtmc="doc outline link">
+              type Option
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="#WithChain" title="WithChain(wrappers)"
+                        data-gtmc="doc outline link">
+                      WithChain(wrappers)
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#WithLocation" title="WithLocation(loc)"
+                        data-gtmc="doc outline link">
+                      WithLocation(loc)
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#WithLogger" title="WithLogger(logger)"
+                        data-gtmc="doc outline link">
+                      WithLogger(logger)
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#WithParser" title="WithParser(p)"
+                        data-gtmc="doc outline link">
+                      WithParser(p)
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="#WithSeconds" title="WithSeconds()"
+                        data-gtmc="doc outline link">
+                      WithSeconds()
+                    </a>
+                  </li>
+                
+                
+              </ul>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#ParseOption" title="type ParseOption" data-gtmc="doc outline link">
+              type ParseOption
+            </a>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#Parser" title="type Parser" data-gtmc="doc outline link">
+              type Parser
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="#NewParser" title="NewParser(options)"
+                        data-gtmc="doc outline link">
+                      NewParser(options)
+                    </a>
+                  </li>
+                
+                
+                  <li>
+                    <a href="#Parser.Parse" title="(p) Parse(spec)"
+                        data-gtmc="doc outline link">
+                      (p) Parse(spec)
+                    </a>
+                  </li>
+                
+              </ul>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#Schedule" title="type Schedule" data-gtmc="doc outline link">
+              type Schedule
+            </a>
+            
+              <ul>
+                
+                  <li>
+                    <a href="#ParseStandard" title="ParseStandard(standardSpec)"
+                        data-gtmc="doc outline link">
+                      ParseStandard(standardSpec)
+                    </a>
+                  </li>
+                
+                
+              </ul>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#ScheduleParser" title="type ScheduleParser" data-gtmc="doc outline link">
+              type ScheduleParser
+            </a>
+             
+          </li>
+        
+          
+          <li>
+            <a href="#SpecSchedule" title="type SpecSchedule" data-gtmc="doc outline link">
+              type SpecSchedule
+            </a>
+            
+              <ul>
+                
+                
+                  <li>
+                    <a href="#SpecSchedule.Next" title="(s) Next(t)"
+                        data-gtmc="doc outline link">
+                      (s) Next(t)
+                    </a>
+                  </li>
+                
+              </ul>
+             
+          </li>
+         
+      </ul>
+    </li>
+  
+  
+</ul>
+
+      </li>
+    
+    
+      <li>
+        <a href="#section-sourcefiles" data-gtmc="outline link">
+          Source Files
+        </a>
+      </li>
+    
+    
+  </ul>
+
+  </div>
+  <div class="go-Main-navMobile js-mainNavMobile">
+    <label class="go-Label">
+      <select class="go-Select">
+        
+          <option selected disabled>README</option>
+        
+      </select>
+    </label>
+  </div>
+</nav>
+    <article class="go-Main-article js-mainContent">
+  <div class="UnitDetails" data-test-id="UnitDetails" style="display: block;">
+    <div class="UnitDetails-content js-unitDetailsContent" data-test-id="UnitDetails-content">
+      
+        
+  <div class="UnitReadme UnitReadme--expanded js-readme">
+    <h2 class="UnitReadme-title" id="section-readme">
+      <img class="go-Icon" height="24" width="24" src="/static/shared/icon/chrome_reader_mode_gm_grey_24dp.svg" alt="">
+      README
+      <a class="UnitReadme-idLink" href="#section-readme" title="Go to Readme" aria-label="Go to Readme">¶</a>
+    </h2>
+    
+      <div class="UnitReadme-content" data-test-id="Unit-readmeContent">
+        <div class="Overview-readmeContent js-readmeContent"><p><a href="http://godoc.org/github.com/robfig/cron" rel="nofollow"><img src="http://godoc.org/github.com/robfig/cron?status.png" alt="GoDoc"/></a>
+<a href="https://travis-ci.org/robfig/cron" rel="nofollow"><img src="https://travis-ci.org/robfig/cron.svg?branch=master" alt="Build Status"/></a></p>
+<h3 class="h1" id="readme-cron">cron</h3>
+<p>Cron V3 has been released!</p>
+<p>To download the specific tagged release, run:</p>
+<pre><code>go get github.com/robfig/cron/v3@v3.0.0
+</code></pre>
+<p>Import it in your program as:</p>
+<pre><code>import &#34;github.com/robfig/cron/v3&#34;
+</code></pre>
+<p>It requires Go 1.11 or later due to usage of Go Modules.</p>
+<p>Refer to the documentation here:
+<a href="http://godoc.org/github.com/robfig/cron" rel="nofollow">http://godoc.org/github.com/robfig/cron</a></p>
+<p>The rest of this document describes the the advances in v3 and a list of
+breaking changes for users that wish to upgrade from an earlier version.</p>
+<h4 class="h2" id="readme-upgrading-to-v3-june-2019">Upgrading to v3 (June 2019)</h4>
+<p>cron v3 is a major upgrade to the library that addresses all outstanding bugs,
+feature requests, and rough edges. It is based on a merge of master which
+contains various fixes to issues found over the years and the v2 branch which
+contains some backwards-incompatible features like the ability to remove cron
+jobs. In addition, v3 adds support for Go Modules, cleans up rough edges like
+the timezone support, and fixes a number of bugs.</p>
+<p>New features:</p>
+<ul>
+<li>
+<p>Support for Go modules. Callers must now import this library as
+<code>github.com/robfig/cron/v3</code>, instead of <code>gopkg.in/...</code></p>
+</li>
+<li>
+<p>Fixed bugs:</p>
+<ul>
+<li>0f01e6b parser: fix combining of Dow and Dom (#70)</li>
+<li>dbf3220 adjust times when rolling the clock forward to handle non-existent midnight (#157)</li>
+<li>eeecf15 spec_test.go: ensure an error is returned on 0 increment (#144)</li>
+<li>70971dc cron.Entries(): update request for snapshot to include a reply channel (#97)</li>
+<li>1cba5e6 cron: fix: removing a job causes the next scheduled job to run too late (#206)</li>
+</ul>
+</li>
+<li>
+<p>Standard cron spec parsing by default (first field is &#34;minute&#34;), with an easy
+way to opt into the seconds field (quartz-compatible). Although, note that the
+year field (optional in Quartz) is not supported.</p>
+</li>
+<li>
+<p>Extensible, key/value logging via an interface that complies with
+the <a href="https://github.com/go-logr/logr" rel="nofollow">https://github.com/go-logr/logr</a> project.</p>
+</li>
+<li>
+<p>The new Chain &amp; JobWrapper types allow you to install &#34;interceptors&#34; to add
+cross-cutting behavior like the following:</p>
+<ul>
+<li>Recover any panics from jobs</li>
+<li>Delay a job&#39;s execution if the previous run hasn&#39;t completed yet</li>
+<li>Skip a job&#39;s execution if the previous run hasn&#39;t completed yet</li>
+<li>Log each job&#39;s invocations</li>
+<li>Notification when jobs are completed</li>
+</ul>
+</li>
+</ul>
+<p>It is backwards incompatible with both v1 and v2. These updates are required:</p>
+<ul>
+<li>
+<p>The v1 branch accepted an optional seconds field at the beginning of the cron
+spec. This is non-standard and has led to a lot of confusion. The new default
+parser conforms to the standard as described by <a href="https://en.wikipedia.org/wiki/Cron" rel="nofollow">the Cron wikipedia page</a>.</p>
+<p>UPDATING: To retain the old behavior, construct your Cron with a custom
+parser:</p>
+<pre><code>// Seconds field, required
+cron.New(cron.WithSeconds())
+
+// Seconds field, optional
+cron.New(
+    cron.WithParser(
+        cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor))
+</code></pre>
+</li>
+<li>
+<p>The Cron type now accepts functional options on construction rather than the
+previous ad-hoc behavior modification mechanisms (setting a field, calling a setter).</p>
+<p>UPDATING: Code that sets Cron.ErrorLogger or calls Cron.SetLocation must be
+updated to provide those values on construction.</p>
+</li>
+<li>
+<p>CRON_TZ is now the recommended way to specify the timezone of a single
+schedule, which is sanctioned by the specification. The legacy &#34;TZ=&#34; prefix
+will continue to be supported since it is unambiguous and easy to do so.</p>
+<p>UPDATING: No update is required.</p>
+</li>
+<li>
+<p>By default, cron will no longer recover panics in jobs that it runs.
+Recovering can be surprising (see issue #192) and seems to be at odds with
+typical behavior of libraries. Relatedly, the <code>cron.WithPanicLogger</code> option
+has been removed to accommodate the more general JobWrapper type.</p>
+<p>UPDATING: To opt into panic recovery and configure the panic logger:</p>
+<pre><code>cron.New(cron.WithChain(
+    cron.Recover(logger),  // or use cron.DefaultLogger
+))
+</code></pre>
+</li>
+<li>
+<p>In adding support for <a href="https://github.com/go-logr/logr" rel="nofollow">https://github.com/go-logr/logr</a>, <code>cron.WithVerboseLogger</code> was
+removed, since it is duplicative with the leveled logging.</p>
+<p>UPDATING: Callers should use <code>WithLogger</code> and specify a logger that does not
+discard <code>Info</code> logs. For convenience, one is provided that wraps <code>*log.Logger</code>:</p>
+<pre><code>cron.New(
+    cron.WithLogger(cron.VerbosePrintfLogger(logger)))
+</code></pre>
+</li>
+</ul>
+<h5 class="h3" id="readme-background-cron-spec-format">Background - Cron spec format</h5>
+<p>There are two cron spec formats in common usage:</p>
+<ul>
+<li>
+<p>The &#34;standard&#34; cron format, described on <a href="https://en.wikipedia.org/wiki/Cron" rel="nofollow">the Cron wikipedia page</a> and used by
+the cron Linux system utility.</p>
+</li>
+<li>
+<p>The cron format used by <a href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/tutorial-lesson-06.html" rel="nofollow">the Quartz Scheduler</a>, commonly used for scheduled
+jobs in Java software</p>
+</li>
+</ul>
+<p>The original version of this package included an optional &#34;seconds&#34; field, which
+made it incompatible with both of these formats. Now, the &#34;standard&#34; format is
+the default format accepted, and the Quartz format is opt-in.</p>
+</div>
+      </div>
+      <button class="UnitReadme-expandLink js-readmeExpand"
+          data-test-id="readme-expand" data-gtmc="readme button"
+          aria-label="Expand Readme">Expand ▾</button>
+      <button class="UnitReadme-collapseLink js-readmeCollapse"
+          data-test-id="readme-collapse" data-gtmc="readme button"
+          aria-label="Expand Readme">Collapse ▴</button>
+    
+  </div>
+
+      
+      
+        
+          
+  <div class="UnitDoc">
+    <h2 class="UnitDoc-title" id="section-documentation">
+      <img class="go-Icon" height="24" width="24" src="/static/shared/icon/code_gm_grey_24dp.svg" alt="">
+      Documentation
+      <a class="UnitDoc-idLink" href="#section-documentation" title="Go to Documentation" aria-label="Go to Documentation">¶</a>
+    </h2>
+    
+  
+    
+  
+
+    <div class="Documentation js-documentation">
+      
+        
+
+<div class="Documentation-content js-docContent"> <section class="Documentation-overview">
+    <h3 tabindex="-1" id="pkg-overview" class="Documentation-overviewHeader">Overview <a href="#pkg-overview" title="Go to Overview" aria-label="Go to Overview">¶</a></h3>
+
+<div role="navigation" aria-label="Table of Contents">
+  <ul class="Documentation-toc Documentation-toc-columns">
+      <li class="Documentation-tocItem"><a href="#hdr-Installation">Installation</a></li>
+      <li class="Documentation-tocItem"><a href="#hdr-Usage">Usage</a></li>
+      <li class="Documentation-tocItem"><a href="#hdr-CRON_Expression_Format">CRON Expression Format</a></li>
+      <li class="Documentation-tocItem"><a href="#hdr-Alternative_Formats">Alternative Formats</a></li>
+      <li class="Documentation-tocItem"><a href="#hdr-Special_Characters">Special Characters</a></li>
+      <li class="Documentation-tocItem"><a href="#hdr-Predefined_schedules">Predefined schedules</a></li>
+      <li class="Documentation-tocItem"><a href="#hdr-Intervals">Intervals</a></li>
+      <li class="Documentation-tocItem"><a href="#hdr-Time_zones">Time zones</a></li>
+      <li class="Documentation-tocItem"><a href="#hdr-Job_Wrappers">Job Wrappers</a></li>
+      <li class="Documentation-tocItem"><a href="#hdr-Thread_safety">Thread safety</a></li>
+      <li class="Documentation-tocItem"><a href="#hdr-Logging">Logging</a></li>
+      <li class="Documentation-tocItem"><a href="#hdr-Implementation">Implementation</a></li>
+  </ul>
+</div>
+<p>Package cron implements a cron spec parser and job runner.
+</p><h4 id="hdr-Installation">Installation <a class="Documentation-idLink" href="#hdr-Installation" title="Go to Installation" aria-label="Go to Installation">¶</a></h4><p>To download the specific tagged release, run:
+</p><pre>go get github.com/robfig/cron/v3@v3.0.0
+</pre><p>Import it in your program as:
+</p><pre>import &#34;github.com/robfig/cron/v3&#34;
+</pre><p>It requires Go 1.11 or later due to usage of Go Modules.
+</p><h4 id="hdr-Usage">Usage <a class="Documentation-idLink" href="#hdr-Usage" title="Go to Usage" aria-label="Go to Usage">¶</a></h4><p>Callers may register Funcs to be invoked on a given schedule.  Cron will run
+them in their own goroutines.
+</p><pre>c := cron.New()
+c.AddFunc(&#34;30 * * * *&#34;, func() { fmt.Println(&#34;Every hour on the half hour&#34;) })
+c.AddFunc(&#34;30 3-6,20-23 * * *&#34;, func() { fmt.Println(&#34;.. in the range 3-6am, 8-11pm&#34;) })
+c.AddFunc(&#34;CRON_TZ=Asia/Tokyo 30 04 * * *&#34;, func() { fmt.Println(&#34;Runs at 04:30 Tokyo time every day&#34;) })
+c.AddFunc(&#34;@hourly&#34;,      func() { fmt.Println(&#34;Every hour, starting an hour from now&#34;) })
+c.AddFunc(&#34;@every 1h30m&#34;, func() { fmt.Println(&#34;Every hour thirty, starting an hour thirty from now&#34;) })
+c.Start()
+..
+// Funcs are invoked in their own goroutine, asynchronously.
+...
+// Funcs may also be added to a running Cron
+c.AddFunc(&#34;@daily&#34;, func() { fmt.Println(&#34;Every day&#34;) })
+..
+// Inspect the cron job entries&#39; next and previous run times.
+inspect(c.Entries())
+..
+c.Stop()  // Stop the scheduler (does not stop any jobs already running).
+</pre><h4 id="hdr-CRON_Expression_Format">CRON Expression Format <a class="Documentation-idLink" href="#hdr-CRON_Expression_Format" title="Go to CRON Expression Format" aria-label="Go to CRON Expression Format">¶</a></h4><p>A cron expression represents a set of times, using 5 space-separated fields.
+</p><pre>Field name   | Mandatory? | Allowed values  | Allowed special characters
+----------   | ---------- | --------------  | --------------------------
+Minutes      | Yes        | 0-59            | * / , -
+Hours        | Yes        | 0-23            | * / , -
+Day of month | Yes        | 1-31            | * / , - ?
+Month        | Yes        | 1-12 or JAN-DEC | * / , -
+Day of week  | Yes        | 0-6 or SUN-SAT  | * / , - ?
+</pre><p>Month and Day-of-week field values are case insensitive.  &#34;SUN&#34;, &#34;Sun&#34;, and
+&#34;sun&#34; are equally accepted.
+</p><p>The specific interpretation of the format is based on the Cron Wikipedia page:
+<a href="https://en.wikipedia.org/wiki/Cron">https://en.wikipedia.org/wiki/Cron</a>
+</p><h4 id="hdr-Alternative_Formats">Alternative Formats <a class="Documentation-idLink" href="#hdr-Alternative_Formats" title="Go to Alternative Formats" aria-label="Go to Alternative Formats">¶</a></h4><p>Alternative Cron expression formats support other fields like seconds. You can
+implement that by creating a custom Parser as follows.
+</p><pre>cron.New(
+	cron.WithParser(
+		cron.NewParser(
+			cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor)))
+</pre><p>Since adding Seconds is the most common modification to the standard cron spec,
+cron provides a builtin function to do that, which is equivalent to the custom
+parser you saw earlier, except that its seconds field is REQUIRED:
+</p><pre>cron.New(cron.WithSeconds())
+</pre><p>That emulates Quartz, the most popular alternative Cron schedule format:
+<a href="http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.html">http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.html</a>
+</p><h4 id="hdr-Special_Characters">Special Characters <a class="Documentation-idLink" href="#hdr-Special_Characters" title="Go to Special Characters" aria-label="Go to Special Characters">¶</a></h4><p>Asterisk ( * )
+</p><p>The asterisk indicates that the cron expression will match for all values of the
+field; e.g., using an asterisk in the 5th field (month) would indicate every
+month.
+</p><p>Slash ( / )
+</p><p>Slashes are used to describe increments of ranges. For example 3-59/15 in the
+1st field (minutes) would indicate the 3rd minute of the hour and every 15
+minutes thereafter. The form &#34;*\/...&#34; is equivalent to the form &#34;first-last/...&#34;,
+that is, an increment over the largest possible range of the field.  The form
+&#34;N/...&#34; is accepted as meaning &#34;N-MAX/...&#34;, that is, starting at N, use the
+increment until the end of that specific range.  It does not wrap around.
+</p><p>Comma ( , )
+</p><p>Commas are used to separate items of a list. For example, using &#34;MON,WED,FRI&#34; in
+the 5th field (day of week) would mean Mondays, Wednesdays and Fridays.
+</p><p>Hyphen ( - )
+</p><p>Hyphens are used to define ranges. For example, 9-17 would indicate every
+hour between 9am and 5pm inclusive.
+</p><p>Question mark ( ? )
+</p><p>Question mark may be used instead of &#39;*&#39; for leaving either day-of-month or
+day-of-week blank.
+</p><h4 id="hdr-Predefined_schedules">Predefined schedules <a class="Documentation-idLink" href="#hdr-Predefined_schedules" title="Go to Predefined schedules" aria-label="Go to Predefined schedules">¶</a></h4><p>You may use one of several pre-defined schedules in place of a cron expression.
+</p><pre>Entry                  | Description                                | Equivalent To
+-----                  | -----------                                | -------------
+@yearly (or @annually) | Run once a year, midnight, Jan. 1st        | 0 0 1 1 *
+@monthly               | Run once a month, midnight, first of month | 0 0 1 * *
+@weekly                | Run once a week, midnight between Sat/Sun  | 0 0 * * 0
+@daily (or @midnight)  | Run once a day, midnight                   | 0 0 * * *
+@hourly                | Run once an hour, beginning of hour        | 0 * * * *
+</pre><h4 id="hdr-Intervals">Intervals <a class="Documentation-idLink" href="#hdr-Intervals" title="Go to Intervals" aria-label="Go to Intervals">¶</a></h4><p>You may also schedule a job to execute at fixed intervals, starting at the time it&#39;s added
+or cron is run. This is supported by formatting the cron spec like this:
+</p><pre>@every &lt;duration&gt;
+</pre><p>where &#34;duration&#34; is a string accepted by time.ParseDuration
+(<a href="http://golang.org/pkg/time/#ParseDuration">http://golang.org/pkg/time/#ParseDuration</a>).
+</p><p>For example, &#34;@every 1h30m10s&#34; would indicate a schedule that activates after
+1 hour, 30 minutes, 10 seconds, and then every interval after that.
+</p><p>Note: The interval does not take the job runtime into account.  For example,
+if a job takes 3 minutes to run, and it is scheduled to run every 5 minutes,
+it will have only 2 minutes of idle time between each run.
+</p><h4 id="hdr-Time_zones">Time zones <a class="Documentation-idLink" href="#hdr-Time_zones" title="Go to Time zones" aria-label="Go to Time zones">¶</a></h4><p>By default, all interpretation and scheduling is done in the machine&#39;s local
+time zone (time.Local). You can specify a different time zone on construction:
+</p><pre>cron.New(
+    cron.WithLocation(time.UTC))
+</pre><p>Individual cron schedules may also override the time zone they are to be
+interpreted in by providing an additional space-separated field at the beginning
+of the cron spec, of the form &#34;CRON_TZ=Asia/Tokyo&#34;.
+</p><p>For example:
+</p><pre># Runs at 6am in time.Local
+cron.New().AddFunc(&#34;0 6 * * ?&#34;, ...)
+
+# Runs at 6am in America/New_York
+nyc, _ := time.LoadLocation(&#34;America/New_York&#34;)
+c := cron.New(cron.WithLocation(nyc))
+c.AddFunc(&#34;0 6 * * ?&#34;, ...)
+
+# Runs at 6am in Asia/Tokyo
+cron.New().AddFunc(&#34;CRON_TZ=Asia/Tokyo 0 6 * * ?&#34;, ...)
+
+# Runs at 6am in Asia/Tokyo
+c := cron.New(cron.WithLocation(nyc))
+c.SetLocation(&#34;America/New_York&#34;)
+c.AddFunc(&#34;CRON_TZ=Asia/Tokyo 0 6 * * ?&#34;, ...)
+</pre><p>The prefix &#34;TZ=(TIME ZONE)&#34; is also supported for legacy compatibility.
+</p><p>Be aware that jobs scheduled during daylight-savings leap-ahead transitions will
+not be run!
+</p><h4 id="hdr-Job_Wrappers">Job Wrappers <a class="Documentation-idLink" href="#hdr-Job_Wrappers" title="Go to Job Wrappers" aria-label="Go to Job Wrappers">¶</a></h4><p>A Cron runner may be configured with a chain of job wrappers to add
+cross-cutting functionality to all submitted jobs. For example, they may be used
+to achieve the following effects:
+</p><ul class="Documentation-bulletList">
+  <li>Recover any panics from jobs (activated by default)</li>
+  <li>Delay a job&#39;s execution if the previous run hasn&#39;t completed yet</li>
+  <li>Skip a job&#39;s execution if the previous run hasn&#39;t completed yet</li>
+  <li>Log each job&#39;s invocations</li>
+</ul><p>Install wrappers for all jobs added to a cron using the `cron.WithChain` option:
+</p><pre>cron.New(cron.WithChain(
+	cron.SkipIfStillRunning(logger),
+))
+</pre><p>Install wrappers for individual jobs by explicitly wrapping them:
+</p><pre>job = cron.NewChain(
+	cron.SkipIfStillRunning(logger),
+).Then(job)
+</pre><h4 id="hdr-Thread_safety">Thread safety <a class="Documentation-idLink" href="#hdr-Thread_safety" title="Go to Thread safety" aria-label="Go to Thread safety">¶</a></h4><p>Since the Cron service runs concurrently with the calling code, some amount of
+care must be taken to ensure proper synchronization.
+</p><p>All cron methods are designed to be correctly synchronized as long as the caller
+ensures that invocations have a clear happens-before ordering between them.
+</p><h4 id="hdr-Logging">Logging <a class="Documentation-idLink" href="#hdr-Logging" title="Go to Logging" aria-label="Go to Logging">¶</a></h4><p>Cron defines a Logger interface that is a subset of the one defined in
+github.com/go-logr/logr. It has two logging levels (Info and Error), and
+parameters are key/value pairs. This makes it possible for cron logging to plug
+into structured logging systems. An adapter, [Verbose]PrintfLogger, is provided
+to wrap the standard library *log.Logger.
+</p><p>For additional insight into Cron operations, verbose logging may be activated
+which will record job runs, scheduling decisions, and added or removed jobs.
+Activate it with a one-off logger as follows:
+</p><pre>cron.New(
+	cron.WithLogger(
+		cron.VerbosePrintfLogger(log.New(os.Stdout, &#34;cron: &#34;, log.LstdFlags))))
+</pre><h4 id="hdr-Implementation">Implementation <a class="Documentation-idLink" href="#hdr-Implementation" title="Go to Implementation" aria-label="Go to Implementation">¶</a></h4><p>Cron entries are stored in an array, sorted by their next activation time.  Cron
+sleeps until the next job is due to be run.
+</p><p>Upon waking:
+</p><ul class="Documentation-bulletList">
+  <li>it runs each entry that is active on that second</li>
+  <li>it calculates the next run times for the jobs that were run</li>
+  <li>it re-sorts the array of entries by next activation time.</li>
+  <li>it goes to sleep until the soonest job.</li>
+</ul>
+</section><section class="Documentation-index">
+    <h3 id="pkg-index" class="Documentation-indexHeader">Index <a href="#pkg-index" title="Go to Index" aria-label="Go to Index">¶</a></h3>
+
+<ul class="Documentation-indexList">
+<li class="Documentation-indexType">
+          <a href="#Chain">type Chain</a></li>
+<li><ul class="Documentation-indexTypeFunctions">
+<li>
+            <a href="#NewChain">func NewChain(c ...JobWrapper) Chain</a></li>
+</ul></li>
+<li><ul class="Documentation-indexTypeMethods">
+<li>
+            <a href="#Chain.Then">func (c Chain) Then(j Job) Job</a></li>
+</ul></li>
+<li class="Documentation-indexType">
+          <a href="#ConstantDelaySchedule">type ConstantDelaySchedule</a></li>
+<li><ul class="Documentation-indexTypeFunctions">
+<li>
+            <a href="#Every">func Every(duration time.Duration) ConstantDelaySchedule</a></li>
+</ul></li>
+<li><ul class="Documentation-indexTypeMethods">
+<li>
+            <a href="#ConstantDelaySchedule.Next">func (schedule ConstantDelaySchedule) Next(t time.Time) time.Time</a></li>
+</ul></li>
+<li class="Documentation-indexType">
+          <a href="#Cron">type Cron</a></li>
+<li><ul class="Documentation-indexTypeFunctions">
+<li>
+            <a href="#New">func New(opts ...Option) *Cron</a></li>
+</ul></li>
+<li><ul class="Documentation-indexTypeMethods">
+<li>
+            <a href="#Cron.AddFunc">func (c *Cron) AddFunc(spec string, cmd func()) (EntryID, error)</a></li>
+<li>
+            <a href="#Cron.AddJob">func (c *Cron) AddJob(spec string, cmd Job) (EntryID, error)</a></li>
+<li>
+            <a href="#Cron.Entries">func (c *Cron) Entries() []Entry</a></li>
+<li>
+            <a href="#Cron.Entry">func (c *Cron) Entry(id EntryID) Entry</a></li>
+<li>
+            <a href="#Cron.Location">func (c *Cron) Location() *time.Location</a></li>
+<li>
+            <a href="#Cron.Remove">func (c *Cron) Remove(id EntryID)</a></li>
+<li>
+            <a href="#Cron.Run">func (c *Cron) Run()</a></li>
+<li>
+            <a href="#Cron.Schedule">func (c *Cron) Schedule(schedule Schedule, cmd Job) EntryID</a></li>
+<li>
+            <a href="#Cron.Start">func (c *Cron) Start()</a></li>
+<li>
+            <a href="#Cron.Stop">func (c *Cron) Stop() context.Context</a></li>
+</ul></li>
+<li class="Documentation-indexType">
+          <a href="#Entry">type Entry</a></li>
+<li><ul class="Documentation-indexTypeMethods">
+<li>
+            <a href="#Entry.Valid">func (e Entry) Valid() bool</a></li>
+</ul></li>
+<li class="Documentation-indexType">
+          <a href="#EntryID">type EntryID</a></li>
+<li class="Documentation-indexType">
+          <a href="#FuncJob">type FuncJob</a></li>
+<li><ul class="Documentation-indexTypeMethods">
+<li>
+            <a href="#FuncJob.Run">func (f FuncJob) Run()</a></li>
+</ul></li>
+<li class="Documentation-indexType">
+          <a href="#Job">type Job</a></li>
+<li class="Documentation-indexType">
+          <a href="#JobWrapper">type JobWrapper</a></li>
+<li><ul class="Documentation-indexTypeFunctions">
+<li>
+            <a href="#DelayIfStillRunning">func DelayIfStillRunning(logger Logger) JobWrapper</a></li>
+<li>
+            <a href="#Recover">func Recover(logger Logger) JobWrapper</a></li>
+<li>
+            <a href="#SkipIfStillRunning">func SkipIfStillRunning(logger Logger) JobWrapper</a></li>
+</ul></li>
+<li class="Documentation-indexType">
+          <a href="#Logger">type Logger</a></li>
+<li><ul class="Documentation-indexTypeFunctions">
+<li>
+            <a href="#PrintfLogger">func PrintfLogger(l interface{ ... }) Logger</a></li>
+<li>
+            <a href="#VerbosePrintfLogger">func VerbosePrintfLogger(l interface{ ... }) Logger</a></li>
+</ul></li>
+<li class="Documentation-indexType">
+          <a href="#Option">type Option</a></li>
+<li><ul class="Documentation-indexTypeFunctions">
+<li>
+            <a href="#WithChain">func WithChain(wrappers ...JobWrapper) Option</a></li>
+<li>
+            <a href="#WithLocation">func WithLocation(loc *time.Location) Option</a></li>
+<li>
+            <a href="#WithLogger">func WithLogger(logger Logger) Option</a></li>
+<li>
+            <a href="#WithParser">func WithParser(p ScheduleParser) Option</a></li>
+<li>
+            <a href="#WithSeconds">func WithSeconds() Option</a></li>
+</ul></li>
+<li class="Documentation-indexType">
+          <a href="#ParseOption">type ParseOption</a></li>
+<li class="Documentation-indexType">
+          <a href="#Parser">type Parser</a></li>
+<li><ul class="Documentation-indexTypeFunctions">
+<li>
+            <a href="#NewParser">func NewParser(options ParseOption) Parser</a></li>
+</ul></li>
+<li><ul class="Documentation-indexTypeMethods">
+<li>
+            <a href="#Parser.Parse">func (p Parser) Parse(spec string) (Schedule, error)</a></li>
+</ul></li>
+<li class="Documentation-indexType">
+          <a href="#Schedule">type Schedule</a></li>
+<li><ul class="Documentation-indexTypeFunctions">
+<li>
+            <a href="#ParseStandard">func ParseStandard(standardSpec string) (Schedule, error)</a></li>
+</ul></li>
+<li class="Documentation-indexType">
+          <a href="#ScheduleParser">type ScheduleParser</a></li>
+<li class="Documentation-indexType">
+          <a href="#SpecSchedule">type SpecSchedule</a></li>
+<li><ul class="Documentation-indexTypeMethods">
+<li>
+            <a href="#SpecSchedule.Next">func (s *SpecSchedule) Next(t time.Time) time.Time</a></li>
+</ul></li>
+</ul>
+</section><h3 tabindex="-1" id="pkg-constants" class="Documentation-constantsHeader">Constants <a href="#pkg-constants" title="Go to Constants" aria-label="Go to Constants">¶</a></h3>
+
+  <section class="Documentation-constants"><p class="Documentation-empty">This section is empty.</p></section>
+
+  <h3 tabindex="-1" id="pkg-variables" class="Documentation-variablesHeader">Variables <a href="#pkg-variables" title="Go to Variables" aria-label="Go to Variables">¶</a></h3>
+
+  <section class="Documentation-variables"><p class="Documentation-empty">This section is empty.</p></section>
+
+  <h3 tabindex="-1" id="pkg-functions" class="Documentation-functionsHeader">Functions <a href="#pkg-functions" title="Go to Functions" aria-label="Go to Functions">¶</a></h3>
+
+  <section class="Documentation-functions"><p class="Documentation-empty">This section is empty.</p></section>
+
+  <h3 tabindex="-1" id="pkg-types" class="Documentation-typesHeader">Types <a href="#pkg-types" title="Go to Types" aria-label="Go to Types">¶</a></h3>
+
+  <section class="Documentation-types"><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="Chain" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/chain.go#L15">Chain</a> <a class="Documentation-idLink" href="#Chain" title="Go to Chain" aria-label="Go to Chain">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type Chain struct {
+	<span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+    </div>
+  <p>Chain is a sequence of JobWrappers that decorates submitted jobs with
+cross-cutting behaviors like logging or synchronization.
+</p>
+<div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="NewChain" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/chain.go#L20">NewChain</a> <a class="Documentation-idLink" href="#NewChain" title="Go to NewChain" aria-label="Go to NewChain">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func NewChain(c ...<a href="#JobWrapper">JobWrapper</a>) <a href="#Chain">Chain</a></pre>
+    </div>
+  <p>NewChain returns a Chain consisting of the given JobWrappers.
+</p>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Chain.Then" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (Chain) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/chain.go#L30">Then</a> <a class="Documentation-idLink" href="#Chain.Then" title="Go to Chain.Then" aria-label="Go to Chain.Then">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (c <a href="#Chain">Chain</a>) Then(j <a href="#Job">Job</a>) <a href="#Job">Job</a></pre>
+    </div>
+  <p>Then decorates the given job with all JobWrappers in the chain.
+</p><p>This:
+</p><pre>NewChain(m1, m2, m3).Then(job)
+</pre><p>is equivalent to:
+</p><pre>m1(m2(m3(job)))
+</pre>
+
+  
+
+  </div>
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="ConstantDelaySchedule" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/constantdelay.go#L7">ConstantDelaySchedule</a> <a class="Documentation-idLink" href="#ConstantDelaySchedule" title="Go to ConstantDelaySchedule" aria-label="Go to ConstantDelaySchedule">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type ConstantDelaySchedule struct {
+<span id="ConstantDelaySchedule.Delay" data-kind="field">	Delay <a href="/time">time</a>.<a href="/time#Duration">Duration</a>
+</span>}</pre>
+    </div>
+  <p>ConstantDelaySchedule represents a simple recurring duty cycle, e.g. &#34;Every 5 minutes&#34;.
+It does not support jobs more frequent than once a second.
+</p>
+<div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="Every" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/constantdelay.go#L14">Every</a> <a class="Documentation-idLink" href="#Every" title="Go to Every" aria-label="Go to Every">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func Every(duration <a href="/time">time</a>.<a href="/time#Duration">Duration</a>) <a href="#ConstantDelaySchedule">ConstantDelaySchedule</a></pre>
+    </div>
+  <p>Every returns a crontab Schedule that activates once every duration.
+Delays of less than a second are not supported (will round up to 1 second).
+Any fields less than a Second are truncated.
+</p>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="ConstantDelaySchedule.Next" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (ConstantDelaySchedule) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/constantdelay.go#L25">Next</a> <a class="Documentation-idLink" href="#ConstantDelaySchedule.Next" title="Go to ConstantDelaySchedule.Next" aria-label="Go to ConstantDelaySchedule.Next">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (schedule <a href="#ConstantDelaySchedule">ConstantDelaySchedule</a>) Next(t <a href="/time">time</a>.<a href="/time#Time">Time</a>) <a href="/time">time</a>.<a href="/time#Time">Time</a></pre>
+    </div>
+  <p>Next returns the next time this should be run.
+This rounds so that the next activation time will be on the second.
+</p>
+
+  
+
+  </div>
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="Cron" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L13">Cron</a> <a class="Documentation-idLink" href="#Cron" title="Go to Cron" aria-label="Go to Cron">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type Cron struct {
+	<span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+    </div>
+  <p>Cron keeps track of any number of entries, invoking the associated func as
+specified by the schedule. It may be started, stopped, and the entries may
+be inspected while running.
+</p>
+<div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="New" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L113">New</a> <a class="Documentation-idLink" href="#New" title="Go to New" aria-label="Go to New">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func New(opts ...<a href="#Option">Option</a>) *<a href="#Cron">Cron</a></pre>
+    </div>
+  <p>New returns a new Cron job runner, modified by the given options.
+</p><p>Available Settings
+</p><pre>Time Zone
+  Description: The time zone in which schedules are interpreted
+  Default:     time.Local
+
+Parser
+  Description: Parser converts cron spec strings into cron.Schedules.
+  Default:     Accepts this spec: https://en.wikipedia.org/wiki/Cron
+
+Chain
+  Description: Wrap submitted jobs to customize behavior.
+  Default:     A chain that recovers panics and logs them to stderr.
+</pre><p>See &#34;cron.With*&#34; to modify the default behavior.
+</p>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Cron.AddFunc" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (*Cron) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L141">AddFunc</a> <a class="Documentation-idLink" href="#Cron.AddFunc" title="Go to Cron.AddFunc" aria-label="Go to Cron.AddFunc">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (c *<a href="#Cron">Cron</a>) AddFunc(spec <a href="/builtin#string">string</a>, cmd func()) (<a href="#EntryID">EntryID</a>, <a href="/builtin#error">error</a>)</pre>
+    </div>
+  <p>AddFunc adds a func to the Cron to be run on the given schedule.
+The spec is parsed using the time zone of this Cron instance as the default.
+An opaque ID is returned that can be used to later remove it.
+</p>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Cron.AddJob" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (*Cron) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L148">AddJob</a> <a class="Documentation-idLink" href="#Cron.AddJob" title="Go to Cron.AddJob" aria-label="Go to Cron.AddJob">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (c *<a href="#Cron">Cron</a>) AddJob(spec <a href="/builtin#string">string</a>, cmd <a href="#Job">Job</a>) (<a href="#EntryID">EntryID</a>, <a href="/builtin#error">error</a>)</pre>
+    </div>
+  <p>AddJob adds a Job to the Cron to be run on the given schedule.
+The spec is parsed using the time zone of this Cron instance as the default.
+An opaque ID is returned that can be used to later remove it.
+</p>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Cron.Entries" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (*Cron) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L177">Entries</a> <a class="Documentation-idLink" href="#Cron.Entries" title="Go to Cron.Entries" aria-label="Go to Cron.Entries">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (c *<a href="#Cron">Cron</a>) Entries() []<a href="#Entry">Entry</a></pre>
+    </div>
+  <p>Entries returns a snapshot of the cron entries.
+</p>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Cron.Entry" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (*Cron) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L194">Entry</a> <a class="Documentation-idLink" href="#Cron.Entry" title="Go to Cron.Entry" aria-label="Go to Cron.Entry">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (c *<a href="#Cron">Cron</a>) Entry(id <a href="#EntryID">EntryID</a>) <a href="#Entry">Entry</a></pre>
+    </div>
+  <p>Entry returns a snapshot of the given entry, or nil if it couldn&#39;t be found.
+</p>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Cron.Location" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (*Cron) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L189">Location</a> <a class="Documentation-idLink" href="#Cron.Location" title="Go to Cron.Location" aria-label="Go to Cron.Location">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (c *<a href="#Cron">Cron</a>) Location() *<a href="/time">time</a>.<a href="/time#Location">Location</a></pre>
+    </div>
+  <p>Location gets the time zone location
+</p>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Cron.Remove" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (*Cron) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L204">Remove</a> <a class="Documentation-idLink" href="#Cron.Remove" title="Go to Cron.Remove" aria-label="Go to Cron.Remove">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (c *<a href="#Cron">Cron</a>) Remove(id <a href="#EntryID">EntryID</a>)</pre>
+    </div>
+  <p>Remove an entry from being run in the future.
+</p>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Cron.Run" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (*Cron) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L226">Run</a> <a class="Documentation-idLink" href="#Cron.Run" title="Go to Cron.Run" aria-label="Go to Cron.Run">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (c *<a href="#Cron">Cron</a>) Run()</pre>
+    </div>
+  <p>Run the cron scheduler, or no-op if already running.
+</p>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Cron.Schedule" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (*Cron) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L158">Schedule</a> <a class="Documentation-idLink" href="#Cron.Schedule" title="Go to Cron.Schedule" aria-label="Go to Cron.Schedule">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (c *<a href="#Cron">Cron</a>) Schedule(schedule <a href="#Schedule">Schedule</a>, cmd <a href="#Job">Job</a>) <a href="#EntryID">EntryID</a></pre>
+    </div>
+  <p>Schedule adds a Job to the Cron to be run on the given schedule.
+The job is wrapped with the configured Chain.
+</p>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Cron.Start" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (*Cron) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L215">Start</a> <a class="Documentation-idLink" href="#Cron.Start" title="Go to Cron.Start" aria-label="Go to Cron.Start">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (c *<a href="#Cron">Cron</a>) Start()</pre>
+    </div>
+  <p>Start the cron scheduler in its own goroutine, or no-op if already started.
+</p>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Cron.Stop" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (*Cron) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L323">Stop</a> <a class="Documentation-idLink" href="#Cron.Stop" title="Go to Cron.Stop" aria-label="Go to Cron.Stop">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (c *<a href="#Cron">Cron</a>) Stop() <a href="/context">context</a>.<a href="/context#Context">Context</a></pre>
+    </div>
+  <p>Stop stops the cron scheduler if it is running; otherwise it does nothing.
+A context is returned so the caller can wait for running jobs to complete.
+</p>
+
+  
+
+  </div>
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="Entry" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L50">Entry</a> <a class="Documentation-idLink" href="#Entry" title="Go to Entry" aria-label="Go to Entry">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type Entry struct {
+<span id="Entry.ID" data-kind="field">	<span class="comment">// ID is the cron-assigned ID of this entry, which may be used to look up a</span>
+</span>	<span class="comment">// snapshot or remove it.</span>
+	ID <a href="#EntryID">EntryID</a>
+
+<span id="Entry.Schedule" data-kind="field">	<span class="comment">// Schedule on which this job should be run.</span>
+</span>	Schedule <a href="#Schedule">Schedule</a>
+
+<span id="Entry.Next" data-kind="field">	<span class="comment">// Next time the job will run, or the zero time if Cron has not been</span>
+</span>	<span class="comment">// started or this entry&#39;s schedule is unsatisfiable</span>
+	Next <a href="/time">time</a>.<a href="/time#Time">Time</a>
+
+<span id="Entry.Prev" data-kind="field">	<span class="comment">// Prev is the last time this job was run, or the zero time if never.</span>
+</span>	Prev <a href="/time">time</a>.<a href="/time#Time">Time</a>
+
+<span id="Entry.WrappedJob" data-kind="field">	<span class="comment">// WrappedJob is the thing to run when the Schedule is activated.</span>
+</span>	WrappedJob <a href="#Job">Job</a>
+
+<span id="Entry.Job" data-kind="field">	<span class="comment">// Job is the thing that was submitted to cron.</span>
+</span>	<span class="comment">// It is kept around so that user code that needs to get at the job later,</span>
+	<span class="comment">// e.g. via Entries() can do so.</span>
+	Job <a href="#Job">Job</a>
+}</pre>
+    </div>
+  <p>Entry consists of a schedule and the func to execute on that schedule.
+</p>
+<div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Entry.Valid" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (Entry) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L75">Valid</a> <a class="Documentation-idLink" href="#Entry.Valid" title="Go to Entry.Valid" aria-label="Go to Entry.Valid">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (e <a href="#Entry">Entry</a>) Valid() <a href="/builtin#bool">bool</a></pre>
+    </div>
+  <p>Valid returns true if this is not the zero entry.
+</p>
+
+  
+
+  </div>
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="EntryID" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L47">EntryID</a> <a class="Documentation-idLink" href="#EntryID" title="Go to EntryID" aria-label="Go to EntryID">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type EntryID <a href="/builtin#int">int</a></pre>
+    </div>
+  <p>EntryID identifies an entry within a Cron instance
+</p>
+
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="FuncJob" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L134">FuncJob</a> <a class="Documentation-idLink" href="#FuncJob" title="Go to FuncJob" aria-label="Go to FuncJob">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type FuncJob func()</pre>
+    </div>
+  <p>FuncJob is a wrapper that turns a func() into a cron.Job
+</p>
+<div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="FuncJob.Run" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (FuncJob) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L136">Run</a> <a class="Documentation-idLink" href="#FuncJob.Run" title="Go to FuncJob.Run" aria-label="Go to FuncJob.Run">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (f <a href="#FuncJob">FuncJob</a>) Run()</pre>
+    </div>
+  
+
+  
+
+  </div>
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="Job" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L35">Job</a> <a class="Documentation-idLink" href="#Job" title="Go to Job" aria-label="Go to Job">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type Job interface {
+<span id="Job.Run" data-kind="method">	Run()
+</span>}</pre>
+    </div>
+  <p>Job is an interface for submitted cron jobs.
+</p>
+
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="JobWrapper" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/chain.go#L11">JobWrapper</a> <a class="Documentation-idLink" href="#JobWrapper" title="Go to JobWrapper" aria-label="Go to JobWrapper">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type JobWrapper func(<a href="#Job">Job</a>) <a href="#Job">Job</a></pre>
+    </div>
+  <p>JobWrapper decorates the given Job with some behavior.
+</p>
+<div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="DelayIfStillRunning" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/chain.go#L61">DelayIfStillRunning</a> <a class="Documentation-idLink" href="#DelayIfStillRunning" title="Go to DelayIfStillRunning" aria-label="Go to DelayIfStillRunning">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func DelayIfStillRunning(logger <a href="#Logger">Logger</a>) <a href="#JobWrapper">JobWrapper</a></pre>
+    </div>
+  <p>DelayIfStillRunning serializes jobs, delaying subsequent runs until the
+previous one is complete. Jobs running after a delay of more than a minute
+have the delay logged at Info.
+</p>
+
+  
+
+  </div><div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="Recover" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/chain.go#L38">Recover</a> <a class="Documentation-idLink" href="#Recover" title="Go to Recover" aria-label="Go to Recover">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func Recover(logger <a href="#Logger">Logger</a>) <a href="#JobWrapper">JobWrapper</a></pre>
+    </div>
+  <p>Recover panics in wrapped jobs and log them with the provided logger.
+</p>
+
+  
+
+  </div><div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="SkipIfStillRunning" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/chain.go#L78">SkipIfStillRunning</a> <a class="Documentation-idLink" href="#SkipIfStillRunning" title="Go to SkipIfStillRunning" aria-label="Go to SkipIfStillRunning">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func SkipIfStillRunning(logger <a href="#Logger">Logger</a>) <a href="#JobWrapper">JobWrapper</a></pre>
+    </div>
+  <p>SkipIfStillRunning skips an invocation of the Job if a previous invocation is
+still running. It logs skips to the given logger at Info level.
+</p>
+
+  
+
+  </div>
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="Logger" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/logger.go#L19">Logger</a> <a class="Documentation-idLink" href="#Logger" title="Go to Logger" aria-label="Go to Logger">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type Logger interface {
+<span id="Logger.Info" data-kind="method">	<span class="comment">// Info logs routine messages about cron&#39;s operation.</span>
+</span>	Info(msg <a href="/builtin#string">string</a>, keysAndValues ...interface{})
+<span id="Logger.Error" data-kind="method">	<span class="comment">// Error logs an error condition.</span>
+</span>	Error(err <a href="/builtin#error">error</a>, msg <a href="/builtin#string">string</a>, keysAndValues ...interface{})
+}</pre>
+    </div>
+  <p>Logger is the interface used in this package for logging, so that any backend
+can be plugged in. It is a subset of the github.com/go-logr/logr interface.
+</p>
+<div class="Documentation-typeVariable">
+    <div class="Documentation-declaration">
+      <pre><span id="DefaultLogger" data-kind="variable">var DefaultLogger <a href="#Logger">Logger</a> = <a href="#PrintfLogger">PrintfLogger</a>(<a href="/log">log</a>.<a href="/log#New">New</a>(<a href="/os">os</a>.<a href="/os#Stdout">Stdout</a>, &#34;cron: &#34;, <a href="/log">log</a>.<a href="/log#LstdFlags">LstdFlags</a>))</span></pre>
+    </div>
+  <p>DefaultLogger is used by Cron if none is specified.
+</p>
+</div><div class="Documentation-typeVariable">
+    <div class="Documentation-declaration">
+      <pre><span id="DiscardLogger" data-kind="variable">var DiscardLogger <a href="#Logger">Logger</a> = <a href="#PrintfLogger">PrintfLogger</a>(<a href="/log">log</a>.<a href="/log#New">New</a>(<a href="/io/ioutil">ioutil</a>.<a href="/io/ioutil#Discard">Discard</a>, &#34;&#34;, 0))</span></pre>
+    </div>
+  <p>DiscardLogger can be used by callers to discard all log messages.
+</p>
+</div><div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="PrintfLogger" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/logger.go#L28">PrintfLogger</a> <a class="Documentation-idLink" href="#PrintfLogger" title="Go to PrintfLogger" aria-label="Go to PrintfLogger">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func PrintfLogger(l interface{ Printf(<a href="/builtin#string">string</a>, ...interface{}) }) <a href="#Logger">Logger</a></pre>
+    </div>
+  <p>PrintfLogger wraps a Printf-based logger (such as the standard library &#34;log&#34;)
+into an implementation of the Logger interface which logs errors only.
+</p>
+
+  
+
+  </div><div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="VerbosePrintfLogger" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/logger.go#L34">VerbosePrintfLogger</a> <a class="Documentation-idLink" href="#VerbosePrintfLogger" title="Go to VerbosePrintfLogger" aria-label="Go to VerbosePrintfLogger">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func VerbosePrintfLogger(l interface{ Printf(<a href="/builtin#string">string</a>, ...interface{}) }) <a href="#Logger">Logger</a></pre>
+    </div>
+  <p>VerbosePrintfLogger wraps a Printf-based logger (such as the standard library
+&#34;log&#34;) into an implementation of the Logger interface which logs everything.
+</p>
+
+  
+
+  </div>
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="Option" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/option.go#L8">Option</a> <a class="Documentation-idLink" href="#Option" title="Go to Option" aria-label="Go to Option">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type Option func(*<a href="#Cron">Cron</a>)</pre>
+    </div>
+  <p>Option represents a modification to the default behavior of a Cron.
+</p>
+<div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="WithChain" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/option.go#L34">WithChain</a> <a class="Documentation-idLink" href="#WithChain" title="Go to WithChain" aria-label="Go to WithChain">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func WithChain(wrappers ...<a href="#JobWrapper">JobWrapper</a>) <a href="#Option">Option</a></pre>
+    </div>
+  <p>WithChain specifies Job wrappers to apply to all jobs added to this cron.
+Refer to the Chain* functions in this package for provided wrappers.
+</p>
+
+  
+
+  </div><div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="WithLocation" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/option.go#L11">WithLocation</a> <a class="Documentation-idLink" href="#WithLocation" title="Go to WithLocation" aria-label="Go to WithLocation">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func WithLocation(loc *<a href="/time">time</a>.<a href="/time#Location">Location</a>) <a href="#Option">Option</a></pre>
+    </div>
+  <p>WithLocation overrides the timezone of the cron instance.
+</p>
+
+  
+
+  </div><div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="WithLogger" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/option.go#L41">WithLogger</a> <a class="Documentation-idLink" href="#WithLogger" title="Go to WithLogger" aria-label="Go to WithLogger">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func WithLogger(logger <a href="#Logger">Logger</a>) <a href="#Option">Option</a></pre>
+    </div>
+  <p>WithLogger uses the provided logger.
+</p>
+
+  
+
+  </div><div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="WithParser" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/option.go#L26">WithParser</a> <a class="Documentation-idLink" href="#WithParser" title="Go to WithParser" aria-label="Go to WithParser">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func WithParser(p <a href="#ScheduleParser">ScheduleParser</a>) <a href="#Option">Option</a></pre>
+    </div>
+  <p>WithParser overrides the parser used for interpreting job schedules.
+</p>
+
+  
+
+  </div><div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="WithSeconds" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/option.go#L19">WithSeconds</a> <a class="Documentation-idLink" href="#WithSeconds" title="Go to WithSeconds" aria-label="Go to WithSeconds">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func WithSeconds() <a href="#Option">Option</a></pre>
+    </div>
+  <p>WithSeconds overrides the parser used for interpreting job schedules to
+include a seconds field as the first one.
+</p>
+
+  
+
+  </div>
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="ParseOption" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/parser.go#L15">ParseOption</a> <a class="Documentation-idLink" href="#ParseOption" title="Go to ParseOption" aria-label="Go to ParseOption">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type ParseOption <a href="/builtin#int">int</a></pre>
+    </div>
+  <p>Configuration options for creating a parser. Most options specify which
+fields should be included, while others enable features. If a field is not
+included the parser will assume a default value. These options do not change
+the order fields are parse in.
+</p>
+<div class="Documentation-typeConstant">
+    <div class="Documentation-declaration">
+      <pre>const (
+<span id="Second" data-kind="constant">	Second         <a href="#ParseOption">ParseOption</a> = 1 &lt;&lt; <a href="/builtin#iota">iota</a> <span class="comment">// Seconds field, default 0</span>
+</span><span id="SecondOptional" data-kind="constant">	SecondOptional                         <span class="comment">// Optional seconds field, default 0</span>
+</span><span id="Minute" data-kind="constant">	Minute                                 <span class="comment">// Minutes field, default 0</span>
+</span><span id="Hour" data-kind="constant">	Hour                                   <span class="comment">// Hours field, default 0</span>
+</span><span id="Dom" data-kind="constant">	Dom                                    <span class="comment">// Day of month field, default *</span>
+</span><span id="Month" data-kind="constant">	Month                                  <span class="comment">// Month field, default *</span>
+</span><span id="Dow" data-kind="constant">	Dow                                    <span class="comment">// Day of week field, default *</span>
+</span><span id="DowOptional" data-kind="constant">	DowOptional                            <span class="comment">// Optional day of week field, default *</span>
+</span><span id="Descriptor" data-kind="constant">	Descriptor                             <span class="comment">// Allow descriptors such as @monthly, @weekly, etc.</span>
+</span>)</pre>
+    </div>
+  
+</div>
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="Parser" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/parser.go#L48">Parser</a> <a class="Documentation-idLink" href="#Parser" title="Go to Parser" aria-label="Go to Parser">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type Parser struct {
+	<span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+    </div>
+  <p>A custom Parser that can be configured.
+</p>
+<div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="NewParser" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/parser.go#L71">NewParser</a> <a class="Documentation-idLink" href="#NewParser" title="Go to NewParser" aria-label="Go to NewParser">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func NewParser(options <a href="#ParseOption">ParseOption</a>) <a href="#Parser">Parser</a></pre>
+    </div>
+  <p>NewParser creates a Parser with custom options.
+</p><p>It panics if more than one Optional is given, since it would be impossible to
+correctly infer which optional is provided or missing in general.
+</p><p>Examples
+</p><pre>// Standard parser without descriptors
+specParser := NewParser(Minute | Hour | Dom | Month | Dow)
+sched, err := specParser.Parse(&#34;0 0 15 */3 *&#34;)
+
+// Same as above, just excludes time fields
+subsParser := NewParser(Dom | Month | Dow)
+sched, err := specParser.Parse(&#34;15 */3 *&#34;)
+
+// Same as above, just makes Dow optional
+subsParser := NewParser(Dom | Month | DowOptional)
+sched, err := specParser.Parse(&#34;15 */3&#34;)
+</pre>
+
+  
+
+  </div><div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="Parser.Parse" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (Parser) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/parser.go#L88">Parse</a> <a class="Documentation-idLink" href="#Parser.Parse" title="Go to Parser.Parse" aria-label="Go to Parser.Parse">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (p <a href="#Parser">Parser</a>) Parse(spec <a href="/builtin#string">string</a>) (<a href="#Schedule">Schedule</a>, <a href="/builtin#error">error</a>)</pre>
+    </div>
+  <p>Parse returns a new crontab schedule representing the given spec.
+It returns a descriptive error if the spec is not valid.
+It accepts crontab specs and features configured by NewParser.
+</p>
+
+  
+
+  </div>
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="Schedule" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L40">Schedule</a> <a class="Documentation-idLink" href="#Schedule" title="Go to Schedule" aria-label="Go to Schedule">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type Schedule interface {
+<span id="Schedule.Next" data-kind="method">	<span class="comment">// Next returns the next activation time, later than the given time.</span>
+</span>	<span class="comment">// Next is invoked initially, and then each time the job is run.</span>
+	Next(<a href="/time">time</a>.<a href="/time#Time">Time</a>) <a href="/time">time</a>.<a href="/time#Time">Time</a>
+}</pre>
+    </div>
+  <p>Schedule describes a job&#39;s duty cycle.
+</p>
+<div class="Documentation-typeFunc">
+    
+  
+  
+    <h4 tabindex="-1" id="ParseStandard" data-kind="function" class="Documentation-typeFuncHeader">
+      <span>func <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/parser.go#L229">ParseStandard</a> <a class="Documentation-idLink" href="#ParseStandard" title="Go to ParseStandard" aria-label="Go to ParseStandard">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func ParseStandard(standardSpec <a href="/builtin#string">string</a>) (<a href="#Schedule">Schedule</a>, <a href="/builtin#error">error</a>)</pre>
+    </div>
+  <p>ParseStandard returns a new crontab schedule representing the given
+standardSpec (<a href="https://en.wikipedia.org/wiki/Cron">https://en.wikipedia.org/wiki/Cron</a>). It requires 5 entries
+representing: minute, hour, day of month, month and day of week, in that
+order. It returns a descriptive error if the spec is not valid.
+</p><p>It accepts
+</p><ul class="Documentation-bulletList">
+  <li>Standard crontab specs, e.g. &#34;* * * * ?&#34;</li>
+  <li>Descriptors, e.g. &#34;@midnight&#34;, &#34;@every 1h30m&#34;</li>
+</ul>
+
+  
+
+  </div>
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="ScheduleParser" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/cron.go#L30">ScheduleParser</a> <a class="Documentation-idLink" href="#ScheduleParser" title="Go to ScheduleParser" aria-label="Go to ScheduleParser">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+      <span class="Documentation-sinceVersionLabel">added in</span>
+      <span class="Documentation-sinceVersionVersion">v3.0.1</span>
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type ScheduleParser interface {
+<span id="ScheduleParser.Parse" data-kind="method">	Parse(spec <a href="/builtin#string">string</a>) (<a href="#Schedule">Schedule</a>, <a href="/builtin#error">error</a>)
+</span>}</pre>
+    </div>
+  <p>ScheduleParser is an interface for schedule spec parsers that return a Schedule
+</p>
+
+  
+
+    </div><div class="Documentation-type">
+      
+  
+  
+    <h4 tabindex="-1" id="SpecSchedule" data-kind="type" class="Documentation-typeHeader">
+      <span>type <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/spec.go#L7">SpecSchedule</a> <a class="Documentation-idLink" href="#SpecSchedule" title="Go to SpecSchedule" aria-label="Go to SpecSchedule">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>type SpecSchedule struct {
+<span id="SpecSchedule.Second" data-kind="field"><span id="SpecSchedule.Minute" data-kind="field"><span id="SpecSchedule.Hour" data-kind="field"><span id="SpecSchedule.Dom" data-kind="field"><span id="SpecSchedule.Month" data-kind="field"><span id="SpecSchedule.Dow" data-kind="field">	Second, Minute, Hour, Dom, Month, Dow <a href="/builtin#uint64">uint64</a>
+</span>
+<span id="SpecSchedule.Location" data-kind="field">	<span class="comment">// Override location for this schedule.</span>
+</span>	Location *<a href="/time">time</a>.<a href="/time#Location">Location</a>
+}</pre>
+    </div>
+  <p>SpecSchedule specifies a duty cycle (to the second granularity), based on a
+traditional crontab specification. It is computed initially and stored as bit sets.
+</p>
+<div class="Documentation-typeMethod">
+    
+  
+  
+    <h4 tabindex="-1" id="SpecSchedule.Next" data-kind="method" class="Documentation-typeMethodHeader">
+      <span>func (*SpecSchedule) <a class="Documentation-source" href="https://github.com/robfig/cron/blob/v3.0.1/spec.go#L58">Next</a> <a class="Documentation-idLink" href="#SpecSchedule.Next" title="Go to SpecSchedule.Next" aria-label="Go to SpecSchedule.Next">¶</a></span>
+  <span class="Documentation-sinceVersion">
+    
+  </span>
+</h4>
+
+    
+    <div class="Documentation-declaration">
+      <pre>func (s *<a href="#SpecSchedule">SpecSchedule</a>) Next(t <a href="/time">time</a>.<a href="/time#Time">Time</a>) <a href="/time">time</a>.<a href="/time#Time">Time</a></pre>
+    </div>
+  <p>Next returns the next time this schedule is activated, greater than the given
+time.  If no time can be found to satisfy the schedule, return the zero time.
+</p>
+
+  
+
+  </div>
+  
+
+    </div></section></div> 
+
+
+
+
+
+
+
+      
+    </div>
+  </div>
+
+        
+      
+      
+        
+  <div class="UnitFiles js-unitFiles">
+    <h2 class="UnitFiles-title" id="section-sourcefiles">
+      <img class="go-Icon" height="24" width="24" src="/static/shared/icon/insert_drive_file_gm_grey_24dp.svg" alt="">
+      Source Files
+      <a class="UnitFiles-idLink" href="#section-sourcefiles" title="Go to Source Files" aria-label="Go to Source Files">¶</a>
+    </h2><div class="UnitFiles-titleLink">
+      <a href="https://github.com/robfig/cron/tree/v3.0.1" target="_blank" rel="noopener">View all Source files</a>
+    </div><div>
+      <ul class="UnitFiles-fileList"><li><a href="https://github.com/robfig/cron/blob/v3.0.1/chain.go" target="_blank" rel="noopener" title="chain.go">chain.go</a></li><li><a href="https://github.com/robfig/cron/blob/v3.0.1/constantdelay.go" target="_blank" rel="noopener" title="constantdelay.go">constantdelay.go</a></li><li><a href="https://github.com/robfig/cron/blob/v3.0.1/cron.go" target="_blank" rel="noopener" title="cron.go">cron.go</a></li><li><a href="https://github.com/robfig/cron/blob/v3.0.1/doc.go" target="_blank" rel="noopener" title="doc.go">doc.go</a></li><li><a href="https://github.com/robfig/cron/blob/v3.0.1/logger.go" target="_blank" rel="noopener" title="logger.go">logger.go</a></li><li><a href="https://github.com/robfig/cron/blob/v3.0.1/option.go" target="_blank" rel="noopener" title="option.go">option.go</a></li><li><a href="https://github.com/robfig/cron/blob/v3.0.1/parser.go" target="_blank" rel="noopener" title="parser.go">parser.go</a></li><li><a href="https://github.com/robfig/cron/blob/v3.0.1/spec.go" target="_blank" rel="noopener" title="spec.go">spec.go</a></li></ul>
+    </div>
+  </div>
+
+      
+      
+    </div>
+  </div>
+  <div id="showInternal-description" hidden> Click to show internal directories. </div>
+  <div id="hideInternal-description" hidden> Click to hide internal directories. </div>
+</article>
+    <footer class="go-Main-footer"></footer>
+  </main>
+
+    
+  <footer class="go-Footer">
+    
+    <div class="go-Footer-links">
+      <div class="go-Footer-linkColumn">
+        <a href="https://go.dev/solutions" class="go-Footer-link go-Footer-link--primary"
+            data-gtmc="footer link">
+          Why Go
+        </a>
+        <a href="https://go.dev/solutions#use-cases" class="go-Footer-link"
+            data-gtmc="footer link">
+          Use Cases
+        </a>
+        <a href="https://go.dev/solutions#case-studies" class="go-Footer-link"
+            data-gtmc="footer link">
+          Case Studies
+        </a>
+      </div>
+      <div class="go-Footer-linkColumn">
+        <a href="https://learn.go.dev/" class="go-Footer-link go-Footer-link--primary"
+            data-gtmc="footer link">
+          Get Started
+        </a>
+        <a href="https://play.golang.org" class="go-Footer-link" data-gtmc="footer link">
+          Playground
+        </a>
+        <a href="https://tour.golang.org" class="go-Footer-link" data-gtmc="footer link">
+          Tour
+        </a>
+        <a href="https://stackoverflow.com/questions/tagged/go?tab=Newest" class="go-Footer-link"
+            data-gtmc="footer link">
+          Stack Overflow
+        </a>
+        <a href="https://go.dev/help" class="go-Footer-link"
+            data-gtmc="footer link">
+          Help
+        </a>
+      </div>
+      <div class="go-Footer-linkColumn">
+        <a href="https://pkg.go.dev" class="go-Footer-link go-Footer-link--primary"
+            data-gtmc="footer link">
+          Packages
+        </a>
+        <a href="/std" class="go-Footer-link" data-gtmc="footer link">
+          Standard Library
+        </a>
+        <a href="/golang.org/x" class="go-Footer-link" data-gtmc="footer link">
+          Sub-repositories
+        </a>
+        <a href="https://pkg.go.dev/about" class="go-Footer-link" data-gtmc="footer link">
+          About Go Packages
+        </a>
+         <a href="/api" class="go-Footer-link" data-gtmc="footer link">
+          pkg.go.dev API
+        </a>
+      </div>
+      <div class="go-Footer-linkColumn">
+        <a href="https://go.dev/project" class="go-Footer-link go-Footer-link--primary"
+            data-gtmc="footer link">
+          About
+        </a>
+        <a href="https://go.dev/dl/" class="go-Footer-link" data-gtmc="footer link">Download</a>
+        <a href="https://go.dev/blog" class="go-Footer-link" data-gtmc="footer link">Blog</a>
+        <a href="https://github.com/golang/go/issues" class="go-Footer-link" data-gtmc="footer link">
+          Issue Tracker
+        </a>
+        <a href="https://go.dev/doc/devel/release.html" class="go-Footer-link"
+            data-gtmc="footer link">
+          Release Notes
+        </a>
+        <a href="https://go.dev/brand" class="go-Footer-link" data-gtmc="footer link">
+          Brand Guidelines
+        </a>
+        <a href="https://go.dev/conduct" class="go-Footer-link" data-gtmc="footer link">
+          Code of Conduct
+        </a>
+      </div>
+      <div class="go-Footer-linkColumn">
+        <a href="https://www.twitter.com/golang" class="go-Footer-link go-Footer-link--primary"
+            data-gtmc="footer link">
+          Connect
+        </a>
+        <a href="https://www.twitter.com/golang" class="go-Footer-link" data-gtmc="footer link">
+          Twitter
+        </a>
+        <a href="https://github.com/golang" class="go-Footer-link" data-gtmc="footer link">GitHub</a>
+        <a href="https://invite.slack.golangbridge.org/" class="go-Footer-link"
+            data-gtmc="footer link">
+          Slack
+        </a>
+        <a href="https://reddit.com/r/golang" class="go-Footer-link" data-gtmc="footer link">
+          r/golang
+        </a>
+        <a href="https://www.meetup.com/pro/go" class="go-Footer-link" data-gtmc="footer link">
+          Meetup
+        </a>
+        <a href="https://golangweekly.com/" class="go-Footer-link" data-gtmc="footer link">
+          Golang Weekly
+        </a>
+      </div>
+    </div>
+    <div class="go-Footer-bottom">
+      <img class="go-Footer-gopher"  width="1431" height="901"
+          src="/static/shared/gopher/pilot-bust-1431x901.svg" alt="Gopher in flight goggles">
+      <ul class="go-Footer-listRow">
+        <li class="go-Footer-listItem">
+          <a href="https://go.dev/copyright" data-gtmc="footer link">Copyright</a>
+        </li>
+        <li class="go-Footer-listItem">
+          <a href="https://go.dev/tos" data-gtmc="footer link">Terms of Service</a>
+        </li>
+        <li class="go-Footer-listItem">
+          <a href="http://www.google.com/intl/en/policies/privacy/" data-gtmc="footer link"
+              target="_blank" rel="noopener">
+            Privacy Policy
+          </a>
+        </li>
+        <li class="go-Footer-listItem">
+          <a href="https://go.dev/s/pkgsite-feedback" target="_blank" rel="noopener"
+              data-gtmc="footer link">
+            Report an Issue
+          </a>
+        </li>
+        <li class="go-Footer-listItem">
+          <button class="go-Button go-Button--text go-Footer-toggleTheme js-toggleTheme" aria-label="Theme Toggle">
+            <img data-value="auto" class="go-Icon go-Icon--inverted" height="24" width="24" src="/static/shared/icon/brightness_6_gm_grey_24dp.svg" alt="System theme">
+            <img data-value="dark" class="go-Icon go-Icon--inverted" height="24" width="24" src="/static/shared/icon/brightness_2_gm_grey_24dp.svg" alt="Dark theme">
+            <img data-value="light" class="go-Icon go-Icon--inverted" height="24" width="24" src="/static/shared/icon/light_mode_gm_grey_24dp.svg" alt="Light theme">
+            <p> Theme Toggle </p>
+          </button>
+        </li>
+        <li class="go-Footer-listItem">
+          <button class="go-Button go-Button--text go-Footer-keyboard js-openShortcuts" aria-label="Shorcuts Modal">
+            <img class="go-Icon go-Icon--inverted" height="24" width="24" src="/static/shared/icon/keyboard_grey_24dp.svg" alt="">
+            <p> Shortcuts Modal </p>
+          </button>
+        </li>
+      </ul>
+      <a class="go-Footer-googleLogo" href="https://google.com" target="_blank"rel="noopener"
+          data-gtmc="footer link">
+        <img class="go-Footer-googleLogoImg" height="24" width="72"
+            src="/static/shared/logo/google-white.svg" alt="Google logo">
+      </a>
+    </div>
+  </footer>
+
+    
+  <dialog id="jump-to-modal" class="JumpDialog go-Modal go-Modal--md js-modal">
+    <form method="dialog" data-gmtc="jump to form" aria-label="Jump to Identifier">
+      <div class="Dialog-title go-Modal-header">
+        <h2>Jump to</h2>
+        <button
+          class="go-Button go-Button--inline"
+          type="button"
+          data-modal-close
+          data-gtmc="modal button"
+          aria-label="Close"
+        >
+          <img
+            class="go-Icon"
+            height="24"
+            width="24"
+            src="/static/shared/icon/close_gm_grey_24dp.svg"
+            alt=""
+          />
+        </button>
+      </div>
+      <div class="JumpDialog-filter">
+        <input class="JumpDialog-input go-Input" autocomplete="off" type="text">
+      </div>
+      <div class="JumpDialog-body go-Modal-body">
+        <div class="JumpDialog-list"></div>
+      </div>
+      <div class="go-Modal-actions">
+        <button class="go-Button" data-test-id="close-dialog">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="ShortcutsDialog go-Modal go-Modal--sm js-modal">
+    <form method="dialog">
+      <div class="go-Modal-header">
+        <h2>Keyboard shortcuts</h2>
+        <button
+          class="go-Button go-Button--inline"
+          type="button"
+          data-modal-close
+          data-gtmc="modal button"
+          aria-label="Close"
+        >
+          <img
+            class="go-Icon"
+            height="24"
+            width="24"
+            src="/static/shared/icon/close_gm_grey_24dp.svg"
+            alt=""
+          />
+        </button>
+      </div>
+      <div class="go-Modal-body">
+        <table>
+          <tbody>
+            <tr><td class="ShortcutsDialog-key">
+              <strong>?</strong></td><td> : This menu</td>
+            </tr>
+            <tr><td class="ShortcutsDialog-key">
+              <strong>/</strong></td><td> : Search site</td>
+            </tr>
+            <tr><td class="ShortcutsDialog-key">
+              <strong>f</strong> or <strong>F</strong></td><td> : Jump to</td>
+            </tr>
+            <tr>
+              <td class="ShortcutsDialog-key"><strong>y</strong> or <strong>Y</strong></td>
+              <td> : Canonical URL</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="go-Modal-actions">
+        <button class="go-Button" data-test-id="close-dialog">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+    
+      <section class="Cookie-notice js-cookieNotice">
+        <div>go.dev uses cookies from Google to deliver and enhance the quality of its services and to
+        analyze traffic. <a target=_blank href="https://policies.google.com/technologies/cookies">Learn more.</a></div>
+        <div><button class="go-Button">Okay</button></div>
+      </section>
+    
+    
+      <script>
+        // this will throw if the querySelector can’t find the element
+        const gtmId = document.querySelector('.js-gtmID').dataset.gtmid;
+        if (!gtmId) {
+          throw new Error('Google Tag Manager ID not found');
+        }
+        loadScript(`https://www.googletagmanager.com/gtm.js?id=${gtmId}`);
+      </script>
+      <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W8MVQXG"
+                height="0" width="0" style="display:none;visibility:hidden">
+        </iframe>
+      </noscript>
+    
+    
+  
+  <div class="js-canonicalURLPath" data-canonical-url-path="/github.com/robfig/cron/v3@v3.0.1" hidden></div>
+  <div class="js-playgroundVars" data-modulepath="github.com/robfig/cron/v3" data-version="v3.0.1" hidden></div>
+  <script>
+    loadScript('/static/frontend/unit/main/main.js')
+  </script>
+
+  <script>
+    loadScript('/static/frontend/unit/unit.js')
+  </script>
+
+  </body>
+</html>

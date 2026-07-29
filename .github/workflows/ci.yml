@@ -31,6 +31,23 @@ jobs:
           path: "."
           fail-on: high
 
+  claims:
+    name: docs claims and numbers
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Every external claim's snapshot hash and anchor, and every measured
+      # number's origin, are checked. A gap fails; live drift is a warning.
+      - run: pnpm check-claims
+
   hermetic:
     name: hermetic suite (no secrets)
     runs-on: ubuntu-latest

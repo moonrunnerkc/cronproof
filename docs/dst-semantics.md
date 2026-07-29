@@ -84,7 +84,7 @@ moved to permanent -06 on 2026-06-18"
 A transition can be a full day. When Samoa crossed the date line at the end
 of 2011, December 30 2011 did not exist. A daily `0 0 * * *` job has no
 December 30 to run on. EVIDENCE.md section 6 shows `0 0 * * * Pacific/Apia
-2011` producing both a `SKIPPED ... gap 1440min` (a 24-hour gap) and a
+2011` producing both a `SKIPPED ... gap 1440min` (a full-day gap) and a
 `COUNT_ANOMALY ... phantom-day count 0 vs modal 1`: the day fired zero
 times against a modal daily count of one. The count anomaly is the safety
 net that catches a vanished day, which a per-firing check would otherwise
