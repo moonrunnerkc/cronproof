@@ -4,25 +4,62 @@ A pre-execution differential prover for cron schedule hazards across timezone of
 
 [![CI](https://github.com/moonrunnerkc/cronproof/actions/workflows/ci.yml/badge.svg)](https://github.com/moonrunnerkc/cronproof/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![Node](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](./package.json)
+[![Node](https://img.shields.io/badge/node-22.16.0-brightgreen.svg)](./.nvmrc)
 
 ## What This Does
 
 cronproof takes a cron expression, an IANA zone, and a window, and reports every wall-clock firing that a daylight-saving transition skips, doubles, or drifts. Instead of picking one scheduler and answering "it fires here", it evaluates the schedule under ten explicit scheduler policy models and reports where they disagree, because a disagreement is a portability defect waiting to happen when a job moves between platforms. It runs as a CLI and as a CI gate that emits SARIF, and every scheduler model is tagged VERIFIED (confirmed against a real run with a committed fixture) or ASSERTED, so a claim is never presented as more certain than it is.
 
+## Requirements
+
+Use the Node release pinned in [.nvmrc](./.nvmrc), not just any Node 22 or
+newer. cronproof answers every question against two independent timezone
+backends: the runtime's ICU tzdb, and the TZif tree vendored in
+`vendor/zoneinfo`. If those two carry different tzdb releases, every command
+stops with exit 3 instead of answering against a rule set that may be stale.
+The vendored tree is tzdb 2025b, and the pinned Node ships the ICU build of
+2025b. Confirm the two agree before anything else:
+
+```console
+$ node -p "process.versions.tz"
+2025b
+$ cat vendor/zoneinfo/+VERSION
+2025b
+```
+
+If those differ, either switch to the pinned Node or pass
+`--zoneinfo-root <path>` pointing at a tzdb tree whose `+VERSION` matches your
+runtime. pnpm 10.13.1 is pinned in `package.json`; `corepack enable` puts that
+exact version on PATH.
+
 ## Install
 
-cronproof is not published to a package registry; install it from source.
+cronproof is not published to a package registry, so `npx cronproof` does not
+resolve. Install it from source.
 
 ```bash
 git clone https://github.com/moonrunnerkc/cronproof
 cd cronproof
-pnpm install
+nvm install                      # reads .nvmrc; or install that Node another way
+corepack enable                  # puts the pinned pnpm on PATH
+pnpm install --frozen-lockfile
 pnpm build
-npm link           # optional: puts `cronproof` on PATH; or run `node dist/cli.js`
 ```
 
-For CI, use the published composite GitHub Action instead (see [CI setup](#ci-setup)); it needs no local install.
+That leaves a runnable CLI at `dist/cli.js`. Every example below is written as
+`cronproof`; run it either way:
+
+```bash
+node dist/cli.js --version       # from the repo, no further setup
+npm link && cronproof --version  # optional: puts `cronproof` on PATH
+```
+
+`npm link` is the shortest way to get the binary on PATH and leaves the pnpm
+install alone; `pnpm link --global` also works but needs `pnpm setup` first.
+Undo it with `npm unlink -g cronproof`.
+
+For CI, use the composite GitHub Action instead (see [CI setup](#ci-setup)); it
+needs no local install.
 
 ## Quick example
 
@@ -58,7 +95,32 @@ portability verdict
 - `cronproof scan <path>` walk a repo (or a file), report every schedule a supported platform understands with its file, line, and column and where its timezone came from (explicit, inherited from CRON_TZ, a platform default such as UTC, or UNKNOWN), classify each one's hazards over a window, and exit non-zero on hazards at or above `--fail-on`. Recognized sources: crontab and /etc/crontab, Kubernetes CronJob manifests (Helm templates reported UNRESOLVED, never guessed), GitHub Actions `on.schedule.cron`, systemd `.timer` units, wrangler.toml, vercel.json, render.yaml, netlify.toml, Terraform Cloud Scheduler and EventBridge, and node-cron, cron-parser, Spring `@Scheduled`, and Celery beat call sites. Honors `.cronproofignore` and inline `cronproof-ignore: <reason>` comments.
 - `cronproof baseline <path> --out <file>` write the current hazard ids to a baseline so an existing codebase can adopt the gate without its known hazards blocking every build.
 
+`cronproof --help` prints the same list with every option; `cronproof --version` prints the version. Both exit 0. Every flag needs a command in front of it: `cronproof --tzdb-check 2025b` on its own is a usage error (exit 2).
+
+One runnable line per command:
+
+```bash
+cronproof check "30 2 * * *" --tz Europe/Berlin --from 2025-10-01 --to 2025-11-01
+cronproof explain "30 2 * * *" --tz Europe/Berlin --at 2025-10-26T00:30:00Z
+cronproof zones --hazard-window 2025-10-01..2025-11-01
+cronproof scan .
+cronproof baseline . --out .cronproof-baseline.json
+```
+
 Options: `--format human|json|sarif|junit|markdown`, `--dialect vixie|debian|quartz|k8s|systemd|github-actions|aws-eventbridge`, `--fail-on info|low|medium|high|critical`, `--idempotent`, `--baseline <file>`, `--tzdb-check <release>`, `--zoneinfo-root <path>`.
+
+`--from` and `--to` take `YYYY-MM-DD` or `YYYY-MM-DDTHH:MM`; `--at` takes an ISO instant; `--hazard-window` takes `FROM..TO` with no spaces.
+
+### Expression syntax follows the dialect
+
+`--dialect` changes how the expression is parsed. Three of the seven reject a five-field expression outright with exit 2, so pass one the dialect accepts:
+
+| dialect | fields | example |
+| ------- | ------ | ------- |
+| `vixie` (default), `debian`, `k8s`, `github-actions` | 5 | `30 2 * * *` |
+| `quartz` | 6 or 7 | `0 30 2 * * ?` |
+| `aws-eventbridge` | 6 | `30 2 * * ? *` |
+| `systemd` | calendar event | `*-*-* 02:30:00` |
 
 ## Exit codes
 
@@ -69,7 +131,9 @@ Options: `--format human|json|sarif|junit|markdown`, `--dialect vixie|debian|qua
 | 2 | usage error or expression parse error |
 | 3 | internal failure: the two timezone backends disagreed, the ICU and zoneinfo tzdb versions do not match, or `--tzdb-check` found the runner's tzdb differs from the pin |
 
-`explain` and `zones` are informational and exit 0 unless an internal verification failure occurs.
+Exit 3 applies to every command. A tzdb disagreement stops `scan`, `baseline`, `explain`, and `zones` exactly as it stops `check`, because a gate that answers from a rule set it cannot vouch for is worse than one that stops.
+
+`explain`, `zones`, and `baseline` are informational and otherwise exit 0; only `check` and `scan` turn hazards into exit 1.
 
 ## CI setup
 
@@ -125,8 +189,8 @@ Each of those answers a real question well. cronproof answers a different one, b
 
 - [docs/dst-semantics.md](docs/dst-semantics.md): the wall-clock resolution cases, sub-hour and multi-hour transitions, abolished DST, missing calendar days, POSIX footer extrapolation, and tzdb drift.
 - [docs/policy-models.md](docs/policy-models.md): each scheduler model, its source, its verification status, and its fixture.
-- [EVIDENCE.md](EVIDENCE.md): regenerated from real command output by `npm run evidence`.
-- [research/out/report.md](research/out/report.md): the corpus study over public GitHub schedules.
+- [EVIDENCE.md](EVIDENCE.md): regenerated from real command output by `pnpm evidence`. `pnpm evidence:check` regenerates without writing and exits non-zero if the committed file has drifted, which is what CI runs.
+- [research/out/report.md](research/out/report.md): the corpus study over public GitHub schedules. [research/README.md](research/README.md) documents the four pipeline stages and how to rerun them from cache.
 
 ## License
 

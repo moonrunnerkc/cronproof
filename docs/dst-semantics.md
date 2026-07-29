@@ -3,7 +3,7 @@
 This is the reference cronproof is built on. Every behavioral claim below
 is either a number measured in this repository (traceable to
 [EVIDENCE.md](../EVIDENCE.md), regenerated from real command output by
-`npm run evidence`) or a link to a primary source fetched while writing it.
+`pnpm evidence`) or a link to a primary source fetched while writing it.
 
 ## The three wall-clock resolution cases
 
@@ -118,7 +118,10 @@ lists newer releases (2026a, 2026b, 2026c) with real rule changes such as
 Alberta going permanent -06
 ([tz NEWS](https://data.iana.org/time-zones/tzdb/NEWS)). When a runner's
 tzdb updates, a schedule proven safe yesterday can silently rest on a stale
-proof. `cronproof --tzdb-check <release>` turns that silent drift into a
-loud exit 3: EVIDENCE.md section 3 records that "a pin matching the runner
+proof. The `--tzdb-check <release>` flag turns that silent drift into a
+loud exit 3. It attaches to a command, so in CI it reads
+`cronproof scan . --tzdb-check 2025b` and for a single expression
+`cronproof check "30 2 * * *" --tz Europe/Berlin --from 2025-10-01 --to 2025-11-01 --tzdb-check 2025b`;
+on its own the flag is a usage error. EVIDENCE.md section 3 records that "a pin matching the runner
 tzdb passes" and "a deliberately wrong pin fails and names both releases".
 Pin the release you verified against, and re-verify when you move the pin.

@@ -1582,3 +1582,71 @@ k8s fixture observes robfig/cron, the controller's parser, which is how phase
 Rules 9 and 10 were added: a phase is not closed until CI is green on the
 pushed SHA, and "simulated" verification does not satisfy a criterion that
 says observed.
+
+## 2026-07-28: Documented commands audited and made runnable
+
+Every command in README.md, docs/, action/README.md, and research/README.md
+was executed rather than read. Four of them did not work as written, and one
+of the failures was a gap in the tool, not the prose.
+
+The headline README example, `cronproof check "30 2 * * *" --tz Europe/Berlin
+...`, exits 3 on any Node whose ICU tzdb is not the vendored release. Measured
+here: vendor/zoneinfo/+VERSION is 2025b; Node 22.16.0 (the .nvmrc pin) reports
+process.versions.tz 2025b, 22.15.0 reports 2025a, 22.23.1 and 24.15.0 report
+2026a, 24.12.0 reports 2025b, and the system Node 18.19.1 reports 2023c. The
+install section said only `pnpm install; pnpm build`, so the documented first
+command failed for anyone not already on the pin. A Requirements section now
+states the constraint, gives the two-line check that confirms it, and the
+badge points at .nvmrc instead of claiming ">=22".
+
+`npx cronproof baseline . --out .cronproof-baseline.json` in action/README.md
+cannot work: the README itself says the package is not published, and the
+registry returns 404 for `cronproof`. Replaced with the from-source form.
+
+`cronproof --tzdb-check <release>` in docs/dst-semantics.md is a usage error
+(exit 2); every flag needs a command. Replaced with the scan and check forms.
+
+Three choices recorded per standing rule 1:
+
+- The tzdb agreement check was hoisted from check.ts into the dispatcher.
+  Before, only `check` refused on a mismatch; `scan`, `baseline`, `explain`,
+  and `zones` answered anyway and printed a receipt showing 2026a against
+  2025b. `scan` is the CI gate, so it was the one command where a stale rule
+  set could pass quietly. The README, docs/dst-semantics.md, and the exit-code
+  table all described exit 3 as protecting a verdict, not one subcommand, so
+  the code was brought to the documented contract rather than the docs
+  narrowed to the code. tests/cli/tzdb-mismatch.test.ts asserts all five.
+
+- action/action.yml pinned `node-version: "22"`, which resolves to the newest
+  22.x (22.23.1 as measured above, tzdb 2026a) and would therefore exit 3 on
+  every run once the dispatcher guard applies. Pinned to the exact .nvmrc
+  version instead. `node-version-file` was rejected: setup-node resolves it
+  against the caller's workspace, which for a consumed composite action is
+  the repository being scanned, not this one. tests/ci/action-node-pin.test.ts
+  fails if the two pins drift.
+
+- The install docs keep `npm link` rather than switching to
+  `pnpm link --global`. `pnpm link --global` fails with
+  ERR_PNPM_NO_GLOBAL_BIN_DIR until the user runs `pnpm setup`; `npm link`
+  worked here in one step against a pnpm-installed tree and left
+  node_modules/.pnpm intact. Both are documented, with the extra step named.
+
+Also corrected: the parse error for a missing command listed four of the five
+commands (`baseline` was absent) and is now derived from the COMMANDS array;
+--help omitted --help and --version and had a misaligned column; and the
+tzdb-mismatch message told the reader to use a matching --zoneinfo-root
+without mentioning the Node pin, which is the remedy that actually applies to
+a fresh clone.
+
+The research pipeline had the same class of defect. research/README.md
+documented `pnpm run research filter analyze report` as "recompute from cache,
+no network", but `cache/` is deliberately not committed, so on any checkout
+that command read zero hits and wrote an empty corpus over the published
+research/out/, taking the headline metric from 4/92 to 0/0 with exit 0. Running
+it here is what surfaced it; the committed artifacts were restored from git.
+`filter` now refuses when cache/hits.jsonl is absent and `analyze` refuses when
+the corpus lists files whose content is no longer cached, each naming the
+missing input and the two ways forward. The README documents `report` as the
+only stage that runs cold. tests/research/cache-guard.test.ts asserts both
+refusals leave the published files byte-identical, and skips those two cases
+when a warm cache is present so a machine that has run `collect` still passes.

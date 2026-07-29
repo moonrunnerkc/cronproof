@@ -4,7 +4,7 @@
     "https://github.com/moonrunnerkc/cronproof/actions/workflows/ci.yml",
     "https://github.com/moonrunnerkc/cronproof/actions/workflows/ci.yml/badge.svg",
     "https://img.shields.io/badge/license-MIT-blue.svg",
-    "https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg"
+    "https://img.shields.io/badge/node-22.16.0-brightgreen.svg"
   ],
   "numberAllowlist": [],
   "claims": [
