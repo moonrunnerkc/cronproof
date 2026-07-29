@@ -1505,3 +1505,80 @@ covered in the remediation 4 entry.
 Coverage summary at green: 18 claims total, 18 sources verified, 0 uncited;
 6 numbers registered, 6 traced, 0 untraceable. Snapshots total 4.2 MiB under
 docs/sources/, committed as the provenance archive.
+
+## 2026-07-28: Remediation 6, retro-audit of phases 1 to 13 acceptance
+
+Phases 12 and 13 were reported complete while CI was failing, which
+invalidates the sign-off procedure for every phase. Executable acceptance
+tests are backfilled at test/acceptance/phase-<n>.test.ts for all 13 phases,
+one test per criterion, named after the criterion.
+
+Reconstruction note (standing rule 1 and rule 4): the phase 10 to 13
+acceptance criteria are verbatim from this session's prompts. The phase 1 to
+9 criteria are reconstructed from the repo's own artifacts (the phase
+DECISIONS entries, EVIDENCE.md, FINDINGS.md, and the README exit-code table),
+because those prompts predate this session. Each phase 1 to 9 file states that
+its criteria are reconstructed and asserts the observable core of the
+delivered behavior.
+
+### Audit table (report before fixing; nothing was fixed during the run)
+
+```
+phase criterion (encoded)                                            result
+1     evidence harness regenerates and catches drift                 pass
+2     two backends agree; three-way wall-clock resolution            pass
+3     seven dialects parse; strict wall-clock order; rejection       pass
+4     five hazard kinds classified; stable hazard id                 pass
+5     ten tagged policy models; differential flags disagreement      pass
+6     every VERIFIED policy rests on a real, non-empty fixture       pass
+7     documented exit-code contract; reproducible result             pass
+8     schedules found with file/line/column and zone source          pass
+9     gate fails on hazards; wrong tzdb exit 3; baseline passes       pass
+10    recorded-seed properties; named adversarial tests; mutation     pass
+11    browser verdict identical to CLI; static bundle; offline SW     pass
+12    report has visible denominators; byte-identical reproduction    pass
+13    every claim sourced; every number traced; snapshot hashes match pass
+```
+
+33 acceptance tests, all pass. There were no failures, so the item-3
+categorization (never met, regressed, or test wrong) applies to nothing.
+That is the finding: the delivered behavior of every phase still meets its
+encoded acceptance criteria.
+
+### Phase 6 policy verification status, before and after
+
+Every VERIFIED status was checked against its fixture. All eight fixtures
+exist, are non-empty (six scenarios each, with observed fire instants), record
+a scheduler version, and were produced by a real-software observation harness
+under test/differential/harness (the cron daemon, cron-parser, node-cron, the
+python libraries, robfig/cron, and systemd-analyze). No status rests on a
+missing or empty fixture, so none drops to ASSERTED and the CLI output is
+unchanged.
+
+```
+policy             before    after     fixture               real observation
+naive              ASSERTED  ASSERTED  (none, definitional)  n/a
+debian-cron        VERIFIED  VERIFIED  debian-cron.json      cron daemon, rawLog per scenario
+cronie             VERIFIED  VERIFIED  cronie.json           cronie daemon, rawLog per scenario
+k8s-cronjob        VERIFIED  VERIFIED  k8s-cronjob.json      robfig/cron Schedule.Next()
+quartz             ASSERTED  ASSERTED  (none, not run)       n/a
+croniter           VERIFIED  VERIFIED  croniter.json         croniter get_next()
+cronsim            VERIFIED  VERIFIED  cronsim.json          cronsim next-fire sequence
+cron-parser-luxon  VERIFIED  VERIFIED  cron-parser-luxon.json cron-parser next()
+node-cron          VERIFIED  VERIFIED  node-cron.json        node-cron scheduler, virtual clock
+systemd-timer      VERIFIED  VERIFIED  systemd-timer.json    systemd-analyze calendar
+```
+
+Honest caveats found, none of which invalidate VERIFIED under the phase-6
+definition: only the two daemon fixtures carry a raw stdout log line; the
+other six record the real library or tool's returned fire sequence
+(observedFireInstantsUtc). The systemd fixture records tzdbVersion "unknown"
+(its scenarios use 2023 historical dates, stable across tzdb releases). The
+k8s fixture observes robfig/cron, the controller's parser, which is how phase
+6 defined that model's VERIFIED status.
+
+### Lessons written into CLAUDE.md
+
+Rules 9 and 10 were added: a phase is not closed until CI is green on the
+pushed SHA, and "simulated" verification does not satisfy a criterion that
+says observed.

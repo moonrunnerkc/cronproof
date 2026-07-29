@@ -40,3 +40,17 @@ STANDING RULES FOR THIS REPO
    by `pnpm phase:close <n>` (see rule 2), which additionally requires a
    clean pushed tree, green CI on that exact SHA, and passing acceptance
    tests.
+
+9. A phase is not closed until CI is green on the pushed SHA. This is the
+   lesson of phases 12 and 13, which were reported complete while CI was
+   red because a local run was green: a local pass proves nothing about the
+   pushed commit. Query CI for the exact SHA, treat in-progress and missing
+   checks as failures, and never infer status from a previous SHA.
+
+10. "Simulated" verification does not satisfy an acceptance criterion that
+    says observed. When a criterion says a real scheduler, a real run, or a
+    real credential-free environment, meet it by observing the real thing.
+    A simulation, a computed proxy, or a "would have worked" argument does
+    not count. If the real observation is genuinely impractical, report that
+    as a failing or not-testable criterion (rule 7), do not substitute a
+    simulation and call it met.
