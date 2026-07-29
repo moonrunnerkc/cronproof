@@ -247,6 +247,12 @@ cron-string grammar. The optional workflow timezone is out of scope
 for a cron-string parser and is recorded here rather than silently
 contradicting the brief.
 
+Superseded in part on 2026-07-29 (see the entry at the end of this file).
+Out of scope for the parser is still right, since `timezone` is not part of
+the cron grammar. Out of scope for the scanner was wrong: reading where a
+schedule's zone comes from is the scanner's job, and treating UTC as fixed
+made every zone-aware Actions schedule report clean.
+
 ## 2026-07-27: Phase 3, the MON#5 example needs a #-supporting dialect
 
 The brief lists `0 0 * 2 MON#5` among the differential cases. The "#"
@@ -710,6 +716,10 @@ this session (2026-07-28):
 - GitHub Actions runs scheduled workflows in UTC: "By default,
   scheduled workflows run in UTC."
   https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
+  (Superseded for the scanner by the 2026-07-29 entry at the end of this
+  file: "by default" is now load-bearing, because a schedule may set a
+  `timezone` key. UTC remains the answer only when the file does not say
+  otherwise.)
 - Kubernetes CronJob without spec.timeZone is NOT assumed UTC; it is
   UNKNOWN: "For CronJobs with no time zone specified, the
   kube-controller-manager interprets schedules relative to its local
@@ -1704,3 +1714,149 @@ reported the punctuation between them as a schedule.
 Not changed: sourceKind stays `wrangler` for all three file formats, since the
 platform and its UTC rule are the same and splitting it would fragment the
 differential for no gain.
+
+## 2026-07-29: Independent-run findings, six defects fixed at the source
+
+Six numbered findings plus one minor came in from a run against real
+repositories. All seven are fixed. What follows is what was wrong, what was
+chosen, and what was deliberately not done.
+
+### The Actions scanner derives the zone from the file instead of asserting UTC
+
+`scanGithubActions` stamped `{ kind: 'platform-default', zone: 'UTC' }` on
+every finding and its header asserted that the platform "runs every scheduled
+workflow in UTC with no timezone knob". That was true when it was written. It
+is not now: GitHub documents an optional `timezone` sibling key on each
+`on.schedule` entry, quoted below. The defect was not the regex, it was a
+platform default frozen into a constant instead of derived from the source, so
+every zone-aware schedule came back clean with zero hazards.
+
+The entry decided in the 2026-07-27 note above (that the workflow-level
+`timezone:` key is out of scope for a cron-string parser) is superseded for the
+scanner. It remains correct for the parser: `timezone` is not part of the cron
+grammar. It was wrong for the scanner, whose whole job is to read where a
+schedule's zone comes from, and reading the key is exactly that job.
+
+The lookup is scoped by indentation to the sequence item the cron key belongs
+to, not by proximity. A nearest-line search would let the next list item's zone
+land on this one, which is worse than reading no zone at all, because it names
+a zone the schedule does not run in. The new `yaml-item` module holds the
+scoping primitives: `parseKeyLine` counts a sequence dash as indentation so a
+`- cron:` and its sibling `timezone:` line up at the same column, and
+`itemBounds` walks out to the item's edges and stops at the next dash.
+
+A declared zone is validated against the zone names the run's tzdb actually
+holds. A typo that resolves silently is how a schedule ends up proven safe in a
+zone that does not exist, and `classifyOne` swallows classifier errors, so an
+unvalidated typo produced nothing at all rather than an error. An unknown name
+now yields `{ kind: 'unknown' }`, which routes to the existing ZONE_UNKNOWN
+discovery hazard. The same treatment covers an unexpanded `${{ }}` expression.
+
+Reaching the zone list from a scanner needed a channel that did not exist.
+`ScanContext` is that channel: one `knownZones()` accessor, memoized, reading
+the same zoneinfo root the classifier will read, so a scan and a check agree on
+what a zone name is. It returns null when no tzdb can be read at all, and a
+scanner must treat null as "cannot check", never as "not a zone".
+
+Source, fetched this session (2026-07-29),
+https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows:
+"By default, scheduled workflows run in UTC. You can optionally specify a
+timezone using an IANA timezone string."
+
+### A github-actions policy model, ASSERTED
+
+`--dialect github-actions` parsed as Actions and then reported what ten other
+schedulers would do, none of which was GitHub. The same page documents the gap
+branch: "during DST spring-forward transitions, scheduled workflows in skipped
+hours advance to the next valid time. For example, a 2:30 AM schedule advances
+to 3:00 AM." The next valid time is the transition instant, not the intended
+offset carried past it, so 02:30 becomes 03:00 and not 03:30. That is a
+compensating run for a slot that never happened: FIRES_AT_CATCHUP.
+
+Two branches are UNDEFINED, the same shape quartz already carries. The fold is
+not on that page: a repeated hour could plausibly fire once or twice, and a
+plausible answer stated as fact is the failure mode this project exists to
+avoid. Neither is the multi-slot interval gap. The documented example is a fixed
+daily time, one slot in the gap; an every-ten-minutes schedule puts six slots in
+the same gap, and applying the sentence literally reports six firings at one
+identical instant, which the docs support no better than one firing does. The
+model is ASSERTED, not VERIFIED: verifying it means
+waiting on GitHub's hosted scheduler through a real transition in a real
+repository, which no phase has done, and a fixture is the only thing that earns
+VERIFIED here.
+
+Two tests froze the policy count at ten. The phase-5 acceptance test now
+asserts that the ten phase-5 policies are registered and tagged, which is the
+criterion the phase actually had; a frozen total would fail on every later
+addition without a criterion regressing. The post-phase-6 registration test now
+asserts the exact id set, which catches an accidental removal that a length
+check would miss.
+
+### The local-intent patterns are split by case and the zone match is validated
+
+One combined `/i` regex silently disabled its own case-dependent alternatives.
+`[A-Z]{3,4}\s*time` under `/i` with `\s*` allowing zero space matches
+"daytime", "Showtime", and "the time"; `[ECMP][SD]T` under `/i` matches inside
+"test". The abbreviation class was also Americas-only, so it could not match
+CET, BST, or JST at all and missed every European and Asian local-time comment.
+The patterns are now three: a case-insensitive one for wording whose meaning
+does not depend on case, a case-sensitive abbreviation set widened past the
+Americas, and a case-sensitive "ABBREV time" phrase that requires the space and
+excludes UTC.
+
+`[A-Za-z]+\/[A-Za-z_]+` matched every slash pair in a file: `issues/PRs`,
+`Fedora/Rawhide`, `com/web`. Zone names are an enumerable set, so a candidate is
+now matched loosely and confirmed against the tzdb the run reads, which is the
+only test that admits `America/New_York` and rejects the rest. This is the
+second consumer of `ScanContext.knownZones`, and the reason it is a set rather
+than a predicate.
+
+No delta against the reporting run's 137 warnings is claimed here, because that
+corpus is not in this repo and rule 3 forbids a number this repo did not
+measure. Precision is pinned by fixture tests naming the specific junk cases and
+the specific true positives instead.
+
+### The intent lookback crosses enclosing keys, with a budget
+
+`intentContext` stopped at the first non-comment line, so a file-header comment
+six lines above the cron and separated by `name:` and `on:` never reached it.
+The walk now crosses blank lines and keys at strictly lower indent than the
+cron key, which is what reaches that comment, and stops at the first key at the
+cron key's own indent or deeper, because that is a sibling or a previous item's
+body. The window is capped at twelve lines. The cap is the point: the reporting
+run prototyped a wide window and warnings went up by more than half, so the
+constraint is precision, not distance, and the stopping rules do the work while
+the cap bounds the worst case.
+
+### One zoneinfo root policy, and a mechanical way back to green
+
+`resolveZoneinfoRoot` documented and implemented system-first while
+`src/cli/analyze.ts` implemented vendored-first on top of it, so the codebase
+had two defaults and the module's doc comment was false for every CLI
+invocation. Vendored-first wins and is now the only implementation:
+`resolveRoot` delegates, and the vendored tree is the only one whose release is
+pinned alongside the Node version, so it is the only default under which the
+agreement gate is reproducible across machines.
+
+The gate itself is kept as is. It is right, and a verdict computed against a
+stale rule set is worth nothing. What was missing was a supported path back to
+green other than finding one exact Node build, since Node ships ICU updates in
+patch releases. `pnpm tzdb:sync <release>` clones eggert/tz at the release tag,
+builds that release's own zic, compiles the standard data files, writes
+`+VERSION`, and prints the `--zoneinfo-root` to pass. The mismatch remedy now
+names that command instead of describing a tree to go find.
+
+Verified by building 2025b with it and comparing against the committed vendored
+tree through the TZif backend: the same 598 zones, no zone missing or extra, and
+zero differing transitions from 1970 to 2040. The files are not byte-identical,
+because zic's packing differs from whatever produced the committed tree, which
+is why the check is on transitions and not on hashes.
+
+### The scan JSON reports its hazards once
+
+`scan --format json` emitted the active hazards at the top level and again
+under `data.hazards`, identical arrays, so a consumer had two and no way to tell
+which the exit code came from. The top-level array stays, since every command
+emits it and the SARIF, JUnit, and exit-code paths all read it; `data.hazards`
+is gone. `data.baselined` is not a second copy and stays: it holds the hazards a
+baseline removed from the top-level array.
