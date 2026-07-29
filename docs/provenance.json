@@ -136,6 +136,20 @@
       "sha256": "fe36e9e74cccbd996620ae169b88c97012a20f26df28aa07982af58134db2c58",
       "anchor": "too many missed start time",
       "fetchedAt": "2026-07-28"
+    },
+    {
+      "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows",
+      "snapshot": "github-actions-schedule.html",
+      "sha256": "473355592c19a47c9c73dc12af9dac4239f6e2ef5fc5b23231365340a952bc84",
+      "anchor": "advance to the next valid time",
+      "fetchedAt": "2026-07-29"
+    },
+    {
+      "url": "https://github.com/eggert/tz",
+      "snapshot": "eggert-tz.html",
+      "sha256": "632bc1c47cb0d27400e1203a6702233ed4e33466fab72ffbba78975da00d1521",
+      "anchor": "Time zone database and code",
+      "fetchedAt": "2026-07-29"
     }
   ],
   "numbers": [

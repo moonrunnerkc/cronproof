@@ -8,7 +8,7 @@ A pre-execution differential prover for cron schedule hazards across timezone of
 
 ## What This Does
 
-cronproof takes a cron expression, an IANA zone, and a window, and reports every wall-clock firing that a daylight-saving transition skips, doubles, or drifts. Instead of picking one scheduler and answering "it fires here", it evaluates the schedule under ten explicit scheduler policy models and reports where they disagree, because a disagreement is a portability defect waiting to happen when a job moves between platforms. It runs as a CLI and as a CI gate that emits SARIF, and every scheduler model is tagged VERIFIED (confirmed against a real run with a committed fixture) or ASSERTED, so a claim is never presented as more certain than it is.
+cronproof takes a cron expression, an IANA zone, and a window, and reports every wall-clock firing that a daylight-saving transition skips, doubles, or drifts. Instead of picking one scheduler and answering "it fires here", it evaluates the schedule under eleven explicit scheduler policy models and reports where they disagree, because a disagreement is a portability defect waiting to happen when a job moves between platforms. It runs as a CLI and as a CI gate that emits SARIF, and every scheduler model is tagged VERIFIED (confirmed against a real run with a committed fixture) or ASSERTED, so a claim is never presented as more certain than it is.
 
 ## Requirements
 
@@ -27,9 +27,24 @@ $ cat vendor/zoneinfo/+VERSION
 2025b
 ```
 
-If those differ, either switch to the pinned Node or pass
-`--zoneinfo-root <path>` pointing at a tzdb tree whose `+VERSION` matches your
-runtime. pnpm 10.13.1 is pinned in `package.json`; `corepack enable` puts that
+If those differ, you do not have to go hunting for the one Node build whose
+ICU happens to agree. Node ships ICU updates in patch releases, so the pinned
+tree stops matching sooner or later on any machine. Build the tree your
+runtime needs and point at it:
+
+```console
+$ pnpm tzdb:sync "$(node -p 'process.versions.tz')"
+...
+  use it:     --zoneinfo-root vendor/zoneinfo-2025b
+```
+
+That clones [eggert/tz](https://github.com/eggert/tz) at the release tag,
+builds that release's own `zic`, compiles the standard data files with it,
+and writes `+VERSION`. It needs `git`, `make`, and a C compiler. Replacing
+`vendor/zoneinfo` with the result makes it the default for every command, so
+the flag is only needed while both trees are kept side by side.
+
+pnpm 10.13.1 is pinned in `package.json`; `corepack enable` puts that
 exact version on PATH.
 
 ## Install

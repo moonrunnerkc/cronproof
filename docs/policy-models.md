@@ -1,6 +1,6 @@
 # Scheduler policy models
 
-cronproof evaluates a schedule under ten scheduler policy models and
+cronproof evaluates a schedule under eleven scheduler policy models and
 reports where they disagree. This document records, for each model, what it
 does at a gap and a fold, where that behavior came from, its verification
 status, and the fixture that pins it.
@@ -20,7 +20,8 @@ A worked reference point: for `30 2 * * *` in Europe/Berlin across the
 fall-back (one ambiguous decision point), EVIDENCE.md section 7 records the
 fire counts used throughout this document: naive 2, debian-cron 1, cronie
 1, k8s-cronjob 2, quartz UNDEFINED, croniter 2, cronsim 1,
-cron-parser-luxon 1, node-cron 1, systemd-timer 1.
+cron-parser-luxon 1, node-cron 1, systemd-timer 1, github-actions
+UNDEFINED.
 
 ## naive (ASSERTED)
 
@@ -164,3 +165,24 @@ cron-parser-luxon 1, node-cron 1, systemd-timer 1.
   systemd 249.
 - **Behavior:** monotonic next-elapse computation, so a fold fires once and
   a gap is dropped.
+
+## github-actions (ASSERTED)
+
+- **Source:** GitHub's workflow event reference, which states that "For
+  schedules that set `timezone` to a time zone that observes daylight
+  saving time (DST), during DST spring-forward transitions, scheduled
+  workflows in skipped hours advance to the next valid time. For example, a
+  2:30 AM schedule advances to 3:00 AM."
+  ([events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)).
+  The same page documents that scheduled workflows run in UTC unless the
+  schedule sets `timezone`.
+- **Fixture:** none. Verifying it means waiting on GitHub's hosted
+  scheduler through a real transition in a real repository, which no phase
+  has done.
+- **Behavior:** a skipped fixed daily time fires as a catch-up at the
+  transition instant, so 02:30 becomes 03:00 and not 03:30; that
+  distinguishes it from cron-parser-luxon, which carries the intended offset
+  past the gap. Two branches are UNDEFINED, because the page covers neither:
+  a repeated hour, and an interval schedule whose several slots all fall in
+  the same gap, where a literal reading would report every one of them firing
+  at the identical instant.
