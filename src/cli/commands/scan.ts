@@ -14,6 +14,7 @@
 
 import { describeZoneSource, type ScanResult, type ScheduleFinding } from '../../scan/index';
 import type { ParsedArgs } from '../args';
+import { severityOrder } from '../analyze';
 import { readBaseline, splitByBaseline } from '../baseline';
 import { analyzeScan } from '../scan-run';
 import type { HazardView, ResultModel, Section } from '../types';
@@ -159,6 +160,12 @@ export function runScan(args: ParsedArgs): { model: ResultModel } | { usageError
     bySeverity[hazard.severity] = (bySeverity[hazard.severity] ?? 0) + 1;
   }
 
+  // The count that decides the exit code is the one filtered by --fail-on,
+  // not the total. Reporting only the total reads as "this build should
+  // have failed" on a green run whose hazards all sit below the threshold.
+  const threshold = severityOrder(args.failOn);
+  const gating = active.filter((hazard) => severityOrder(hazard.severity) >= threshold);
+
   const sections: Section[] = [
     {
       heading: 'summary',
@@ -166,7 +173,8 @@ export function runScan(args: ParsedArgs): { model: ResultModel } | { usageError
       pairs: [
         ['files scanned', String(result.filesScanned)],
         ['schedules found', String(result.findings.length)],
-        ['hazards (gating)', String(active.length)],
+        ['hazards (found)', String(active.length)],
+        [`hazards (gating, at or above ${args.failOn})`, String(gating.length)],
         ['hazards (baselined)', String(baselined.length)],
         ['suppressed', String(result.suppressed.length)],
         ['diagnostics', String(result.diagnostics.length)],
@@ -209,6 +217,8 @@ export function runScan(args: ParsedArgs): { model: ResultModel } | { usageError
         counts: {
           findings: result.findings.length,
           hazards: active.length,
+          gating: gating.length,
+          failOn: args.failOn,
           baselined: baselined.length,
           bySeverity,
           suppressed: result.suppressed.length,

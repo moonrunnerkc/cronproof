@@ -81,3 +81,41 @@ describe('tzdb pin', () => {
     expect(stderr).toContain('tzdb drift');
   });
 });
+
+// A UTC-less systemd timer: ZONE_UNKNOWN at medium, which sits below the
+// default threshold. The summary must not call it gating on a green run.
+const belowDir = mkdtempSync(path.join(tmpdir(), 'cronproof-below-'));
+afterAll(() => rmSync(belowDir, { recursive: true, force: true }));
+writeFileSync(
+  path.join(belowDir, 'backup.timer'),
+  '[Timer]\nOnCalendar=*-*-* 02:30:00\n',
+  'utf8',
+);
+
+interface GatingJson {
+  data: { counts: { hazards: number; gating: number; failOn: string } };
+}
+
+describe('the reported gating count is the one that decides the exit code', () => {
+  test('hazards below --fail-on are counted as found but not as gating, and the scan passes', () => {
+    const { stdout, exit } = invoke(['scan', belowDir, '--format', 'json', '--fail-on', 'high']);
+    const parsed = JSON.parse(stdout) as GatingJson;
+    expect(parsed.data.counts.hazards).toBeGreaterThan(0);
+    expect(parsed.data.counts.gating).toBe(0);
+    expect(parsed.data.counts.failOn).toBe('high');
+    expect(exit).toBe(0);
+  });
+
+  test('lowering --fail-on to the hazard severity makes the same hazards gating and fails', () => {
+    const { stdout, exit } = invoke(['scan', belowDir, '--format', 'json', '--fail-on', 'medium']);
+    const parsed = JSON.parse(stdout) as GatingJson;
+    expect(parsed.data.counts.gating).toBe(parsed.data.counts.hazards);
+    expect(exit).toBe(1);
+  });
+
+  test('the human summary labels the gating row with the active threshold', () => {
+    const { stdout } = invoke(['scan', belowDir, '--fail-on', 'high']);
+    expect(stdout).toContain('hazards (gating, at or above high)');
+    expect(stdout).toContain('hazards (found)');
+  });
+});
