@@ -1650,3 +1650,57 @@ missing input and the two ways forward. The README documents `report` as the
 only stage that runs cold. tests/research/cache-guard.test.ts asserts both
 refusals leave the published files byte-identical, and skips those two cases
 when a warm cache is present so a machine that has run `collect` still passes.
+
+## 2026-07-28: Independent-run findings, three defects fixed at the source
+
+A full external run of the tool (fresh clone, pinned Node, real repos, real
+schedulers) reproduced every VERIFIED policy against the live scheduler on a
+different machine: systemd 255 rather than the fixture's 249, cron 3.0pl1 and
+cronie under libfaketime, robfig/cron v3, croniter 6.2.4, cronsim 2.7,
+cron-parser 4.9.0. Every observed fire instant matched the committed fixtures
+byte for byte. Three defects surfaced that the suite did not cover, all in
+presentation or input routing rather than in the prover.
+
+The scan summary called its hazard count `hazards (gating)` and computed it as
+every hazard not baselined and not suppressed, before `--fail-on` was applied.
+Scanning systemd/systemd printed `hazards (gating) 20` and exited 0, because
+all twenty are medium and the default threshold is high. The same row read the
+same at `--fail-on medium`, where the scan exits 1. A count that does not move
+with the thing it appears to describe is worse than no count: it reads as a
+broken gate on a green build. The summary now reports `hazards (found)` for the
+total and `hazards (gating, at or above <threshold>)` for the count that
+decides the exit code, and the JSON carries `counts.gating` and `counts.failOn`
+alongside the existing `counts.hazards`, which keeps its meaning. Filtering the
+count rather than only renaming the row was the choice, because the number a
+reader wants is the one that predicts the exit code.
+
+The tzdb mismatch message interpolated the zoneinfo tree's release into the
+sentence "the version in .nvmrc ships it". That clause is true only when the
+tree is the vendored one. With `--zoneinfo-root /usr/share/zoneinfo` on the
+pinned Node it read "run on a Node whose ICU tzdb is 2026b (the version in
+.nvmrc ships it)" when .nvmrc ships 2025b, sending the reader after a Node
+build that does not exist. The remedy is now conditional on the root: the
+vendored tree names the .nvmrc pin, and any other tree is told what the
+vendored tree holds instead, which is the actionable fact for someone who
+passed the flag. tzdbRemedy is exported and unit-tested for both branches,
+because the vendored branch cannot be reached from a correctly pinned Node.
+
+Wrangler config routing keyed on the literal filename `wrangler.toml`, so the
+JSON config format Cloudflare has shipped since 2024 was invisible. Five real
+trigger arrays in cloudflare/workers-sdk were missed, including a fixture
+directory named cron-triggers. Fixing the routing exposed the larger defect
+underneath: scanWrangler ran a bare regex over the raw text with no comment
+handling, so a commented-out `# crons = [...]` in TOML was reported as a live
+schedule. A gate that invents a schedule from a comment is worse than one that
+misses a file. The shared primitive maskComments now blanks comment spans while
+preserving length, newlines, and string contents, so offsets still map to the
+same line and column and a `#` in a URL or a `//` in an https string stays a
+value. It is separate from js-lex's maskCommentsAndStrings on purpose: config
+scanning must keep string bodies, since the schedule is a string. The array
+scan also now starts past the opening bracket, because starting at the match
+paired the JSON key's closing quote with the first element's opening quote and
+reported the punctuation between them as a schedule.
+
+Not changed: sourceKind stays `wrangler` for all three file formats, since the
+platform and its UTC rule are the same and splitting it would fragment the
+differential for no gain.
