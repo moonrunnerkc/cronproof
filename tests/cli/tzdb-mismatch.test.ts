@@ -76,7 +76,16 @@ describe('the remedy sentence for each kind of zoneinfo root', () => {
       '/vendor/zoneinfo',
     );
     expect(remedy).toContain('the Node pinned in .nvmrc, which ships 2025b');
-    expect(remedy).toContain('+VERSION reads 2023c');
+    expect(remedy).toContain('pnpm tzdb:sync 2023c');
+  });
+
+  test('the remedy names a command that builds the release, not a Node build to hunt for', () => {
+    const remedy = tzdbRemedy(
+      { intlTzdbVersion: '2026a', zoneinfoTzdbVersion: '2025b', zoneinfoRoot: '/vendor/zoneinfo' },
+      '/vendor/zoneinfo',
+    );
+    expect(remedy).toContain('pnpm tzdb:sync 2026a');
+    expect(remedy).toContain('--zoneinfo-root');
   });
 
   test('an unrelated tree is never described as the release .nvmrc ships', () => {

@@ -42,6 +42,7 @@
     "hermetic": "tsx scripts/credential-skip-check.ts",
     "test": "vitest run --coverage --reporter=verbose",
     "crosscheck": "tsx scripts/cross-check.ts",
+    "tzdb:sync": "tsx scripts/tzdb-sync.ts",
     "dialect-table": "tsx scripts/dialect-table.ts",
     "hazard-table": "tsx scripts/hazard-table.ts",
     "differential-table": "tsx scripts/differential-table.ts",

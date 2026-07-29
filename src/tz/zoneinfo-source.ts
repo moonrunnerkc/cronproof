@@ -1,9 +1,16 @@
 /**
  * Locates compiled zoneinfo files. The root is configurable; the
- * default is the system path /usr/share/zoneinfo, falling back to
- * the tzdata vendored in this package (vendor/zoneinfo, compiled
- * with zic from an IANA release) so the TZif backend works on
- * systems without system zoneinfo.
+ * default is the tzdata vendored in this package (vendor/zoneinfo,
+ * compiled with zic from an IANA release), falling back to the system
+ * path /usr/share/zoneinfo when no vendored copy is present.
+ *
+ * Vendored first, not system first. The vendored tree is the only one
+ * whose release is pinned alongside the Node version in .nvmrc, so it
+ * is the only default under which the tzdb agreement gate is
+ * reproducible: two machines with different distro tzdata would
+ * otherwise answer the same schedule differently. This is also the
+ * order the CLI has always used in practice; the system-first rule
+ * this module used to document applied to no shipped invocation.
  */
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -43,26 +50,37 @@ export function vendoredZoneinfoRoot(): string | null {
 }
 
 /**
- * Resolves the zoneinfo root to use: the explicit override when
- * given, else the system path when present, else the vendored copy.
- * Throws when no root can be found.
+ * Resolves the zoneinfo root to use.
+ * @param explicitRoot Override from --zoneinfo-root, when one was given.
+ * @returns The override when given, else the vendored copy, else the
+ *          system path. This is the one resolution order in the
+ *          codebase: every command, the scanner, and the TZif backend
+ *          go through it, so a scan and a check never read different
+ *          trees.
+ * @throws Error when the override does not exist, or when neither a
+ *         vendored copy nor a system tree can be found.
  */
 export function resolveZoneinfoRoot(explicitRoot?: string): string {
   if (explicitRoot !== undefined) {
     if (!existsSync(explicitRoot)) {
-      throw new Error(`zoneinfo root does not exist: ${explicitRoot}`);
+      throw new Error(
+        `zoneinfo root does not exist: ${explicitRoot}; point --zoneinfo-root at a ` +
+          'directory of compiled TZif files, or omit it to read the copy vendored ' +
+          'with cronproof',
+      );
     }
     return explicitRoot;
-  }
-  if (existsSync(SYSTEM_ZONEINFO_ROOT)) {
-    return SYSTEM_ZONEINFO_ROOT;
   }
   const vendored = vendoredZoneinfoRoot();
   if (vendored !== null) {
     return vendored;
   }
+  if (existsSync(SYSTEM_ZONEINFO_ROOT)) {
+    return SYSTEM_ZONEINFO_ROOT;
+  }
   throw new Error(
-    `no zoneinfo root: ${SYSTEM_ZONEINFO_ROOT} is absent and no vendored copy was found`,
+    `no zoneinfo root: no vendored copy was found and ${SYSTEM_ZONEINFO_ROOT} is absent; ` +
+      'run "pnpm tzdb:sync <release>" to build one, or pass --zoneinfo-root',
   );
 }
 

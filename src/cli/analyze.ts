@@ -30,12 +30,18 @@ export { hazardToView, isoUtc, severityOrder } from '../analyze/index';
 
 const DAY_MILLIS = 86_400_000;
 
-/** Resolves the zoneinfo root: explicit, else vendored, else system. */
+/**
+ * Resolves the zoneinfo root for a command invocation.
+ * @param explicit The --zoneinfo-root value, or null when absent.
+ * @returns The resolved root. The order lives in resolveZoneinfoRoot
+ *          and nowhere else: this used to apply its own vendored-first
+ *          rule on top of a system-first resolver, so the codebase had
+ *          two defaults and the resolver's documentation was false for
+ *          every CLI run.
+ * @throws Error when no readable root exists.
+ */
 export function resolveRoot(explicit: string | null): string {
-  if (explicit !== null) {
-    return resolveZoneinfoRoot(explicit);
-  }
-  return vendoredZoneinfoRoot() ?? resolveZoneinfoRoot();
+  return resolveZoneinfoRoot(explicit ?? undefined);
 }
 
 /** Creates the TZif backend for a root. */
@@ -82,8 +88,8 @@ export function tzdbAgreementFailure(root: string): string | null {
  */
 export function tzdbRemedy(versions: TzdbVersions, vendoredRoot: string | null): string {
   const pointAtIcu =
-    `pass --zoneinfo-root pointing at a tzdb tree whose +VERSION reads ` +
-    `${versions.intlTzdbVersion}`;
+    `build the matching tree with "pnpm tzdb:sync ${versions.intlTzdbVersion}" and pass ` +
+    '--zoneinfo-root at the path it prints';
   if (vendoredRoot !== null && versions.zoneinfoRoot === vendoredRoot) {
     return (
       `Either run on the Node pinned in .nvmrc, which ships ` +
