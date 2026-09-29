@@ -20,7 +20,7 @@ export const EXIT = {
   /** No hazards at or above the fail-on threshold. */
   clean: 0,
   /** Hazards at or above --fail-on were found. */
-  hazards: 1,
+  hazards: 4,
   /** Usage error or expression parse error. */
   usage: 2,
   /** Internal verification failure: backend disagreement or tzdb mismatch. */
